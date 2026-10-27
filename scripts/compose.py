@@ -98,7 +98,9 @@ def main():
     sfx_track(ev, dur, b / "sfx_track.wav")
     inputs = ["-i", video, "-i", str(b / "overlay.mov"), "-i", str(b / "sfx_track.wav")]
     cam = camera_filter(P.get("camera"), W, H, fps)
-    v = f"[0:v]{cam},format=yuv420p[cv];[cv][1:v]" if cam else "[0:v][1:v]"
+    # sources that aren't plan-sized (e.g. 608x1080 phone exports) are upscaled/cropped to fill the frame
+    fit = f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H},setsar=1"
+    v = f"[0:v]{fit},{cam},format=yuv420p[cv];[cv][1:v]" if cam else f"[0:v]{fit}[cv];[cv][1:v]"
     fc = [f"{v}overlay=0:0:format=auto,format=yuv420p[v]"]
     mix = ["[0:a]aresample=44100,aformat=channel_layouts=stereo[voice]", "[2:a]anull[fx]"]
     labels = "[voice][fx]"
@@ -116,7 +118,9 @@ def main():
     tail = "alimiter=limit=0.95" if a.no_loudnorm else "loudnorm=I=-14:TP=-1.5:LRA=11,aresample=44100"
     mix.append(f"{labels}amix=inputs={n}:normalize=0:duration=first,{tail}[a]")
     fc += mix
-    cmd = ["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", ";".join(fc), "-map", "[v]", "-map", "[a]",
+    # camera expressions get long; a script file avoids the Windows 32k command-line limit
+    (b / "filtergraph.txt").write_text(";".join(fc), encoding="utf-8")
+    cmd = ["ffmpeg", "-v", "error", "-y", *inputs, "-/filter_complex", str(b / "filtergraph.txt"), "-map", "[v]", "-map", "[a]",
            "-c:v", "libx264", "-preset", "medium", "-crf", a.crf, "-r", str(fps), "-c:a", "aac", "-b:a", "192k",
            "-movflags", "+faststart", "-t", str(dur), out]
     subprocess.run(cmd, check=True)

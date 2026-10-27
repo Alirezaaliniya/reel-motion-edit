@@ -144,7 +144,9 @@ function lintSfx(sfx) {
   if (mode === 'check') {
     const samples = [];
     for (let t = 0; t <= P.duration; t += 0.2) { await page.evaluate(t => seek(t), t); samples.push({ t, boxes: await page.evaluate(() => boxes()) }); }
-    const issues = [...lint(samples), ...lintSfx(sfx)];
+    const order = [];
+    for (const e of P.elements || []) if (e.type === 'steps') e.items.forEach((it, i) => { if (i && it.t <= e.items[i - 1].t) order.push(`ORDER    steps item ${i + 1} "${it.label}" at ${it.t}s is not after item ${i} (${e.items[i - 1].t}s) — word anchor hit an earlier occurrence? use w:word#n`); });
+    const issues = [...order, ...lint(samples), ...lintSfx(sfx)];
     console.log(`elements: ${(P.elements || []).length}  sfx: ${sfx.length}  duration: ${P.duration}s`);
     for (const e of P.elements || []) console.log(`  ${String(e.t ?? e.items?.[0]?.t).padStart(6)}s  ${e.type.padEnd(10)} ${e.id || ''} ${e.text || e.label || (e.lines || []).join(' / ') || e.title || ''}`);
     console.log(issues.length ? 'ISSUES:\n' + issues.join('\n') : 'no layout issues');
@@ -155,7 +157,7 @@ function lintSfx(sfx) {
       await page.evaluate(t => seek(t), t);
       const png = path.join(dir, `o_${i}.png`); fs.writeFileSync(png, await shot());
       const jpg = path.join(dir, `c_${String(i).padStart(2, '0')}.jpg`);
-      spawnSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(t), '-i', video, '-i', png, '-filter_complex', '[0][1]overlay,scale=360:-1', '-frames:v', '1', jpg]);
+      spawnSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(t), '-i', video, '-i', png, '-filter_complex', `[0]scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H}[b];[b][1]overlay,scale=360:-1`, '-frames:v', '1', jpg]);
       jpgs.push(jpg);
     }
     const cols = Math.min(6, jpgs.length), rows = Math.ceil(jpgs.length / cols);

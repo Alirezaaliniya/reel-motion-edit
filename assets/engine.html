@@ -170,8 +170,23 @@ const C = {};
 
 C.title = (s) => {
   const d = mk('title', '', s); d.style.top = (s.y ?? 100) + 'px';
+  if (s.scrim !== false) {  // dark top gradient keeps the title readable over bright screens
+    const sc = mk('scrim', '', null); sc.style.cssText = `left:0;top:0;width:100%;height:${(s.y ?? 100) + (s.scrimH ?? 520)}px;background:linear-gradient(rgba(0,0,0,.78),rgba(0,0,0,.55) 60%,transparent)`;
+    stage.insertBefore(sc, d);
+    show(sc, s.t); tl.fromTo(sc, {autoAlpha: 0}, {autoAlpha: 1, duration: .25, ...IR}, s.t); hide(sc, s.t + s.d, .4);
+  }
   let html = s.kicker ? `<div class="kick">${icon(s.kickerIcon)}<span>${rich(s.kicker)}</span></div>` : '';
-  (s.lines || []).forEach(l => html += '<div class="ln">' + l.split(' ').map(w => `<span class="w">${rich(w)}</span>`).join(' ') + '</div>');
+  // keep *multi word* / `multi word` spans intact while splitting lines into animated words
+  (s.lines || []).forEach(l => {
+    let mode = null; const parts = [];
+    for (let w of l.split(' ')) {
+      let m = mode, x = w;
+      if (!m && (x[0] === '*' || x[0] === '`') && !(x.length > 1 && x.endsWith(x[0]))) { m = mode = x[0]; x = x.slice(1); }
+      if (m && x.endsWith(m)) { x = x.slice(0, -1); mode = null; }
+      parts.push(m ? m + x + m : x);
+    }
+    html += '<div class="ln">' + parts.map(w => `<span class="w">${rich(w)}</span>`).join(' ') + '</div>';
+  });
   if (s.sub) html += `<div class="sub">${rich(s.sub)}</div>`;
   d.innerHTML = html;
   const T = s.t, ws = d.querySelectorAll('.w');

@@ -124,4 +124,6 @@ Proof-read the printed chunks (fix Whisper spellings with `--fix`). Add `"captio
 - Camtasia-style animated zooms between face and screen last ~0.5 s. Put the transition element at the *start* of the zoom, and don't put text on screen in that window.
 - `steps.hide` hides the step chip during full-face sections and brings it back after.
 - Whisper word timestamps can be ~0.1 s late on the first word after a pause. For hard hits (title slam), nudge with `-0.05`.
+- Sources that aren't 1080×1920 (e.g. 608×1080 phone exports) are upscaled/cropped to the plan size by compose and preview. Plan coordinates are always in plan-size pixels, so multiply coordinates read off source frames by `1080 / source_width`.
+- Handheld phone footage of a monitor: the screen drifts, so screen-pinned elements (click, highlight, arrows) won't stay on target. Use structure (steps), word-anchored stickers in the black margins, and full-frame transitions instead.
 - Keep the speaker's own voice untouched (no EQ/compression beyond loudness normalization) unless asked.
