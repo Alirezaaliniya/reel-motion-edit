@@ -151,7 +151,8 @@ function lintSfx(sfx) {
     for (const e of P.elements || []) console.log(`  ${String(e.t ?? e.items?.[0]?.t).padStart(6)}s  ${e.type.padEnd(10)} ${e.id || ''} ${e.text || e.label || (e.lines || []).join(' / ') || e.title || ''}`);
     console.log(issues.length ? 'ISSUES:\n' + issues.join('\n') : 'no layout issues');
   } else if (mode === 'preview') {
-    const times = rest.map(Number).sort((a, b) => a - b), dir = path.join(build, 'preview'); fs.mkdirSync(dir, { recursive: true });
+    const times = rest.map(Number).sort((a, b) => a - b), dir = path.join(build, 'preview');
+    fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });  // stale stills would leak into the tile
     const video = rel(P.video), jpgs = [];
     for (const [i, t] of times.entries()) {
       await page.evaluate(t => seek(t), t);
