@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<!-- Overlay engine: render.js injects fonts + gsap, then calls build(plan). Every
+     component is created from plan.elements, animates on one paused GSAP timeline,
+     and registers its default sound effects. Frames are rendered with a transparent
+     background and composited over the source video by compose.py. -->
+<style id="fontcss"></style>
+<style>
+:root{--p:#FF7139;--s:#9059FF;--a:#FF2A8A;--ok:#2BD67B;--dark:#14121F;--txt:#fff;--hl:#FFD23F;
+  --display:Lalezar;--body:Vazirmatn;--W:1080px;--H:1920px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:var(--W);height:var(--H);background:transparent;overflow:hidden;font-family:var(--body),Tahoma,sans-serif;color:var(--txt)}
+.c{position:absolute;visibility:hidden;opacity:0}
+.grad{background:linear-gradient(95deg,var(--p),var(--a) 50%,var(--s));-webkit-background-clip:text;background-clip:text;color:transparent}
+.ltr{direction:ltr;unicode-bidi:isolate}
+.glass{background:rgba(18,16,30,.80);border:2px solid rgba(255,255,255,.16);box-shadow:0 16px 44px rgba(0,0,0,.45);backdrop-filter:blur(10px)}
+.ic{display:inline-block;width:1em;height:1em;flex:none}
+.ic svg{width:100%;height:100%;display:block}
+
+/* title */
+.title{left:0;width:100%;text-align:center}
+.title .kick{display:inline-flex;align-items:center;gap:12px;font:800 40px var(--body);padding:10px 28px;border-radius:999px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25)}
+.title .ln{font:400 150px/1.12 var(--display);filter:drop-shadow(0 10px 28px rgba(0,0,0,.55));white-space:nowrap}
+.title .w{display:inline-block;margin:0 .14em}
+.title .kick .ic{width:42px;height:42px}
+.title .sub{font:800 50px var(--body);margin-top:4px;text-shadow:0 4px 18px rgba(0,0,0,.8)}
+
+/* steps */
+.steps{left:50%;display:flex;align-items:center;gap:18px;padding:12px 32px 12px 14px;border-radius:999px;white-space:nowrap;transform-origin:50% 50%;
+  background:linear-gradient(95deg,#1d1830,#2a1f45);border:3px solid rgba(255,255,255,.14);box-shadow:0 18px 50px rgba(20,8,50,.5)}
+.steps .n{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font:400 50px var(--display);background:linear-gradient(135deg,var(--p),var(--a),var(--s));flex:none}
+.steps .l{font:900 46px var(--body)}
+.steps .l small{display:block;font:600 27px var(--body);opacity:.72}
+.steps .dots{position:absolute;left:50%;top:100%;margin-top:14px;transform:translateX(-50%);display:flex;gap:10px}
+.steps .dots i{width:40px;height:9px;border-radius:9px;background:rgba(40,30,70,.35)}
+.steps .dots i.on{background:linear-gradient(90deg,var(--s),var(--p))}
+
+/* keyword stickers */
+.kw{white-space:nowrap;font:400 var(--sz,92px)/1.1 var(--display);display:flex;align-items:center;gap:.2em}
+.kw.sticker{padding:.12em .42em .2em;border-radius:.3em;background:var(--bg,var(--p));box-shadow:0 .12em 0 rgba(0,0,0,.35),0 18px 40px rgba(0,0,0,.4)}
+.kw.neon{color:#fff;text-shadow:0 0 12px var(--bg,var(--a)),0 0 32px var(--bg,var(--a)),0 0 60px var(--bg,var(--a))}
+.kw.outline{color:transparent;-webkit-text-stroke:5px #fff;filter:drop-shadow(0 6px 14px rgba(0,0,0,.6))}
+.kw.gradient span.t{background:linear-gradient(95deg,var(--p),var(--a),var(--s));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 16px rgba(0,0,0,.6))}
+.kw.plain{text-shadow:0 6px 0 rgba(0,0,0,.35),0 10px 30px rgba(0,0,0,.6)}
+
+/* note / callout / lower third */
+.note{display:flex;gap:18px;align-items:flex-start;padding:22px 28px;border-radius:28px;max-width:900px}
+.note .em{font-size:64px;line-height:1}
+.note b{display:block;font:900 44px var(--body);color:var(--hl)}
+.note p{font:700 38px/1.5 var(--body)}
+.callout{display:flex;align-items:center;gap:14px;font:900 42px var(--body);padding:14px 26px;border-radius:20px;background:var(--bg,var(--p));white-space:nowrap;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.callout .ic{width:46px;height:46px}
+.lt{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.lt .nm{font:400 70px var(--display);padding:6px 26px;background:var(--p);border-radius:16px 16px 16px 0}
+.lt .rl{font:700 36px var(--body);padding:6px 22px;background:var(--dark);border-radius:0 0 14px 14px}
+
+/* highlight / click / arrow */
+.hl{border:6px solid var(--bg,var(--p));border-radius:16px;box-shadow:0 0 30px var(--bg,var(--p))}
+.hl.circle{border-radius:50%}
+.hl .lab{position:absolute;top:100%;left:50%;transform:translate(-50%,12px);font:900 36px var(--body);padding:8px 18px;border-radius:14px;background:var(--bg,var(--p));white-space:nowrap}
+.rip{width:0;height:0}
+.rip span{position:absolute;left:0;top:0;border-radius:50%;transform:translate(-50%,-50%);border:6px solid var(--bg,var(--p));width:20px;height:20px}
+.rip span.b{border-color:var(--s)}
+.rip em{position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;transform:translate(-50%,-50%);background:var(--bg,var(--p))}
+svg.arw{left:0;top:0;width:var(--W);height:var(--H);overflow:visible}
+
+/* counter, icon, compare */
+.counter{text-align:center}
+.counter .v{font:400 var(--sz,150px)/1 var(--display);direction:ltr}
+.counter .lb{font:800 40px var(--body);margin-top:6px;text-shadow:0 3px 12px rgba(0,0,0,.8)}
+.icon{font-size:var(--sz,150px);line-height:1;filter:drop-shadow(0 10px 24px rgba(0,0,0,.5))}
+.cmp{display:flex;gap:26px;align-items:center}
+.cmp .x,.cmp .o{font:400 70px var(--display);padding:8px 30px 14px;border-radius:22px;position:relative;white-space:nowrap}
+.cmp .x{background:#3a2030;color:#ff8a8a}
+.cmp .x i{position:absolute;left:8%;right:8%;top:52%;height:8px;background:#ff4d4d;border-radius:8px;transform-origin:right center}
+.cmp .o{background:var(--ok);color:#06210f}
+
+/* success / cta */
+.okcard{display:flex;align-items:center;gap:22px;padding:22px 40px 22px 26px;border-radius:30px;background:rgba(8,38,22,.92);border:3px solid var(--ok);box-shadow:0 20px 60px rgba(43,214,123,.4);white-space:nowrap}
+.okcard .ck{width:96px;height:96px;border-radius:50%;background:var(--ok);display:grid;place-items:center}
+.okcard .tt{font:400 64px var(--display)}
+.okcard .tt small{display:block;font:700 32px var(--body);opacity:.85}
+.conf{position:absolute;width:16px;height:26px;border-radius:4px}
+.cta{display:flex;gap:22px}
+.cta .b{display:flex;align-items:center;gap:14px;padding:18px 30px;border-radius:24px;font:900 44px var(--body);white-space:nowrap;box-shadow:0 16px 40px rgba(0,0,0,.45)}
+.cta .b .ic{width:50px;height:50px}
+
+/* transitions */
+.tr{left:0;top:0;width:var(--W);height:var(--H);overflow:hidden}
+.tr .band{position:absolute;left:-60%;top:-20%;width:220%;height:140%;background:linear-gradient(90deg,transparent,var(--p) 30%,var(--a) 50%,var(--s) 70%,transparent)}
+.tr .dot{position:absolute;border-radius:50%}
+.tr .slice{position:absolute;left:0;width:100%}
+.tr .leak{position:absolute;inset:-20%;background:radial-gradient(circle at 30% 40%,rgba(255,170,80,.9),rgba(255,60,120,.5) 35%,transparent 65%)}
+
+/* captions */
+.cap{left:50px;right:50px;text-align:center}
+.cap .wd{display:inline-block;margin:0 .14em}
+.cap.karaoke{font:900 60px/1.5 var(--body)}
+.cap.karaoke .ln{display:inline-block;padding:6px 26px 12px;border-radius:22px;background:rgba(12,10,22,.74)}
+.cap.karaoke .wd.on{color:var(--hl)}
+.cap.pop{font:400 88px/1.25 var(--display);-webkit-text-stroke:3px rgba(0,0,0,.85);paint-order:stroke fill;text-shadow:0 6px 0 rgba(0,0,0,.55)}
+.cap.pop .wd.on{color:var(--hl)}
+.cap.kinetic{font:900 62px/1.4 var(--body);text-shadow:0 4px 0 rgba(0,0,0,.6),0 8px 22px rgba(0,0,0,.7)}
+.cap.kinetic .wd.key{font:400 96px/1 var(--display);color:var(--hl)}
+.cap.minimal{font:700 50px/1.5 var(--body);text-shadow:0 2px 10px rgba(0,0,0,.9),0 0 2px #000}
+.cap.boxed{font:900 58px/1.6 var(--body)}
+.cap.boxed .wd{background:var(--dark);padding:0 .25em .08em;border-radius:.2em;margin:0 .06em}
+.cap.boxed .wd.on{background:var(--p)}
+
+.progress{left:0;bottom:0;height:10px;width:var(--W);transform-origin:right center;background:linear-gradient(270deg,var(--s),var(--a),var(--p))}
+</style>
+</head>
+<body><div id="stage"></div>
+<script>
+const ICONS = {
+  download:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg>',
+  warn:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3 7 7 .6-5.3 4.7 1.6 7.2L12 17.8 5.7 21.5l1.6-7.2L2 9.6 9 9z"/></svg>',
+  click:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9l11 4-5 2-2 5z"/><path d="M4 4l2 2M9 2v3M2 9h3"/></svg>',
+  save:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M6 3h12v18l-6-4-6 4z"/></svg>',
+  follow:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M19 8v6M16 11h6"/></svg>',
+  like:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11z"/></svg>',
+  share:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/></svg>',
+  comment:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"><path d="M4 4h16v12H9l-5 4z"/></svg>',
+  lock:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+  globe:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg>',
+  bolt:'<svg viewBox="0 0 24 24" fill="#fff"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',
+};
+const icon = n => !n ? '' : ICONS[n] ? `<span class="ic">${ICONS[n]}</span>` : `<span class="em">${n}</span>`;
+const FA = s => String(s).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+const esc = s => String(s ?? '').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+// *word* → gradient highlight, `latin` → isolated LTR run
+const rich = s => esc(s).replace(/\*(.+?)\*/g,'<span class="grad">$1</span>').replace(/`(.+?)`/g,'<span class="ltr">$1</span>');
+
+let W = 1080, H = 1920, tl, SFX = [], stage, rnd;
+
+function mk(cls, html, spec) {
+  const d = document.createElement('div');
+  d.className = 'c ' + cls; d.innerHTML = html || '';
+  if (spec) {
+    d.dataset.id = spec.id; d.dataset.type = spec.type;
+    if (spec.color) d.style.setProperty('--bg', spec.color);
+    if (spec.size) d.style.setProperty('--sz', spec.size + 'px');
+  }
+  stage.appendChild(d); return d;
+}
+// position: x/y are the element's anchor point (default: centered); anchor:'tl' uses top-left
+function place(d, spec, defX = W / 2, defY = 300) {
+  const x = spec.x ?? defX, y = spec.y ?? defY;
+  d.style.left = x + 'px'; d.style.top = y + 'px';
+  const ax = spec.anchor === 'tl' ? 0 : spec.anchor === 'tr' ? -100 : -50, ay = spec.anchor && spec.anchor !== 'c' ? 0 : -50;
+  gsap.set(d, {xPercent: ax, yPercent: ay});
+}
+function sfx(spec, defaults) {
+  if (spec.sfx === false) return;
+  const list = Array.isArray(spec.sfx) ? spec.sfx : defaults;
+  const g = spec.sfxGain || 0;
+  for (const [off, name, db = 0] of list) SFX.push({t: +(spec.t + off).toFixed(3), name, db: db + g, src: spec.id});
+}
+const show = (d, t) => tl.set(d, {visibility: 'visible'}, t);
+const hide = (d, t, dur = .35, vars = {}) => tl.to(d, {autoAlpha: 0, duration: dur, ease: 'power2.in', ...vars}, t - dur);
+const IR = {immediateRender: false};
+
+/* ------------------------------------------------------------------ components */
+const C = {};
+
+C.title = (s) => {
+  const d = mk('title', '', s); d.style.top = (s.y ?? 100) + 'px';
+  let html = s.kicker ? `<div class="kick">${icon(s.kickerIcon)}<span>${rich(s.kicker)}</span></div>` : '';
+  (s.lines || []).forEach(l => html += '<div class="ln">' + l.split(' ').map(w => `<span class="w">${rich(w)}</span>`).join(' ') + '</div>');
+  if (s.sub) html += `<div class="sub">${rich(s.sub)}</div>`;
+  d.innerHTML = html;
+  const T = s.t, ws = d.querySelectorAll('.w');
+  show(d, T); tl.set(d, {opacity: 1}, T);
+  if (s.kicker) tl.fromTo(d.querySelector('.kick'), {y: -60, autoAlpha: 0, scale: .7}, {y: 0, autoAlpha: 1, scale: 1, duration: .45, ease: 'back.out(2)', ...IR}, T);
+  const anim = s.anim || 'slam';
+  ws.forEach((w, i) => {
+    const at = T + .2 + i * (s.wordGap ?? .22);
+    if (anim === 'slam') tl.fromTo(w, {scale: 2.6, autoAlpha: 0, rotate: i % 2 ? 8 : -8, y: 80}, {scale: 1, autoAlpha: 1, rotate: 0, y: 0, duration: .5, ease: 'back.out(1.7)', ...IR}, at);
+    else if (anim === 'rise') tl.fromTo(w, {yPercent: 110, autoAlpha: 0}, {yPercent: 0, autoAlpha: 1, duration: .5, ...IR}, at);
+    else if (anim === 'glitch') { tl.fromTo(w, {autoAlpha: 0, x: 30, skewX: 20}, {autoAlpha: 1, x: 0, skewX: 0, duration: .25, ease: 'steps(4)', ...IR}, at); }
+    else if (anim === 'blur') tl.fromTo(w, {autoAlpha: 0, filter: 'blur(24px)', scale: 1.4}, {autoAlpha: 1, filter: 'blur(0px)', scale: 1, duration: .55, ...IR}, at);
+  });
+  const lastWord = T + .2 + Math.max(0, ws.length - 1) * (s.wordGap ?? .22);
+  if (s.sub) tl.fromTo(d.querySelector('.sub'), {autoAlpha: 0, y: 30}, {autoAlpha: 1, y: 0, duration: .4, ...IR}, lastWord + .35);
+  if (s.jitter !== false) [lastWord + .9, lastWord + .95, lastWord + 2.1].forEach((t, i) =>
+    tl.set(d.querySelectorAll('.ln'), {x: i % 2 ? -12 : 12, skewX: i % 2 ? 6 : -6}, t).set(d.querySelectorAll('.ln'), {x: 0, skewX: 0}, t + .04));
+  hide(d, T + s.d, .4, {y: -80});
+  const fx = [[0, 'impact', -3], [.05, 'whoosh_short', -6]];
+  ws.forEach((w, i) => i < 5 && fx.push([.2 + i * (s.wordGap ?? .22), i % 2 ? 'pop_hi' : 'pop', -5]));
+  if (s.jitter !== false) fx.push([lastWord - T + .9, 'glitch', -9]);
+  fx.push([s.d - .4, 'swoosh_out', -9]);
+  sfx(s, fx);
+};
+
+C.steps = (s) => {
+  const total = s.total ?? s.items.length;
+  const d = mk('steps', `<div class="n"></div><div class="l"></div><div class="dots">${'<i></i>'.repeat(total)}</div>`, s);
+  gsap.set(d, {xPercent: -50, top: s.y ?? 150});
+  const setI = i => {
+    const it = s.items[i]; d.querySelector('.n').textContent = FA(it.n ?? i + 1);
+    d.querySelector('.l').innerHTML = rich(it.label) + (it.sub ? `<small>${rich(it.sub)}</small>` : '');
+    d.querySelectorAll('.dots i').forEach((e, k) => e.classList.toggle('on', k <= i));
+    gsap.set(d, {top: it.y ?? s.y ?? 150});
+  };
+  const fx = []; s.t = s.items[0].t;
+  s.items.forEach((it, i) => {
+    const t = it.t;
+    if (i === 0) {
+      tl.call(() => setI(0), null, t - .01); show(d, t);
+      tl.fromTo(d, {autoAlpha: 0, y: -120, scale: .7}, {autoAlpha: 1, y: 0, scale: 1, duration: .55, ease: 'back.out(1.8)', ...IR}, t);
+    } else {
+      tl.to(d, {rotateX: 90, duration: .16, ease: 'power2.in'}, t - .16);
+      tl.call(() => setI(i), null, t);
+      tl.fromTo(d, {rotateX: -90}, {rotateX: 0, duration: .34, ease: 'back.out(2)', ...IR}, t);
+      tl.fromTo(d.querySelector('.n'), {scale: 1.7}, {scale: 1, duration: .4, ease: 'back.out(3)', ...IR}, t);
+    }
+    fx.push([t - s.t - .05, 'whoosh', -10], [t - s.t + .1, 'pop_hi', -9]);
+  });
+  (s.hide || []).forEach(([a, b]) => {
+    tl.to(d, {autoAlpha: 0, y: -40, duration: .3, ease: 'power2.in'}, a);
+    tl.to(d, {autoAlpha: 1, y: 0, duration: .3}, b);
+  });
+  hide(d, s.end ?? (s.t + s.d), .4, {y: -60});
+  sfx(s, fx);
+};
+
+C.keyword = (s) => {
+  const d = mk('kw ' + (s.style || 'sticker'), `${s.emoji ? `<span>${s.emoji}</span>` : ''}<span class="t">${rich(s.text)}</span>`, s);
+  place(d, s, W / 2, 400); show(d, s.t);
+  const r = s.rotate ?? -4, from = s.from || 'pop';
+  const st = {pop: {scale: 0, rotate: r - 20}, left: {x: -700, rotate: r}, right: {x: 700, rotate: r}, drop: {y: -500, rotate: r + 10}, up: {y: 300, autoAlpha: 0, rotate: r}}[from];
+  tl.fromTo(d, {autoAlpha: 1, ...st}, {x: 0, y: 0, scale: 1, rotate: r, autoAlpha: 1, duration: .5, ease: 'back.out(2.2)', ...IR}, s.t);
+  if (s.wiggle !== false) tl.to(d, {rotate: r + 3, duration: .25, yoyo: true, repeat: Math.max(1, Math.floor((s.d - 1) / .25)), ease: 'sine.inOut'}, s.t + .5);
+  hide(d, s.t + s.d, .25, {scale: .4});
+  sfx(s, [[0, from === 'pop' ? 'pop' : 'whoosh_short', -5]]);
+};
+
+C.note = (s) => {
+  const d = mk('note glass', `<span class="em">${s.icon || '💡'}</span><div>${s.title ? `<b>${rich(s.title)}</b>` : ''}<p>${rich(s.text)}</p></div>`, s);
+  place(d, s, W / 2, 400); show(d, s.t);
+  tl.fromTo(d, {autoAlpha: 0, y: 60, scale: .85}, {autoAlpha: 1, y: 0, scale: 1, duration: .5, ease: 'back.out(1.8)', ...IR}, s.t);
+  hide(d, s.t + s.d, .3, {y: -30});
+  sfx(s, [[0, 'notify', -6]]);
+};
+
+C.callout = (s) => {
+  const d = mk('callout', `${icon(s.icon)}<span>${rich(s.text)}</span>`, s);
+  place(d, s, W / 2, 400); show(d, s.t);
+  tl.fromTo(d, {autoAlpha: 0, y: 40, scale: .7}, {autoAlpha: 1, y: 0, scale: 1, duration: .45, ease: 'back.out(2)', ...IR}, s.t);
+  tl.to(d, {scale: 1.06, duration: .3, yoyo: true, repeat: Math.max(1, Math.floor((s.d - 1) / .3)), ease: 'sine.inOut'}, s.t + .5);
+  hide(d, s.t + s.d, .3);
+  const fx = [[0, 'pop', -6]];
+  if (s.arrow) { C.arrow({id: s.id + '_arrow', type: 'arrow', parent: s.id, t: s.t + .2, d: s.d - .2, color: s.color, sfx: false, ...s.arrow}); fx.push([.2, 'swipe', -10]); }
+  sfx(s, fx);
+};
+
+C.highlight = (s) => {
+  const [x, y, w, h] = s.rect;
+  const d = mk('hl' + (s.shape === 'circle' ? ' circle' : ''), s.label ? `<div class="lab">${rich(s.label)}</div>` : '', s);
+  Object.assign(d.style, {left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px'});
+  show(d, s.t);
+  tl.fromTo(d, {autoAlpha: 0, scale: 1.6}, {autoAlpha: 1, scale: 1, duration: .45, ease: 'back.out(2)', ...IR}, s.t);
+  const dim = s.dim ?? .35, col = s.color || 'var(--p)';
+  if (dim) tl.to(d, {boxShadow: `0 0 0 3000px rgba(8,4,20,${dim}),0 0 36px ${s.color || '#FF7139'}`, duration: .4}, s.t + .15);
+  if (s.pulse !== false) tl.to(d, {scale: 1.05, duration: .3, yoyo: true, repeat: 3, ease: 'sine.inOut'}, s.t + .6);
+  hide(d, s.t + s.d, .3);
+  sfx(s, [[0, 'pop', -6]]);
+};
+
+C.click = (s) => {
+  const d = mk('rip', '<em></em><span></span><span class="b"></span>', s);
+  Object.assign(d.style, {left: s.x + 'px', top: s.y + 'px'}); show(d, s.t); tl.set(d, {opacity: 1}, s.t);
+  tl.fromTo(d.querySelector('em'), {autoAlpha: .9, scale: .3}, {autoAlpha: 0, scale: 2.4, duration: .5, ...IR}, s.t);
+  tl.fromTo(d.querySelectorAll('span'), {width: 20, height: 20, autoAlpha: 1}, {width: 170, height: 170, autoAlpha: 0, duration: .7, stagger: .12, ease: 'power2.out', ...IR}, s.t);
+  tl.set(d, {visibility: 'hidden'}, s.t + 1);
+  sfx(s, [[0, 'click', -4]]);
+};
+
+C.arrow = (s) => {
+  const [x1, y1] = s.from, [x2, y2] = s.to, cv = s.curve ?? .3;
+  const mx = (x1 + x2) / 2 - (y2 - y1) * cv, my = (y1 + y2) / 2 + (x2 - x1) * cv;
+  const ang = Math.atan2(y2 - my, x2 - mx), L = 34;
+  const h1 = [x2 - L * Math.cos(ang - .5), y2 - L * Math.sin(ang - .5)], h2 = [x2 - L * Math.cos(ang + .5), y2 - L * Math.sin(ang + .5)];
+  const col = s.color || '#FF7139';
+  const d = mk('', '', s);
+  d.className = 'c'; d.style.cssText = 'left:0;top:0;width:100%;height:100%';
+  if (s.parent) d.dataset.parent = s.parent;
+  d.innerHTML = `<svg class="arw" viewBox="0 0 ${W} ${H}" fill="none" stroke="${col}" stroke-width="${s.width || 11}" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))">
+    <path class="sh" d="M${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}"/><path class="hd" d="M${h1} L${x2} ${y2} L${h2}"/></svg>`;
+  const sh = d.querySelector('.sh'), hd = d.querySelector('.hd'), len = sh.getTotalLength();
+  gsap.set(sh, {strokeDasharray: len, strokeDashoffset: len}); gsap.set(hd, {opacity: 0});
+  show(d, s.t); tl.set(d, {opacity: 1}, s.t);
+  tl.to(sh, {strokeDashoffset: 0, duration: .45, ease: 'power2.inOut'}, s.t);
+  tl.to(hd, {opacity: 1, duration: .1}, s.t + .4);
+  hide(d, s.t + s.d, .25);
+  sfx(s, [[0, 'swipe', -10]]);
+};
+
+C.counter = (s) => {
+  const d = mk('counter', `<div class="v ${s.gradient === false ? '' : 'grad'}"></div>${s.label ? `<div class="lb">${rich(s.label)}</div>` : ''}`, s);
+  place(d, s, W / 2, 400); show(d, s.t);
+  const v = d.querySelector('.v'), o = {n: s.from ?? 0}, fmt = n => (s.prefix || '') + (s.persian === false ? n.toFixed(s.decimals || 0) : FA(n.toFixed(s.decimals || 0))) + (s.suffix || '');
+  tl.call(() => v.textContent = fmt(o.n), null, s.t);
+  tl.fromTo(d, {autoAlpha: 0, scale: .5}, {autoAlpha: 1, scale: 1, duration: .4, ease: 'back.out(2)', ...IR}, s.t);
+  const dur = s.count ?? 1.2;
+  tl.to(o, {n: s.to, duration: dur, ease: 'power2.out', onUpdate: () => v.textContent = fmt(o.n)}, s.t + .2);
+  tl.fromTo(d, {scale: 1.15}, {scale: 1, duration: .35, ease: 'back.out(3)', ...IR}, s.t + .2 + dur);
+  hide(d, s.t + s.d, .3);
+  const fx = [[0, 'whoosh_short', -8]];
+  for (let k = 0; k < 8; k++) fx.push([.2 + dur * (1 - Math.pow(1 - k / 8, 2)) , 'tick', -12]);
+  fx.push([.2 + dur, 'ding', -8]); sfx(s, fx);
+};
+
+C.icon = (s) => {
+  const d = mk('icon', ICONS[s.icon] ? `<div style="width:${s.size || 150}px;height:${s.size || 150}px" class="ic">${ICONS[s.icon]}</div>` : s.icon, s);
+  place(d, s, W / 2, 400); show(d, s.t);
+  tl.fromTo(d, {autoAlpha: 0, scale: 0, rotate: -30}, {autoAlpha: 1, scale: 1, rotate: 0, duration: .5, ease: 'back.out(2.5)', ...IR}, s.t);
+  const a = s.anim || 'bounce';
+  if (a === 'bounce') tl.to(d, {y: '-=24', duration: .3, yoyo: true, repeat: Math.max(1, Math.floor((s.d - .8) / .3)), ease: 'sine.inOut'}, s.t + .5);
+  if (a === 'pulse') tl.to(d, {scale: 1.12, duration: .3, yoyo: true, repeat: Math.max(1, Math.floor((s.d - .8) / .3)), ease: 'sine.inOut'}, s.t + .5);
+  if (a === 'spin') tl.to(d, {rotate: 360, duration: s.d - .8, ease: 'none'}, s.t + .5);
+  hide(d, s.t + s.d, .25, {scale: 0});
+  sfx(s, [[0, 'bubble', -6]]);
+};
+
+C.compare = (s) => {
+  const d = mk('cmp', `<div class="x">${rich(s.bad)}<i></i></div><div class="o">${rich(s.good)}</div>`, s);
+  place(d, s, W / 2, 400); show(d, s.t); tl.set(d, {opacity: 1}, s.t);
+  const x = d.querySelector('.x'), o = d.querySelector('.o'), gap = s.gap ?? .7;
+  tl.fromTo(x, {autoAlpha: 0, x: 200}, {autoAlpha: 1, x: 0, duration: .4, ...IR}, s.t);
+  tl.fromTo(x.querySelector('i'), {scaleX: 0}, {scaleX: 1, duration: .25, ...IR}, s.t + gap);
+  tl.to(x, {opacity: .55, scale: .9, duration: .3}, s.t + gap);
+  tl.fromTo(o, {autoAlpha: 0, scale: 0}, {autoAlpha: 1, scale: 1, duration: .45, ease: 'back.out(2.4)', ...IR}, s.t + gap + .25);
+  hide(d, s.t + s.d, .3);
+  sfx(s, [[0, 'whoosh_short', -9], [gap, 'error', -12], [gap + .25, 'ding', -8]]);
+};
+
+C.success = (s) => {
+  const ox = s.x ?? W / 2, oy = s.y ?? 700, COLORS = ['#FF7139', '#FF2A8A', '#9059FF', '#2BD67B', '#FFD23F', '#00B3F4'];
+  for (let i = 0; i < (s.confetti ?? 60); i++) {
+    const c = mk('conf'); c.style.background = COLORS[i % 6]; c.style.left = ox + 'px'; c.style.top = oy + 'px';
+    const a = rnd() * Math.PI * 2, dd = 250 + rnd() * 450, st = s.t + rnd() * .15;
+    show(c, st);
+    tl.fromTo(c, {autoAlpha: 1, x: 0, y: 0, rotate: 0, scale: .6 + rnd()}, {x: Math.cos(a) * dd, y: Math.sin(a) * dd * .8 + 300 * rnd(), rotate: rnd() * 720 - 360, duration: 1.8, ease: 'power3.out', ...IR}, st);
+    tl.to(c, {autoAlpha: 0, duration: .5}, s.t + 1.4 + rnd() * .4);
+  }
+  if (s.title) {
+    const d = mk('okcard', `<div class="ck"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7" stroke-dasharray="24" stroke-dashoffset="24"/></svg></div><div class="tt">${rich(s.title)}${s.sub ? `<small>${rich(s.sub)}</small>` : ''}</div>`, {...s, id: s.id + '_card'});
+    place(d, {x: s.cardX ?? W / 2, y: s.cardY ?? 1060}); show(d, s.t + .2);
+    tl.fromTo(d, {autoAlpha: 0, y: 80, scale: .6}, {autoAlpha: 1, y: 0, scale: 1, duration: .55, ease: 'back.out(1.8)', ...IR}, s.t + .2);
+    tl.to(d.querySelector('path'), {strokeDashoffset: 0, duration: .45}, s.t + .5);
+    hide(d, s.t + s.d, .4, {y: -40});
+  }
+  sfx(s, [[0, 'success', -4], [0, 'impact', -13], [.3, 'sparkle', -12]]);
+};
+
+C.cta = (s) => {
+  const d = mk('cta', s.items.map((it, i) => `<div class="b" style="background:${it.color || ['linear-gradient(135deg,var(--p),var(--a))', 'linear-gradient(135deg,var(--s),#5b2fd6)', 'linear-gradient(135deg,var(--a),var(--s))'][i % 3]}">${icon(it.icon)}${rich(it.text)}</div>`).join(''), s);
+  place(d, s, W / 2, 1060); show(d, s.t); tl.set(d, {opacity: 1}, s.t);
+  const fx = [];
+  d.querySelectorAll('.b').forEach((b, i) => {
+    tl.fromTo(b, {autoAlpha: 0, y: 60, scale: .5}, {autoAlpha: 1, y: 0, scale: 1, duration: .5, ease: 'back.out(2)', ...IR}, s.t + i * .25);
+    fx.push([i * .25, i % 2 ? 'pop_hi' : 'pop', -6]);
+  });
+  tl.to(d.querySelectorAll('.b'), {scale: 1.08, duration: .3, yoyo: true, repeat: 3, ease: 'sine.inOut', stagger: .15}, s.t + .8);
+  fx.push([.8, 'ding', -9]);
+  if (s.d) hide(d, s.t + s.d, .3);
+  sfx(s, fx);
+};
+
+C.lowerthird = (s) => {
+  const d = mk('lt', `<div class="nm">${rich(s.name)}</div>${s.role ? `<div class="rl">${rich(s.role)}</div>` : ''}`, s);
+  place(d, {anchor: 'tr', x: s.x ?? W - 60, y: s.y ?? 1350}); show(d, s.t); tl.set(d, {opacity: 1}, s.t);
+  tl.fromTo(d.querySelector('.nm'), {clipPath: 'inset(0 0 0 100%)'}, {clipPath: 'inset(0 0 0 0%)', duration: .45, ease: 'power3.out', ...IR}, s.t);
+  if (s.role) tl.fromTo(d.querySelector('.rl'), {clipPath: 'inset(0 0 100% 0)'}, {clipPath: 'inset(0 0 0% 0)', duration: .35, ...IR}, s.t + .3);
+  hide(d, s.t + s.d, .3, {x: 200});
+  sfx(s, [[0, 'whoosh_short', -8]]);
+};
+
+C.transition = (s) => {
+  const k = s.kind || 'wipe', dur = s.dur ?? .55, d = mk('tr', '', s);
+  show(d, s.t); tl.set(d, {opacity: 1}, s.t);
+  let fx;
+  if (k === 'flash') { d.style.background = s.color || '#fff'; tl.fromTo(d, {opacity: .9}, {opacity: 0, duration: dur, ease: 'power2.in', ...IR}, s.t); fx = [[0, 'impact', -8]]; }
+  else if (k === 'wipe') {
+    d.innerHTML = '<div class="band"></div>'; const b = d.firstChild; gsap.set(b, {rotate: -18});
+    tl.fromTo(b, {xPercent: 70}, {xPercent: -70, duration: dur, ease: 'power2.inOut', ...IR}, s.t); fx = [[0, 'whoosh', -6]];
+  } else if (k === 'circles') {
+    const cols = ['var(--p)', 'var(--a)', 'var(--s)'];
+    cols.forEach((c, i) => { const e = document.createElement('div'); e.className = 'dot'; Object.assign(e.style, {background: c, left: (s.x ?? W / 2) + 'px', top: (s.y ?? H / 2) + 'px', width: '10px', height: '10px'}); d.appendChild(e);
+      gsap.set(e, {xPercent: -50, yPercent: -50});
+      tl.fromTo(e, {width: 10, height: 10}, {width: 2600, height: 2600, duration: dur * .55, ease: 'power3.in', ...IR}, s.t + i * .06);
+      tl.to(e, {autoAlpha: 0, duration: dur * .45}, s.t + dur * .55 + i * .06); });
+    fx = [[0, 'whoosh_heavy', -6]];
+  } else if (k === 'glitch') {
+    for (let i = 0; i < 9; i++) { const e = document.createElement('div'); e.className = 'slice'; const hgt = 30 + rnd() * 160; Object.assign(e.style, {top: rnd() * H + 'px', height: hgt + 'px', background: ['rgba(255,0,90,.55)', 'rgba(0,220,255,.5)', 'rgba(255,255,255,.35)'][i % 3], mixBlendMode: 'screen'}); d.appendChild(e);
+      tl.fromTo(e, {x: (rnd() - .5) * 400, autoAlpha: 1}, {x: (rnd() - .5) * 600, autoAlpha: 0, duration: dur, ease: 'steps(5)', ...IR}, s.t); }
+    fx = [[0, 'glitch', -6]];
+  } else if (k === 'lightleak') {
+    d.innerHTML = '<div class="leak"></div>';
+    tl.fromTo(d.firstChild, {autoAlpha: 0, xPercent: -30}, {autoAlpha: 1, xPercent: 10, duration: dur * .5, ...IR}, s.t);
+    tl.to(d.firstChild, {autoAlpha: 0, xPercent: 40, duration: dur * .5}, s.t + dur * .5); fx = [[0, 'whoosh_short', -8]];
+  } else if (k === 'bars') {
+    for (let i = 0; i < 6; i++) { const e = document.createElement('div'); e.className = 'slice'; Object.assign(e.style, {top: i * H / 6 + 'px', height: H / 6 + 1 + 'px', background: i % 2 ? 'var(--s)' : 'var(--p)'}); d.appendChild(e);
+      tl.fromTo(e, {xPercent: i % 2 ? -100 : 100}, {xPercent: 0, duration: dur * .45, ease: 'power3.in', ...IR}, s.t + i * .03);
+      tl.to(e, {xPercent: i % 2 ? 100 : -100, duration: dur * .45, ease: 'power3.out'}, s.t + dur * .55 + i * .03); }
+    fx = [[0, 'swipe', -6], [dur * .5, 'whoosh_short', -8]];
+  }
+  tl.set(d, {visibility: 'hidden'}, s.t + dur + .4);
+  sfx(s, fx);
+};
+
+C.progress = (s) => {
+  const d = mk('progress', '', s); show(d, 0); tl.set(d, {opacity: 1}, 0);
+  tl.fromTo(d, {scaleX: 0}, {scaleX: 1, duration: s.duration, ease: 'none', ...IR}, 0);
+};
+
+C.captions = (s, chunks) => {
+  const d = mk('cap ' + (s.style || 'karaoke'), '', s);
+  chunks.forEach(ch => {
+    tl.call(() => {
+      const inner = ch.words.map(w => `<span class="wd${w.key ? ' key' : ''}">${esc(w.w)}</span>`).join(' ');
+      d.innerHTML = s.style === 'karaoke' ? `<span class="ln">${inner}</span>` : inner;
+      d.style.top = ch.y + 'px';
+      if (s.style === 'pop') d.querySelectorAll('.wd').forEach(w => gsap.set(w, {autoAlpha: 0}));
+    }, null, ch.s - .001);
+    show(d, ch.s);
+    if (s.style !== 'pop') tl.fromTo(d, {autoAlpha: 0, scale: .88}, {autoAlpha: 1, scale: 1, duration: .16, ease: 'back.out(2)', ...IR}, ch.s);
+    else tl.set(d, {autoAlpha: 1}, ch.s);
+    ch.words.forEach((w, k) => tl.call(() => {
+      const els = d.querySelectorAll('.wd');
+      els.forEach((e, j) => e.classList.toggle('on', j === k));
+      if (s.style === 'pop' && els[k]) gsap.fromTo(els[k], {autoAlpha: 0, scale: 1.6, y: 20}, {autoAlpha: 1, scale: 1, y: 0, duration: .12});
+      if (s.style === 'kinetic' && els[k] && w.key) gsap.fromTo(els[k], {scale: 1.5}, {scale: 1, duration: .15});
+    }, null, Math.max(ch.s, w.s)));
+    tl.to(d, {autoAlpha: 0, duration: .1}, ch.e);
+  });
+};
+
+/* ------------------------------------------------------------------ build */
+window.build = (plan) => {
+  W = plan.size?.[0] || 1080; H = plan.size?.[1] || 1920;
+  document.documentElement.style.setProperty('--W', W + 'px'); document.documentElement.style.setProperty('--H', H + 'px');
+  const th = plan.theme || {};
+  const map = {primary: '--p', secondary: '--s', accent: '--a', ok: '--ok', dark: '--dark', text: '--txt', highlight: '--hl'};
+  for (const [k, v] of Object.entries(map)) if (th[k]) document.documentElement.style.setProperty(v, th[k]);
+  if (th.display) document.documentElement.style.setProperty('--display', `"${th.display}"`);
+  if (th.body) document.documentElement.style.setProperty('--body', `"${th.body}"`);
+  stage = document.getElementById('stage'); SFX = [];
+  let seed = 11; rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  tl = gsap.timeline({paused: true, defaults: {ease: 'power3.out'}});
+  (plan.elements || []).forEach((e, i) => {
+    e.id = e.id || `${e.type}_${i}`;
+    if (!C[e.type]) throw new Error('unknown element type: ' + e.type);
+    C[e.type](e);
+  });
+  if (plan.progress !== false) C.progress({id: 'progress', type: 'progress', duration: plan.duration});
+  if (plan.captions && plan.captionChunks) C.captions({id: 'captions', type: 'captions', ...plan.captions}, plan.captionChunks);
+  for (const x of plan.sfx || []) SFX.push({t: x.t, name: x.name, db: x.db ?? 0, src: 'manual'});
+  tl.set({}, {}, plan.duration);
+  return SFX;
+};
+window.seek = t => { tl.seek(t, false); };
+// visible element boxes at the current time, for the layout checker
+window.boxes = () => [...document.querySelectorAll('[data-id]')].filter(e => {
+  for (let n = e; n && n !== document.body; n = n.parentElement) { const cs = getComputedStyle(n); if (cs.visibility === 'hidden' || +cs.opacity < .05) return false; }
+  return true;
+}).map(e => {
+  // arrows live in a full-frame svg: measure the drawn stroke instead
+  const r = (e.dataset.type === 'arrow' ? e.querySelector('.sh') : e).getBoundingClientRect();
+  return {id: e.dataset.id, type: e.dataset.type, parent: e.dataset.parent, x: r.x, y: r.y, w: r.width, h: r.height};
+});
+</script>
+</body>
+</html>

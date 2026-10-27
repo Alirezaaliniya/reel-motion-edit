@@ -1,0 +1,319 @@
+{
+ "video": "D:/videos/vpn firefox.mp4",
+ "size": [
+  1080,
+  1920
+ ],
+ "fps": 30,
+ "theme": {
+  "primary": "#FF7139",
+  "secondary": "#9059FF",
+  "accent": "#FF2A8A",
+  "display": "Lalezar",
+  "body": "Vazirmatn"
+ },
+ "avoid": [
+  {
+   "name": "face",
+   "from": 0,
+   "to": 14.6,
+   "rect": [
+    270,
+    420,
+    560,
+    640
+   ]
+  },
+  {
+   "name": "face",
+   "from": 29.7,
+   "to": 33.6,
+   "rect": [
+    270,
+    420,
+    560,
+    640
+   ]
+  },
+  {
+   "name": "pip",
+   "from": 15.2,
+   "to": 29.0,
+   "rect": [
+    0,
+    1310,
+    500,
+    610
+   ]
+  },
+  {
+   "name": "pip",
+   "from": 34.3,
+   "to": 59.8,
+   "rect": [
+    0,
+    1310,
+    500,
+    610
+   ]
+  }
+ ],
+ "elements": [
+  {
+   "type": "title",
+   "t": 0,
+   "d": 3.8,
+   "y": 80,
+   "anim": "slam",
+   "kicker": "آموزش ۶۰ ثانیه‌ای",
+   "kickerIcon": "globe",
+   "lines": [
+    "`VPN` *رایگان*"
+   ],
+   "sub": "با سرورهای فایرفاکس 🦊"
+  },
+  {
+   "type": "transition",
+   "t": 14.6,
+   "kind": "wipe"
+  },
+  {
+   "type": "steps",
+   "y": 150,
+   "hide": [
+    [
+     29.0,
+     34.1
+    ]
+   ],
+   "end": 56.9,
+   "items": [
+    {
+     "t": 15.2,
+     "label": "جستجو در گوگل",
+     "sub": "`vpn firefox github`"
+    },
+    {
+     "t": 20.4,
+     "label": "ورود به گیت‌هاب",
+     "sub": "`armanlife/firefox-vpn-client`"
+    },
+    {
+     "t": 22.4,
+     "label": "بخش Releases",
+     "sub": "`Firefox VPN 1.0.4`"
+    },
+    {
+     "t": 24.4,
+     "label": "دانلود نسخه ویندوز",
+     "sub": "`Setup x64`",
+     "y": 510
+    },
+    {
+     "t": 34.2,
+     "label": "نصب برنامه",
+     "sub": "`Next → Install`"
+    },
+    {
+     "t": 39.8,
+     "label": "ورود با حساب فایرفاکس",
+     "sub": "`Firefox Account`"
+    },
+    {
+     "t": 50.6,
+     "label": "روشن کردن VPN",
+     "sub": "`Connect`"
+    }
+   ]
+  },
+  {
+   "type": "click",
+   "t": 21.0,
+   "x": 990,
+   "y": 615
+  },
+  {
+   "type": "click",
+   "t": 22.8,
+   "x": 550,
+   "y": 1000
+  },
+  {
+   "type": "highlight",
+   "t": 26.2,
+   "d": 2.7,
+   "rect": [
+    462,
+    100,
+    170,
+    58
+   ],
+   "dim": 0.35
+  },
+  {
+   "type": "callout",
+   "t": 26.5,
+   "d": 2.4,
+   "x": 790,
+   "y": 330,
+   "text": "نسخه ویندوز رو بگیر",
+   "icon": "download",
+   "arrow": {
+    "from": [
+     660,
+     290
+    ],
+    "to": [
+     600,
+     175
+    ],
+    "curve": 0.25
+   }
+  },
+  {
+   "type": "click",
+   "t": 28.1,
+   "x": 555,
+   "y": 128,
+   "sfx": [
+    [
+     0,
+     "click",
+     -4
+    ],
+    [
+     0.2,
+     "blips",
+     -8
+    ]
+   ]
+  },
+  {
+   "type": "transition",
+   "t": 29.1,
+   "kind": "circles",
+   "x": 250,
+   "y": 1600,
+   "sfxGain": -3
+  },
+  {
+   "type": "transition",
+   "t": 33.7,
+   "kind": "bars"
+  },
+  {
+   "type": "click",
+   "t": 36.1,
+   "x": 816,
+   "y": 1024
+  },
+  {
+   "type": "click",
+   "t": 37.1,
+   "x": 816,
+   "y": 1024
+  },
+  {
+   "type": "click",
+   "t": 42.0,
+   "x": 125,
+   "y": 545
+  },
+  {
+   "type": "click",
+   "t": 44.6,
+   "x": 600,
+   "y": 1090
+  },
+  {
+   "type": "highlight",
+   "t": 51.4,
+   "d": 1.3,
+   "rect": [
+    285,
+    558,
+    240,
+    240
+   ],
+   "shape": "circle",
+   "dim": 0.25,
+   "color": "#2BD67B",
+   "label": "اینجا بزن"
+  },
+  {
+   "type": "click",
+   "t": 52.6,
+   "x": 405,
+   "y": 678
+  },
+  {
+   "type": "success",
+   "t": 54.0,
+   "d": 2.9,
+   "x": 405,
+   "y": 678,
+   "cardY": 1060,
+   "title": "وصل شدی! 🎉",
+   "sub": "سرور هلند 🇳🇱 · ۵۰ گیگ رایگان"
+  },
+  {
+   "type": "cta",
+   "t": 57.2,
+   "y": 1060,
+   "items": [
+    {
+     "text": "سیو کن",
+     "icon": "save"
+    },
+    {
+     "text": "فالو کن",
+     "icon": "follow"
+    }
+   ]
+  }
+ ],
+ "camera": [
+  {
+   "t": 0.0,
+   "d": 3.6,
+   "type": "zoom",
+   "scale": 1.08,
+   "cx": 540,
+   "cy": 760
+  },
+  {
+   "t": 30.4,
+   "d": 1.4,
+   "type": "punch",
+   "scale": 1.12,
+   "cx": 540,
+   "cy": 760
+  }
+ ],
+ "sfx": [
+  {
+   "t": 16.2,
+   "name": "typing",
+   "db": -8
+  },
+  {
+   "t": 17.4,
+   "name": "typing",
+   "db": -9
+  },
+  {
+   "t": 52.4,
+   "name": "riser",
+   "db": -9
+  },
+  {
+   "t": 52.7,
+   "name": "power_on",
+   "db": -7
+  }
+ ],
+ "captions": {
+  "file": "captions.json",
+  "style": "karaoke"
+ }
+}
