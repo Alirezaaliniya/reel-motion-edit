@@ -105,14 +105,136 @@ svg.arw{left:0;top:0;width:var(--W);height:var(--H);overflow:visible}
 .cap.kinetic{font:900 62px/1.4 var(--body);text-shadow:0 4px 0 rgba(0,0,0,.6),0 8px 22px rgba(0,0,0,.7)}
 .cap.kinetic .wd.key{font:400 96px/1 var(--display);color:var(--hl)}
 .cap.minimal{font:700 50px/1.5 var(--body);text-shadow:0 2px 10px rgba(0,0,0,.9),0 0 2px #000}
+.cap.minimal .wd{background:rgba(0,0,0,.38);padding:0 .18em .06em;margin:0;border-radius:.15em;box-decoration-break:clone}
 .cap.boxed{font:900 58px/1.6 var(--body)}
 .cap.boxed .wd{background:var(--dark);padding:0 .25em .08em;border-radius:.2em;margin:0 .06em}
 .cap.boxed .wd.on{background:var(--p)}
 
 .progress{left:0;bottom:0;height:10px;width:var(--W);transform-origin:right center;background:linear-gradient(270deg,var(--s),var(--a),var(--p))}
+
+/* hidden-by-default helpers some styles reveal */
+.kw .ul,.hl .scr{display:none}
+
+/* ================================================================ style: bold */
+.st-bold .grad{background:none;-webkit-background-clip:initial;background-clip:initial;color:var(--p)}
+.st-bold .title .ln{font-size:165px;color:#fff;-webkit-text-stroke:12px #000;paint-order:stroke fill;filter:drop-shadow(10px 12px 0 #000)}
+.st-bold .title .kick{background:var(--s);border:4px solid #000;box-shadow:6px 6px 0 #000;color:#fff}
+.st-bold .title .sub{color:#fff;-webkit-text-stroke:6px #000;paint-order:stroke fill;font-size:56px}
+.st-bold .kw.sticker{background:var(--bg,var(--p));color:#000;border:6px solid #000;border-radius:18px;box-shadow:12px 12px 0 #000}
+.st-bold .kw.plain,.st-bold .kw.neon,.st-bold .kw.gradient span.t{color:var(--p);-webkit-text-stroke:8px #000;paint-order:stroke fill;text-shadow:none;background:none}
+.st-bold .steps{background:var(--p);color:#000;border:5px solid #000;box-shadow:10px 10px 0 #000;border-radius:20px}
+.st-bold .steps .n{background:#000;color:var(--p)}
+.st-bold .steps .dots i{background:rgba(0,0,0,.25)} .st-bold .steps .dots i.on{background:#000}
+.st-bold .callout,.st-bold .cta .b{border:5px solid #000;box-shadow:8px 8px 0 #000;color:#000;background:var(--p)!important}
+.st-bold .cta .b .ic svg *,.st-bold .callout .ic svg *{stroke:#000;fill:none} .st-bold .cta .b .ic svg [fill="#fff"]{fill:#000}
+.st-bold .note{background:#fff;color:#000;border:5px solid #000;box-shadow:10px 10px 0 #000}
+.st-bold .note b{color:var(--s)}
+.st-bold .okcard{background:var(--ok);border:5px solid #000;box-shadow:10px 10px 0 #000;color:#000}
+.st-bold .hl{border-width:9px;box-shadow:0 0 0 4px #000}
+.st-bold .progress{height:16px;background:var(--p);border-top:4px solid #000}
+
+/* ================================================================ style: neon */
+.st-neon .glass,.st-neon .note,.st-neon .steps,.st-neon .okcard,.st-neon .callout,.st-neon .cta .b{background:rgba(4,8,22,.82)!important;border:2px solid var(--p);box-shadow:0 0 18px var(--p),inset 0 0 18px rgba(0,229,255,.25);color:#e8fdff}
+.st-neon .steps .n{background:transparent;border:3px solid var(--a);box-shadow:0 0 16px var(--a);color:var(--a);font-family:var(--display)}
+.st-neon .steps .l{font-family:var(--display);font-weight:700;letter-spacing:.5px}
+.st-neon .steps .dots i.on{background:var(--p);box-shadow:0 0 10px var(--p)}
+.st-neon .title .ln{font-weight:800;color:#fff;text-shadow:0 0 14px var(--p),0 0 40px var(--p),3px 0 0 var(--a),-3px 0 0 var(--p)}
+.st-neon .grad{background:none;-webkit-background-clip:initial;color:var(--a);text-shadow:0 0 14px var(--a),0 0 40px var(--a)}
+.st-neon .title .kick{background:rgba(0,229,255,.08);border-color:var(--p);box-shadow:0 0 14px var(--p)}
+.st-neon .kw{font-family:var(--display);font-weight:800}
+.st-neon .kw.sticker{background:rgba(4,8,22,.85);border:3px solid var(--bg,var(--a));box-shadow:0 0 22px var(--bg,var(--a));color:#fff;text-shadow:0 0 12px var(--bg,var(--a))}
+.st-neon .okcard{border-color:var(--ok);box-shadow:0 0 28px var(--ok)} .st-neon .okcard .ck{background:transparent;border:3px solid var(--ok);box-shadow:0 0 18px var(--ok)}
+.st-neon .hl{box-shadow:0 0 30px var(--bg,var(--p)),inset 0 0 20px var(--bg,var(--p))}
+.st-neon .progress{background:var(--p);box-shadow:0 0 16px var(--p)}
+
+/* ================================================================ style: minimal */
+.st-minimal .grad{background:none;-webkit-background-clip:initial;color:var(--p)}
+.st-minimal .title{padding:0 70px}
+.st-minimal .title .kick{background:#fff;color:#111;border:none;box-shadow:0 8px 24px rgba(0,0,0,.18);font-weight:700}
+.st-minimal .title .kick .ic svg *{stroke:#111} .st-minimal .title .kick .ic svg[fill="#fff"]{fill:#111}
+.st-minimal .title .ln{color:#fff!important;font:900 120px/1.2 var(--display);color:#fff;filter:drop-shadow(0 6px 24px rgba(0,0,0,.45))}
+.st-minimal .title .sub{font-weight:600;font-size:44px;opacity:.95}
+.st-minimal .kw{font:800 76px/1.2 var(--display)}
+.st-minimal .kw.plain,.st-minimal .kw.sticker{background:#fff;color:#111;padding:.15em .5em .22em;border-radius:28px;box-shadow:0 14px 40px rgba(0,0,0,.22);text-shadow:none}
+.st-minimal .kw .t{border-bottom:6px solid var(--bg,var(--p))}
+.st-minimal .steps,.st-minimal .note,.st-minimal .callout,.st-minimal .okcard,.st-minimal .cta .b{background:#fff!important;color:#111;border:none;box-shadow:0 14px 40px rgba(0,0,0,.22)}
+.st-minimal .steps .n{background:var(--p);color:#fff;font:800 42px var(--body)} .st-minimal .steps .l small{opacity:.55}
+.st-minimal .steps .dots i{background:rgba(255,255,255,.5)} .st-minimal .steps .dots i.on{background:var(--p)}
+.st-minimal .note b{color:var(--p)} .st-minimal .note p{font-weight:500}
+.st-minimal .callout .ic svg *,.st-minimal .cta .b .ic svg *{stroke:var(--p)} .st-minimal .cta .b .ic svg[fill="#fff"]{fill:var(--p)}
+.st-minimal .okcard{border:none} .st-minimal .okcard .tt{font:800 56px var(--body)}
+.st-minimal .hl{border-width:4px;box-shadow:none}
+.st-minimal .progress{height:6px;background:#fff;opacity:.9}
+
+/* ================================================================ style: doodle */
+.st-doodle .grad{background:none;-webkit-background-clip:initial;color:var(--p)}
+.st-doodle .title .ln{font:700 120px/1.35 var(--display);color:#fff;filter:drop-shadow(4px 5px 0 #1b1b1b)}
+.st-doodle .title .kick{background:var(--a);color:#1b1b1b;border:3px solid #1b1b1b;transform:rotate(-2deg)}
+.st-doodle .kw{font:700 74px/1.3 var(--display);color:#1b1b1b}
+.st-doodle .kw.sticker,.st-doodle .steps,.st-doodle .note,.st-doodle .callout,.st-doodle .okcard,.st-doodle .cta .b{background:transparent!important;border:none;box-shadow:none;color:#1b1b1b;position:absolute}
+.st-doodle .kw.sticker::before,.st-doodle .steps::before,.st-doodle .note::before,.st-doodle .callout::before,.st-doodle .okcard::before,.st-doodle .cta .b::before{
+  content:'';position:absolute;inset:0;z-index:-1;background:#FFFDF5;border:5px solid #1b1b1b;border-radius:22px 30px 20px 34px;filter:url(#rough);box-shadow:6px 7px 0 rgba(0,0,0,.85)}
+.st-doodle .kw.sticker::before{background:var(--bg,var(--a))}
+.st-doodle .cta .b{position:relative}
+.st-doodle .kw .ul{display:block;position:absolute;left:6%;right:6%;bottom:-.18em;height:.35em;overflow:visible}
+.st-doodle .steps .n{background:var(--p);border:4px solid #1b1b1b;font-family:var(--display);filter:url(#rough)}
+.st-doodle .steps .dots i{background:rgba(255,255,255,.6);border:2px solid #1b1b1b} .st-doodle .steps .dots i.on{background:var(--p)}
+.st-doodle .callout .ic svg *,.st-doodle .cta .b .ic svg *{stroke:#1b1b1b} .st-doodle .cta .b .ic svg[fill="#fff"]{fill:#1b1b1b}
+.st-doodle .note b{color:var(--p)}
+.st-doodle .okcard .tt{font:700 54px var(--display)} .st-doodle .okcard .ck{border:4px solid #1b1b1b}
+.st-doodle .hl.scribble{border:none;box-shadow:none!important;border-radius:0}
+.st-doodle .hl .scr{display:block;position:absolute;inset:-18%;width:136%;height:136%;overflow:visible}
+.st-doodle .progress{height:12px;background:var(--p);filter:url(#rough)}
+
+/* ================================================================ style: retro */
+.st-retro .grad{background:none;-webkit-background-clip:initial;color:var(--hl)}
+.st-retro .title .ln,.st-retro .kw,.st-retro .steps .l,.st-retro .okcard .tt{text-shadow:4px 0 0 rgba(255,46,136,.85),-4px 0 0 rgba(0,194,184,.85)}
+.st-retro .title .ln{font-size:150px;font-style:italic;color:#fff}
+.st-retro .title .kick{background:var(--a);border:none;border-radius:6px}
+.st-retro .kw.sticker{background:var(--bg,var(--p));border-radius:6px;box-shadow:10px 10px 0 var(--s);transform-origin:center}
+.st-retro .steps,.st-retro .note,.st-retro .callout,.st-retro .okcard,.st-retro .cta .b{border-radius:6px;background:var(--dark)!important;border:3px solid var(--hl);box-shadow:8px 8px 0 var(--a)}
+.st-retro .steps .n{border-radius:6px;background:var(--hl);color:var(--dark)}
+.st-retro .steps .dots i.on{background:var(--hl)}
+.st-retro .cap.boxed .wd{background:#000;color:var(--hl);border-radius:0}
+.st-retro .cap.boxed .wd.on{background:var(--a);color:#fff}
+.st-retro .progress{background:repeating-linear-gradient(90deg,var(--hl) 0 18px,transparent 18px 26px)}
+
+/* ================================================================ style: news */
+.st-news .grad{background:none;-webkit-background-clip:initial;color:var(--hl)}
+.st-news .title{text-align:right;padding:0 50px}
+.st-news .title .kick{border-radius:0;background:var(--p);border:none;font-weight:900;letter-spacing:1px}
+.st-news .title .ln{font:900 112px/1.25 var(--display);color:#fff;background:var(--s);display:inline-block;padding:0 30px 14px;margin-top:8px;filter:none}
+.st-news .title .sub{display:inline-block;background:#fff;color:var(--s);padding:4px 24px;font-weight:800;text-shadow:none;margin-top:0}
+.st-news .kw{font:900 66px/1.3 var(--display);color:#fff}
+.st-news .kw.sticker,.st-news .callout{border-radius:0;background:var(--bg,var(--p));box-shadow:none;border-right:16px solid var(--s)}
+.st-news .steps{border-radius:0;background:var(--s);border:none;border-right:14px solid var(--p);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.st-news .steps .n{border-radius:0;background:var(--p)} .st-news .steps .dots i{border-radius:0} .st-news .steps .dots i.on{background:var(--p)}
+.st-news .note,.st-news .okcard,.st-news .cta .b{border-radius:0;background:#fff!important;color:var(--s);border:none;border-right:14px solid var(--p);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.st-news .cta .b .ic svg *{stroke:var(--s)} .st-news .cta .b .ic svg[fill="#fff"]{fill:var(--s)}
+.st-news .cap.karaoke .ln{border-radius:0;background:rgba(11,31,68,.92);border-bottom:6px solid var(--p)}
+.st-news .progress{display:none}
+
+/* ================================================================ fx layers */
+.fx{left:0;top:0;width:var(--W);height:var(--H);pointer-events:none}
+.fx.scanlines{background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 2px,transparent 2px 5px);mix-blend-mode:multiply;opacity:.55}
+.fx.vignette{background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%)}
+.fx.vhs svg{width:100%;height:100%;opacity:.16;mix-blend-mode:screen}
+.fx.vhs .rec{position:absolute;top:60px;left:60px;font:700 44px/1 "Courier New",monospace;color:#fff;text-shadow:2px 0 #f0f,-2px 0 #0ff;direction:ltr}
+.fx.vhs .rec i{display:inline-block;width:26px;height:26px;border-radius:50%;background:#ff2a2a;margin-right:14px;vertical-align:-2px}
+.fx.vhs .tc{position:absolute;bottom:70px;left:60px;font:700 40px/1 "Courier New",monospace;color:#fff;text-shadow:2px 0 #f0f,-2px 0 #0ff;direction:ltr}
+.fx.vhs .band{position:absolute;left:0;width:100%;height:60px;background:linear-gradient(transparent,rgba(255,255,255,.12),transparent)}
+.fx.newsbar .bar{position:absolute;left:0;right:0;bottom:0;height:92px;background:var(--s);border-top:6px solid var(--p);overflow:hidden}
+.fx.newsbar .tag{position:absolute;right:0;top:0;bottom:0;padding:0 26px;display:flex;align-items:center;background:var(--p);font:900 38px var(--display);z-index:2}
+.fx.newsbar .tk{position:absolute;top:50%;transform:translateY(-50%);white-space:nowrap;font:700 38px var(--body);color:#fff}
+.handle{display:flex;align-items:center;gap:10px;padding:8px 20px;border-radius:999px;background:rgba(0,0,0,.45);font:700 34px var(--body);direction:ltr}
+.handle img{width:46px;height:46px;border-radius:50%}
 </style>
 </head>
-<body><div id="stage"></div>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="7"/></filter>
+</defs></svg>
+<div id="stage"></div>
 <script>
 const ICONS = {
   download:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>',
@@ -136,7 +258,7 @@ const esc = s => String(s ?? '').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;'
 // *word* → gradient highlight, `latin` → isolated LTR run
 const rich = s => esc(s).replace(/\*(.+?)\*/g,'<span class="grad">$1</span>').replace(/`(.+?)`/g,'<span class="ltr">$1</span>');
 
-let W = 1080, H = 1920, tl, SFX = [], stage, rnd;
+let W = 1080, H = 1920, tl, SFX = [], stage, rnd, STY = {};
 
 function mk(cls, html, spec) {
   const d = document.createElement('div');
@@ -157,9 +279,12 @@ function place(d, spec, defX = W / 2, defY = 300) {
 }
 function sfx(spec, defaults) {
   if (spec.sfx === false) return;
-  const list = Array.isArray(spec.sfx) ? spec.sfx : defaults;
-  const g = spec.sfxGain || 0;
-  for (const [off, name, db = 0] of list) SFX.push({t: +(spec.t + off).toFixed(3), name, db: db + g, src: spec.id});
+  const custom = Array.isArray(spec.sfx), list = custom ? spec.sfx : defaults;
+  const g = (spec.sfxGain || 0) + (custom ? 0 : STY.sfxGain || 0), map = custom ? {} : STY.sfxMap || {};
+  for (let [off, name, db = 0] of list) {
+    if (name in map) name = map[name];   // style sound palette; null drops the sound
+    if (name) SFX.push({t: +(spec.t + off).toFixed(3), name, db: db + g, src: spec.id});
+  }
 }
 const show = (d, t) => tl.set(d, {visibility: 'visible'}, t);
 const hide = (d, t, dur = .35, vars = {}) => tl.to(d, {autoAlpha: 0, duration: dur, ease: 'power2.in', ...vars}, t - dur);
@@ -226,7 +351,7 @@ C.steps = (s) => {
   s.items.forEach((it, i) => {
     const t = it.t;
     if (i === 0) {
-      tl.call(() => setI(0), null, t - .01); show(d, t);
+      setI(0); tl.call(() => setI(0), null, Math.max(0, t - .01)); show(d, t);
       tl.fromTo(d, {autoAlpha: 0, y: -120, scale: .7}, {autoAlpha: 1, y: 0, scale: 1, duration: .55, ease: 'back.out(1.8)', ...IR}, t);
     } else {
       tl.to(d, {rotateX: 90, duration: .16, ease: 'power2.in'}, t - .16);
@@ -245,8 +370,10 @@ C.steps = (s) => {
 };
 
 C.keyword = (s) => {
-  const d = mk('kw ' + (s.style || 'sticker'), `${s.emoji ? `<span>${s.emoji}</span>` : ''}<span class="t">${rich(s.text)}</span>`, s);
+  const d = mk('kw ' + (s.style || 'sticker'), `${s.emoji ? `<span>${s.emoji}</span>` : ''}<span class="t">${rich(s.text)}</span>` +
+    '<svg class="ul" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M3 13 C 40 5, 75 18, 115 10 S 175 6, 197 12" fill="none" stroke="#1b1b1b" stroke-width="5" stroke-linecap="round"/></svg>', s);
   place(d, s, W / 2, 400); show(d, s.t);
+  { const u = d.querySelector('.ul path'); gsap.set(u, {strokeDasharray: 230, strokeDashoffset: 230}); tl.to(u, {strokeDashoffset: 0, duration: .35, ease: 'power1.inOut'}, s.t + .3); }
   const r = s.rotate ?? -4, from = s.from || 'pop';
   const st = {pop: {scale: 0, rotate: r - 20}, left: {x: -700, rotate: r}, right: {x: 700, rotate: r}, drop: {y: -500, rotate: r + 10}, up: {y: 300, autoAlpha: 0, rotate: r}}[from];
   tl.fromTo(d, {autoAlpha: 1, ...st}, {x: 0, y: 0, scale: 1, rotate: r, autoAlpha: 1, duration: .5, ease: 'back.out(2.2)', ...IR}, s.t);
@@ -276,7 +403,9 @@ C.callout = (s) => {
 
 C.highlight = (s) => {
   const [x, y, w, h] = s.rect;
-  const d = mk('hl' + (s.shape === 'circle' ? ' circle' : ''), s.label ? `<div class="lab">${rich(s.label)}</div>` : '', s);
+  const d = mk('hl' + (s.shape === 'circle' ? ' circle' : s.shape === 'scribble' ? ' scribble' : ''), (s.label ? `<div class="lab">${rich(s.label)}</div>` : '') +
+    `<svg class="scr" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M52 8 C 20 6, 4 30, 8 55 C 12 84, 48 96, 76 88 C 98 80, 98 40, 84 22 C 72 8, 50 4, 30 12" fill="none" stroke="${s.color || '#FF5A36'}" stroke-linecap="round" vector-effect="non-scaling-stroke" style="stroke-width:8px"/></svg>`, s);
+  if (s.shape === 'scribble') { const pth = d.querySelector('.scr path'); gsap.set(pth, {strokeDasharray: 320, strokeDashoffset: 320}); tl.to(pth, {strokeDashoffset: 0, duration: .5, ease: 'power1.inOut'}, s.t + .05); }
   Object.assign(d.style, {left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px'});
   show(d, s.t);
   tl.fromTo(d, {autoAlpha: 0, scale: 1.6}, {autoAlpha: 1, scale: 1, duration: .45, ease: 'back.out(2)', ...IR}, s.t);
@@ -397,8 +526,10 @@ C.lowerthird = (s) => {
   sfx(s, [[0, 'whoosh_short', -8]]);
 };
 
+let trIdx = 0;
 C.transition = (s) => {
-  const k = s.kind || 'wipe', dur = s.dur ?? .55, d = mk('tr', '', s);
+  const pool = STY.transitions || ['wipe'];
+  const k = !s.kind || s.kind === 'auto' ? pool[trIdx++ % pool.length] : s.kind, dur = s.dur ?? .55, d = mk('tr', '', s);
   show(d, s.t); tl.set(d, {opacity: 1}, s.t);
   let fx;
   if (k === 'flash') { d.style.background = s.color || '#fff'; tl.fromTo(d, {opacity: .9}, {opacity: 0, duration: dur, ease: 'power2.in', ...IR}, s.t); fx = [[0, 'impact', -8]]; }
@@ -426,8 +557,50 @@ C.transition = (s) => {
       tl.to(e, {xPercent: i % 2 ? 100 : -100, duration: dur * .45, ease: 'power3.out'}, s.t + dur * .55 + i * .03); }
     fx = [[0, 'swipe', -6], [dur * .5, 'whoosh_short', -8]];
   }
+  else if (k === 'fade') { d.style.background = s.color || '#fff'; tl.fromTo(d, {opacity: 0}, {opacity: .85, duration: dur * .45, ease: 'power1.in', ...IR}, s.t); tl.to(d, {opacity: 0, duration: dur * .55, ease: 'power1.out'}, s.t + dur * .45); fx = [[0, 'whoosh_short', -12]]; }
+  else if (k === 'paper') {
+    d.innerHTML = '<div style="position:absolute;inset:-6%;background:#FFFDF5;border:10px solid #1b1b1b;filter:url(#rough)"></div>';
+    tl.fromTo(d.firstChild, {xPercent: 110, rotate: 6}, {xPercent: 0, rotate: 0, duration: dur * .45, ease: 'power3.in', ...IR}, s.t);
+    tl.to(d.firstChild, {xPercent: -115, rotate: -6, duration: dur * .45, ease: 'power3.out'}, s.t + dur * .55); fx = [[0, 'whoosh', -6]];
+  } else if (k === 'static') {
+    d.innerHTML = `<svg width="100%" height="100%"><filter id="st_${s.id}"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="1"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#st_${s.id})"/></svg>`;
+    const turb = d.querySelector('feTurbulence');
+    tl.fromTo(d, {opacity: .9}, {opacity: 0, duration: dur, ease: 'power2.in', ...IR, onUpdate() { turb.setAttribute('seed', Math.floor(this.progress() * 30)); }}, s.t);
+    fx = [[0, 'static', -6]];
+  }
   tl.set(d, {visibility: 'hidden'}, s.t + dur + .4);
   sfx(s, fx);
+};
+
+/* full-frame look layers from the style preset */
+C.fx = (s) => {
+  const d = mk('fx ' + s.kind, '', s); show(d, 0); tl.set(d, {opacity: 1}, 0);
+  if (s.kind === 'vhs') {
+    d.innerHTML = `<svg><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="0"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#grain)"/></svg>
+      <div class="rec"><i></i>REC</div><div class="tc"></div><div class="band"></div>`;
+    const turb = d.querySelector('feTurbulence'), tc = d.querySelector('.tc'), rec = d.querySelector('.rec i'), band = d.querySelector('.band');
+    const pad = n => String(n).padStart(2, '0');
+    tl.to({}, {duration: s.duration, ease: 'none', onUpdate() {
+      const t = this.time(), f = Math.floor(t * 30);
+      turb.setAttribute('seed', f % 24);
+      tc.textContent = `PLAY ▶  00:${pad(Math.floor(t / 60))}:${pad(Math.floor(t % 60))}:${pad(f % 30)}`;
+      rec.style.opacity = Math.floor(t * 1.6) % 2 ? .25 : 1;
+      band.style.top = ((t * 260) % (H + 200) - 100) + 'px';
+    }}, 0);
+  } else if (s.kind === 'newsbar') {
+    d.innerHTML = `<div class="bar"><div class="tag">${rich(s.tag || 'ترفند')}</div><div class="tk">${rich(s.text || '')}</div></div>`;
+    tl.fromTo(d.querySelector('.tk'), {x: -W}, {x: W * 1.2, duration: s.duration, ease: 'none', ...IR}, 0);
+  }
+};
+
+/* persistent @handle / logo watermark */
+C.handle = (s) => {
+  const d = mk('handle', `${s.logo ? `<img src="${s.logo}">` : ''}<span>${esc(s.text)}</span>`, s);
+  const corners = {tl: [60, 70, 'tl'], tr: [W - 60, 70, 'tr'], bl: [60, H - 150, 'tl'], br: [W - 60, H - 150, 'tr']};
+  const [x, y, a] = corners[s.corner || 'tl'];
+  place(d, {x, y, anchor: a}); show(d, s.t);
+  tl.fromTo(d, {autoAlpha: 0}, {autoAlpha: s.opacity ?? .85, duration: .5, ...IR}, s.t);
+  if (s.d) hide(d, s.t + s.d, .3);
 };
 
 C.progress = (s) => {
@@ -443,7 +616,7 @@ C.captions = (s, chunks) => {
       d.innerHTML = s.style === 'karaoke' ? `<span class="ln">${inner}</span>` : inner;
       d.style.top = ch.y + 'px';
       if (s.style === 'pop') d.querySelectorAll('.wd').forEach(w => gsap.set(w, {autoAlpha: 0}));
-    }, null, ch.s - .001);
+    }, null, Math.max(0, ch.s - .001));
     show(d, ch.s);
     if (s.style !== 'pop') tl.fromTo(d, {autoAlpha: 0, scale: .88}, {autoAlpha: 1, scale: 1, duration: .16, ease: 'back.out(2)', ...IR}, ch.s);
     else tl.set(d, {autoAlpha: 1}, ch.s);
@@ -462,20 +635,26 @@ window.build = (plan) => {
   W = plan.size?.[0] || 1080; H = plan.size?.[1] || 1920;
   document.documentElement.style.setProperty('--W', W + 'px'); document.documentElement.style.setProperty('--H', H + 'px');
   const th = plan.theme || {};
-  const map = {primary: '--p', secondary: '--s', accent: '--a', ok: '--ok', dark: '--dark', text: '--txt', highlight: '--hl'};
-  for (const [k, v] of Object.entries(map)) if (th[k]) document.documentElement.style.setProperty(v, th[k]);
-  if (th.display) document.documentElement.style.setProperty('--display', `"${th.display}"`);
-  if (th.body) document.documentElement.style.setProperty('--body', `"${th.body}"`);
-  stage = document.getElementById('stage'); SFX = [];
+  const map = {primary: ['--p', '#FF7139'], secondary: ['--s', '#9059FF'], accent: ['--a', '#FF2A8A'], ok: ['--ok', '#2BD67B'],
+    dark: ['--dark', '#14121F'], text: ['--txt', '#fff'], highlight: ['--hl', '#FFD23F']};
+  for (const [k, [v, def]] of Object.entries(map)) document.documentElement.style.setProperty(v, th[k] || def);
+  document.documentElement.style.setProperty('--display', `"${th.display || 'Lalezar'}"`);
+  document.documentElement.style.setProperty('--body', `"${th.body || 'Vazirmatn'}"`);
+  stage = document.getElementById('stage'); SFX = []; trIdx = 0;
+  STY = plan.styleDef || {};
+  document.body.className = plan.style ? 'st-' + plan.style : '';
   let seed = 11; rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   tl = gsap.timeline({paused: true, defaults: {ease: 'power3.out'}});
+  (STY.fx || []).forEach(k => C.fx({id: 'fx_' + k, type: 'fx', kind: k, duration: plan.duration, ...(plan.fxProps?.[k] || {})}));
   (plan.elements || []).forEach((e, i) => {
+    e = {...(STY.defaults?.[e.type] || {}), ...e};   // the style preset fills unset visual props
     e.id = e.id || `${e.type}_${i}`;
     if (!C[e.type]) throw new Error('unknown element type: ' + e.type);
     C[e.type](e);
   });
+  if (plan.handle) C.handle({id: 'handle', type: 'handle', t: 0, ...plan.handle});
   if (plan.progress !== false) C.progress({id: 'progress', type: 'progress', duration: plan.duration});
-  if (plan.captions && plan.captionChunks) C.captions({id: 'captions', type: 'captions', ...plan.captions}, plan.captionChunks);
+  if (plan.captions && plan.captionChunks) C.captions({id: 'captions', type: 'captions', style: STY.captions, ...plan.captions}, plan.captionChunks);
   for (const x of plan.sfx || []) SFX.push({t: x.t, name: x.name, db: x.db ?? 0, src: 'manual'});
   tl.set({}, {}, plan.duration);
   return SFX;

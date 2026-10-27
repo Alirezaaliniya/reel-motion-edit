@@ -1,5 +1,9 @@
 # Caption styles (offer 3–4, recommend one for this video)
 
+Each edit style has a default caption style (`captions` in `assets/styles.json`): gradient→karaoke, bold→pop,
+neon→kinetic, minimal→minimal, doodle→boxed, retro→boxed (yellow-on-black), news→karaoke (navy bar). Recommend that
+one first unless the video argues otherwise. The caption look also adapts to the chosen style's colors and fonts.
+
 Describe each to the user in their language, with a one-line "feel" and when it fits. Base the recommendation on the
 video: speech pace (words/sec from the transcript), how busy the screen is, and how much text the edit already has.
 

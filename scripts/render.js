@@ -3,6 +3,8 @@
 //   node render.js <plan.json> check              resolve times + layout/clutter/sfx lint
 //   node render.js <plan.json> preview t1 t2 ...  composite stills over the video → build/preview.jpg
 //   node render.js <plan.json> full               ProRes 4444 alpha track → build/overlay.mov
+//   node render.js <plan.json> styleboard T       the frame at T rendered in every style preset → build/styleboard.jpg
+//   node render.js <plan.json> cover T            frame T + plan.cover title → build/cover.jpg (1080x1920)
 //
 // Time fields (t, end, items[].t, hide[][], sfx[].t) accept seconds or anchors:
 //   "w:رایگان"        start of the first spoken word matching (normalized, prefix ok)
@@ -76,6 +78,19 @@ for (const e of P.elements || []) {
   if (e.type === 'steps' && e.end == null && e.d == null) e.end = P.duration - .3;
 }
 if (P.captions?.file) P.captionChunks = JSON.parse(fs.readFileSync(rel(P.captions.file), 'utf8'));
+// brand kit (~/.config/reel-motion-edit/brand.json): the user's saved style, colors, fonts and @handle;
+// the plan wins over it, and "brand": false ignores it for one video
+const BRAND_FILE = path.join(os.homedir(), '.config', 'reel-motion-edit', 'brand.json');
+const BRAND = plan.brand !== false && fs.existsSync(BRAND_FILE) ? JSON.parse(fs.readFileSync(BRAND_FILE, 'utf8')) : {};
+P.fonts = { ...(BRAND.fonts || {}), ...(P.fonts || {}) };
+if (P.handle === undefined && BRAND.handle) P.handle = { text: BRAND.handle, corner: BRAND.handleCorner || 'tl', logo: BRAND.logo };
+if (P.handle?.logo && !/^(file|data|https?):/.test(P.handle.logo)) P.handle.logo = url.pathToFileURL(P.handle.logo).href;
+// style preset: its theme is the base, then brand colors, then plan.theme
+const STYLES = JSON.parse(fs.readFileSync(path.join(SKILL, 'assets', 'styles.json'), 'utf8'));
+P.style = P.style || BRAND.style || 'gradient';
+if (!STYLES[P.style]) throw new Error(`unknown style "${P.style}" — one of: ${Object.keys(STYLES).join(', ')}`);
+P.styleDef = STYLES[P.style];
+P.theme = { ...P.styleDef.theme, ...(BRAND.theme || {}), ...(plan.theme || {}) };
 fs.writeFileSync(path.join(build, 'plan.resolved.json'), JSON.stringify(P, null, 1));
 
 /* ---------- fonts ---------- */
@@ -91,7 +106,7 @@ function fontCss() {
 /* ---------- lint ---------- */
 function lint(samples) {
   const W = P.size?.[0] || 1080, H = P.size?.[1] || 1920, out = [];
-  const seen = new Set(), skip = new Set(['progress', 'transition', 'click']);
+  const seen = new Set(), skip = new Set(['progress', 'transition', 'click', 'fx', 'handle']);  // persistent layers aren't overlays
   for (const { t, boxes } of samples) {
     const live = boxes.filter(b => !skip.has(b.type) && b.type !== 'captions' && !b.parent);
     if (live.length > 3) { const k = 'clutter' + Math.round(t); if (!seen.has(k)) { seen.add(k); out.push(`CLUTTER  ${t.toFixed(1)}s  ${live.length} overlays at once: ${live.map(b => b.id).join(', ')}`); } }
@@ -164,6 +179,46 @@ function lintSfx(sfx) {
     const cols = Math.min(6, jpgs.length), rows = Math.ceil(jpgs.length / cols);
     spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', path.join(dir, 'c_%02d.jpg'), '-vf', `tile=${cols}x${rows}:padding=6:color=white`, '-frames:v', '1', path.join(build, 'preview.jpg')]);
     console.log('preview →', path.join(build, 'preview.jpg'), 'times:', times.join(' '));
+  } else if (mode === 'styleboard' || mode === 'cover') {
+    const t = Number(rest[0] ?? 2), video = rel(P.video), dir = path.join(build, mode);
+    fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });
+    const frame = path.join(dir, 'frame.png');
+    // covers get a blurred, darker frame so the title owns the image
+    const look = mode === 'cover' && P.cover?.blur !== false ? ',boxblur=14:2,eq=brightness=-0.12:saturation=1.15' : '';
+    spawnSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(t), '-i', video, '-vf', `scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H}${look}`, '-frames:v', '1', frame]);
+    const pick = type => (P.elements || []).find(e => e.type === type);
+    const comp = async (plan, at, out, scale) => {
+      await page.evaluate(p => { document.getElementById('stage').innerHTML = ''; build(p); }, plan);
+      await page.evaluate(t => seek(t), at);
+      const png = out.replace(/\.jpg$/, '.png'); fs.writeFileSync(png, await shot());
+      spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', frame, '-i', png, '-filter_complex', `[0][1]overlay${scale ? `,scale=${scale}:-1` : ''}`, '-q:v', '2', '-frames:v', '1', out]);
+    };
+    if (mode === 'cover') {
+      const c = P.cover || {}, ti = pick('title') || {};
+      const el = [{ type: 'title', t: 0, d: 99, jitter: false, y: c.y ?? 620, scrimH: c.scrimH ?? 900, kicker: c.kicker ?? ti.kicker, lines: c.lines || ti.lines || ['عنوان'], sub: c.sub ?? ti.sub, sfx: false }];
+      await comp({ ...P, elements: el, captions: null, progress: false, handle: P.handle && { ...P.handle, t: 0 } }, 3, path.join(build, 'cover.jpg'));
+      console.log('cover →', path.join(build, 'cover.jpg'));
+    } else {
+      // the same demo moment in each preset: title, step chip, keyword sticker, subtitle line, style name
+      const ti = pick('title') || { lines: ['عنوان *ویدیو*'], kicker: 'آموزش' }, st = pick('steps'), kw = pick('keyword');
+      const sub = (P.captionChunks?.[0]?.words || [{ w: 'این' }, { w: 'یه' }, { w: 'زیرنویس' }, { w: 'نمونه‌ست' }]).slice(0, 4);
+      const names = Object.keys(STYLES), jpgs = [];
+      for (const [i, k] of names.entries()) {
+        const D = STYLES[k];
+        const el = [
+          { type: 'title', t: 0, d: 99, y: 70, jitter: false, kicker: ti.kicker, kickerIcon: ti.kickerIcon, lines: ti.lines, sub: ti.sub, sfx: false },
+          st && { type: 'steps', t: 0, y: 760, items: [{ t: 0, label: st.items[0].label, sub: st.items[0].sub }], total: st.total ?? st.items.length, end: 99, sfx: false },
+          { type: 'keyword', t: 0, d: 99, x: 540, y: 1560, text: kw?.text || 'نکته مهم', emoji: kw?.emoji || '💡', sfx: false, wiggle: false },
+          { type: 'keyword', t: 0, d: 99, x: 540, y: 1840, text: D.label, style: 'plain', rotate: 0, sfx: false, wiggle: false, size: 58 },
+        ].filter(Boolean);
+        const chunks = [{ s: 0, e: 99, y: 1290, words: sub.map((w, j) => ({ w: w.w, s: j ? 99 : 0, key: j === 1 })) }];
+        const out = path.join(dir, `s_${String(i).padStart(2, '0')}.jpg`);
+        await comp({ ...P, style: k, styleDef: D, theme: D.theme, elements: el, captions: { style: D.captions }, captionChunks: chunks, handle: null, progress: true }, 2.4, out, 360);
+        jpgs.push(out); console.log(`  ${k.padEnd(9)} ${D.en}`);
+      }
+      spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', path.join(dir, 's_%02d.jpg'), '-vf', `tile=${Math.min(4, jpgs.length)}x${Math.ceil(jpgs.length / 4)}:padding=8:color=white`, '-q:v', '2', '-frames:v', '1', path.join(build, 'styleboard.jpg')]);
+      console.log('styleboard →', path.join(build, 'styleboard.jpg'));
+    }
   } else if (mode === 'full') {
     const out = path.join(build, 'overlay.mov');
     const ff = spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-',

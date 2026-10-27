@@ -127,6 +127,34 @@ def build(out):
     S("power_off", np.sin(2 * np.pi * np.cumsum(np.geomspace(1000, 120, len(tt))) / SR) * np.sin(np.pi * tt / .6) ** 1.5, gain=.6)
     tt = t(.5); S("heartbeat", (np.sin(2 * np.pi * 55 * tt) * np.exp(-tt * 18)) + np.concatenate([np.zeros(int(SR * .18)), (np.sin(2 * np.pi * 50 * tt) * np.exp(-tt * 18))[:len(tt) - int(SR * .18)]]) * .7)
 
+    # --- style palettes (styles.json maps component defaults onto these) ---
+    # minimal: soft, short, low-key
+    tt = t(.1); S("soft_pop", lp(np.sin(2 * np.pi * (520 * tt - 900 * tt ** 2)) * np.exp(-tt * 45), 2500), gain=.6)
+    S("soft_whoosh", lp(whoosh(.45, 400, 2200, 2.6), 3000), gain=.45, width=1)
+    # neon / tech: square-ish digital blips
+    tt = t(.08); S("digital_blip", lp(np.sign(np.sin(2 * np.pi * 1760 * tt)) * np.exp(-tt * 40), 7000), gain=.4)
+    seq = np.zeros(int(SR * .35))
+    for i, f in enumerate([1320, 1760, 2637]):
+        tt = t(.06); place(seq, np.sign(np.sin(2 * np.pi * f * tt)) * np.exp(-tt * 50), .07 * i)
+    S("digital_seq", lp(seq, 7000), gain=.4)
+    # doodle: pencil scribble + paper
+    n = int(SR * .5); sc = np.zeros(n); p = 0.0
+    while p < .45:
+        L = rng.uniform(.04, .09); seg = bp(rng.standard_normal(int(SR * L)), rng.uniform(2500, 5000))
+        place(sc, seg * np.sin(np.pi * np.linspace(0, 1, len(seg))), p); p += L * .8
+    S("scribble", sc, gain=.55)
+    n = int(SR * .45); x = rng.standard_normal(n)
+    S("paper", bp(x, np.full(n, 3500.0)) * (np.abs(np.sin(np.linspace(0, 9, n))) ** 3) * np.linspace(1, .2, n), gain=.5, width=1)
+    # retro VHS: tape stop + static
+    tt = t(.7); f = np.geomspace(700, 40, len(tt))
+    S("tape_stop", np.sin(2 * np.pi * np.cumsum(f) / SR) * (1 - tt / .7) + lp(rng.standard_normal(len(tt)), 2000) * .15, gain=.6)
+    n = int(SR * .4); S("static", (rng.standard_normal(n) - lp(rng.standard_normal(n), 300)) * np.exp(-np.linspace(0, 4, n)), gain=.35)
+    # news: broadcast sting (brassy two-tone)
+    seq = np.zeros(int(SR * 1.2))
+    for i, f in enumerate([523, 784]):
+        place(seq, tone(f, .9, 3.5, ((1, 1), (2, .6), (3, .45), (4, .3), (5, .2))), .12 * i)
+    S("sting", lp(seq, 5000), gain=.7)
+
     print("sfx:", " ".join(sorted(f[:-4] for f in os.listdir(out) if f.endswith(".wav"))))
 
 

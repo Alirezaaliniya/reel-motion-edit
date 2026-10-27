@@ -7,6 +7,7 @@ Reads build/plan.resolved.json, build/sfx.json and build/overlay.mov written by 
   (overlay stays put), via ffmpeg perspective with sub-pixel interpolation.
 - SFX are summed in numpy into build/sfx_track.wav (gain per event in dB, relative to -4 dB).
 - music: {file, db:-20, duck:true} is looped/trimmed and ducked under the voice.
+- voice: "enhance" (or --voice enhance) cleans the voice: rumble cut, denoise, presence boost, gentle compression.
 - loudness is normalized to -14 LUFS / -1.5 dBTP (Instagram/TikTok target).
 """
 import argparse, sys, json, subprocess, wave
@@ -87,6 +88,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("plan"); ap.add_argument("--out"); ap.add_argument("--crf", default="18")
     ap.add_argument("--no-loudnorm", action="store_true")
+    ap.add_argument("--voice", choices=["raw", "enhance"], help="override plan.voice")
     a = ap.parse_args()
     pd = Path(a.plan).resolve().parent; b = pd / "build"
     P = json.loads((b / "plan.resolved.json").read_text(encoding="utf-8"))
@@ -102,7 +104,12 @@ def main():
     fit = f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H},setsar=1"
     v = f"[0:v]{fit},{cam},format=yuv420p[cv];[cv][1:v]" if cam else f"[0:v]{fit}[cv];[cv][1:v]"
     fc = [f"{v}overlay=0:0:format=auto,format=yuv420p[v]"]
-    mix = ["[0:a]aresample=44100,aformat=channel_layouts=stereo[voice]", "[2:a]anull[fx]"]
+    # voice: untouched by default; "enhance" = rumble cut, denoise, presence, gentle compression
+    voice = "aresample=44100,aformat=channel_layouts=stereo"
+    if (a.voice or P.get("voice")) == "enhance":
+        voice += (",highpass=f=80,afftdn=nf=-25:tn=1,equalizer=f=250:t=q:w=1:g=-2,equalizer=f=3500:t=q:w=1.2:g=2.5"
+                  ",acompressor=threshold=-20dB:ratio=3:attack=8:release=160:makeup=2")
+    mix = [f"[0:a]{voice}[voice]", "[2:a]anull[fx]"]
     labels = "[voice][fx]"
     mu = P.get("music")
     if mu:

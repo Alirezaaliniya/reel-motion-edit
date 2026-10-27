@@ -1,0 +1,79 @@
+{
+  "gradient": {
+    "label": "گرادیانی مدرن", "en": "Modern gradient",
+    "feel": "colorful brand gradients, glossy chips, confetti; safe default for tech tutorials",
+    "theme": {"primary": "#FF7139", "secondary": "#9059FF", "accent": "#FF2A8A", "ok": "#2BD67B", "dark": "#14121F", "highlight": "#FFD23F", "display": "Lalezar", "body": "Vazirmatn"},
+    "defaults": {"title": {"anim": "slam"}, "keyword": {"style": "sticker"}},
+    "transitions": ["wipe", "circles", "bars", "lightleak"],
+    "captions": "karaoke",
+    "fx": [],
+    "sfxMap": {},
+    "sfxGain": 0
+  },
+  "bold": {
+    "label": "پاپ جسور", "en": "Bold pop (Hormozi / MrBeast)",
+    "feel": "huge yellow+black type with thick strokes, hard shadows, punchy zooms and loud pops; max energy, max retention",
+    "theme": {"primary": "#FFD400", "secondary": "#FF3B30", "accent": "#FFD400", "ok": "#22C55E", "dark": "#0A0A0A", "highlight": "#FFD400", "text": "#FFFFFF", "display": "Lalezar", "body": "Vazirmatn"},
+    "defaults": {"title": {"anim": "slam"}, "keyword": {"style": "sticker", "from": "pop", "rotate": -5}},
+    "transitions": ["flash", "bars"],
+    "captions": "pop",
+    "fx": [],
+    "sfxMap": {"whoosh": "whoosh_heavy", "swoosh_out": "whoosh_short"},
+    "sfxGain": 1
+  },
+  "neon": {
+    "label": "نئون تکنولوژی", "en": "Neon tech / cyber",
+    "feel": "dark glass panels, cyan-magenta glow, glitch hits, scanlines and digital blips; hacker / tech vibe",
+    "theme": {"primary": "#00E5FF", "secondary": "#B026FF", "accent": "#FF2BD6", "ok": "#39FF88", "dark": "#05060F", "highlight": "#00E5FF", "display": "Changa", "body": "Vazirmatn"},
+    "defaults": {"title": {"anim": "glitch"}, "keyword": {"style": "neon", "rotate": 0, "from": "up"}},
+    "transitions": ["glitch", "bars"],
+    "captions": "kinetic",
+    "fx": ["scanlines", "vignette"],
+    "sfxMap": {"pop": "digital_blip", "pop_hi": "digital_blip", "bubble": "digital_blip", "tick": "digital_blip", "notify": "digital_seq", "ding": "digital_seq", "swipe": "glitch"},
+    "sfxGain": 0
+  },
+  "minimal": {
+    "label": "مینیمال تمیز", "en": "Clean minimal (Apple-like)",
+    "feel": "white cards, soft shadows, one accent color, slow smooth moves and quiet sounds; premium and calm",
+    "theme": {"primary": "#0A84FF", "secondary": "#0A84FF", "accent": "#5E5CE6", "ok": "#30D158", "dark": "#111111", "highlight": "#0A84FF", "text": "#111111", "display": "Vazirmatn", "body": "Vazirmatn"},
+    "defaults": {"title": {"anim": "rise", "jitter": false}, "keyword": {"style": "plain", "rotate": 0, "from": "up", "wiggle": false}, "highlight": {"dim": 0.15, "pulse": false}, "success": {"confetti": 0}},
+    "transitions": ["fade", "wipe"],
+    "captions": "minimal",
+    "fx": [],
+    "sfxMap": {"pop": "soft_pop", "pop_hi": "soft_pop", "bubble": "soft_pop", "whoosh": "soft_whoosh", "whoosh_short": "soft_whoosh", "whoosh_heavy": "soft_whoosh", "swoosh_out": "soft_whoosh", "swipe": "soft_whoosh", "impact": null, "glitch": null, "sparkle": null, "error": "tick", "notify": "soft_pop"},
+    "sfxGain": -3
+  },
+  "doodle": {
+    "label": "دست‌نویس", "en": "Hand-drawn doodle",
+    "feel": "marker strokes, wobbly outlines, scribbled circles and arrows, paper-and-pencil sounds; friendly, teacher-like",
+    "theme": {"primary": "#FF5A36", "secondary": "#2D7FF9", "accent": "#FFC93C", "ok": "#22A06B", "dark": "#1B1B1B", "highlight": "#FFC93C", "display": "Lemonada", "body": "Vazirmatn"},
+    "defaults": {"title": {"anim": "rise", "jitter": false}, "keyword": {"style": "sticker", "rotate": -3, "from": "pop"}, "highlight": {"shape": "scribble", "dim": 0}},
+    "transitions": ["paper", "wipe"],
+    "captions": "boxed",
+    "fx": [],
+    "sfxMap": {"pop": "scribble", "pop_hi": "scribble", "bubble": "scribble", "whoosh": "paper", "whoosh_short": "paper", "whoosh_heavy": "paper", "swoosh_out": "paper", "swipe": "scribble", "glitch": null, "impact": null},
+    "sfxGain": 0
+  },
+  "retro": {
+    "label": "رترو VHS", "en": "Retro VHS / 90s",
+    "feel": "VHS grain, REC timecode, RGB-split type, sunset colors, tape-stop and static sounds; nostalgic, playful",
+    "theme": {"primary": "#FF6B35", "secondary": "#00C2B8", "accent": "#FF2E88", "ok": "#7CFC00", "dark": "#120B1F", "highlight": "#FFD23F", "display": "Lalezar", "body": "Vazirmatn"},
+    "defaults": {"title": {"anim": "glitch"}, "keyword": {"style": "sticker", "rotate": -2}},
+    "transitions": ["static", "glitch"],
+    "captions": "boxed",
+    "fx": ["vhs"],
+    "sfxMap": {"whoosh": "static", "whoosh_short": "static", "whoosh_heavy": "tape_stop", "swoosh_out": "tape_stop", "pop": "blips", "pop_hi": "blips"},
+    "sfxGain": 0
+  },
+  "news": {
+    "label": "خبری / رسمی", "en": "Broadcast news",
+    "feel": "navy and red bars, squared labels, headline banner, bottom ticker, broadcast stings; serious, credible",
+    "theme": {"primary": "#D7192F", "secondary": "#0B1F44", "accent": "#D7192F", "ok": "#1E9E5A", "dark": "#0B1F44", "highlight": "#FFC400", "display": "NotoKufiArabic", "body": "Vazirmatn"},
+    "defaults": {"title": {"anim": "rise", "jitter": false}, "keyword": {"style": "sticker", "rotate": 0, "from": "right", "wiggle": false}, "success": {"confetti": 0}},
+    "transitions": ["bars", "wipe"],
+    "captions": "karaoke",
+    "fx": ["newsbar"],
+    "sfxMap": {"impact": "sting", "pop": "tick", "pop_hi": "tick", "bubble": "tick", "success": "sting", "sparkle": null, "glitch": null},
+    "sfxGain": 0
+  }
+}
