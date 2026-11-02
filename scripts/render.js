@@ -104,7 +104,42 @@ P.theme = { ...P.styleDef.theme, ...(BRAND.theme || {}), ...(plan.theme || {}) }
 P.mode = P.mode || 'overlay';
 const EXPLAINER = P.mode === 'explainer';
 if (EXPLAINER && !P.styleDef.bg) console.warn(`note: style "${P.style}" has no explainer background; using black (set plan.bg)`);
+// intro: every edit opens with one (style default kind); "intro": false in the plan turns it off
+if (plan.intro !== false && !(P.elements || []).some(e => e.type === 'intro')) {
+  P.elements = [{ type: 'intro', t: 0, ...(typeof plan.intro === 'object' ? plan.intro : {}) }, ...(P.elements || [])];
+  // overlay mode: the footage also lands with a short punch-out (camera starts zoomed and eases back)
+  if (!EXPLAINER && (P.camera || []).every(c => c.t > .8)) P.camera = [{ t: 0, d: .35, type: 'punch', scale: 1.14, cx: 540, cy: 820 }, ...(P.camera || [])];
+}
+// colour grade for the footage: plan.grade (name | raw ffmpeg filter | false) → style default → natural
+const GRADES = JSON.parse(fs.readFileSync(path.join(SKILL, 'assets', 'grades.json'), 'utf8'));
+const g = plan.grade ?? BRAND.grade ?? P.styleDef.grade ?? 'natural';
+P.gradeFilter = g === false || g === 'none' ? '' : (GRADES[g] || String(g));
+// images as icons: "img:<path>" (relative to the plan) → file url
+const imgs = o => Array.isArray(o) ? o.map(imgs) : o && typeof o === 'object' ? Object.fromEntries(Object.entries(o).map(([k, v]) => [k, imgs(v)]))
+  : typeof o === 'string' && o.startsWith('img:') && !/^img:(file|data|https?):/.test(o) ? 'img:' + url.pathToFileURL(rel(o.slice(4))).href : o;
+P.elements = imgs(P.elements);
 fs.writeFileSync(path.join(build, 'plan.resolved.json'), JSON.stringify(P, null, 1));
+
+/* ---------- sound restraint ----------
+   The user's rule: few, quiet sound effects so the voice is always clear. After the engine registers every
+   component's default sounds, keep at most `perElement` per element (loudest first), drop any sound closer than
+   `minGap` s to the previous kept one (manual plan.sfx always stays), and pull everything down by `gain` dB.
+   plan.sfxMix = {gain: -8, minGap: 0.6, perElement: 1} by default. */
+function thinSfx(list) {
+  const m = { gain: -8, minGap: .6, perElement: 1, ...(BRAND.sfxMix || {}), ...(plan.sfxMix || {}) };
+  const by = {};
+  for (const e of list) (by[e.src] = by[e.src] || []).push(e);
+  let keep = [];
+  for (const [src, l] of Object.entries(by)) keep.push(...(src === 'manual' ? l : [...l].sort((a, b) => b.db - a.db).slice(0, m.perElement)));
+  keep.sort((a, b) => a.t - b.t);
+  const out = []; let last = -9;
+  for (const e of keep) {
+    if (e.src === 'manual') { out.push(e); continue; }
+    if (e.t - last < m.minGap) continue;
+    out.push(e); last = e.t;
+  }
+  return out.map(e => ({ ...e, db: +(e.db + m.gain).toFixed(1) }));
+}
 
 /* ---------- fonts ---------- */
 function fontCss() {
@@ -136,7 +171,7 @@ function fontCss() {
 /* ---------- lint ---------- */
 function lint(samples) {
   const W = P.size?.[0] || 1080, H = P.size?.[1] || 1920, out = [];
-  const seen = new Set(), skip = new Set(['progress', 'transition', 'click', 'fx', 'handle', 'panel', 'footage', 'segbar', 'mascot'].concat(EXPLAINER ? ['scene'] : []));  // persistent layers aren't overlays
+  const seen = new Set(), skip = new Set(['progress', 'transition', 'intro', 'click', 'fx', 'handle', 'panel', 'footage', 'segbar', 'mascot'].concat(EXPLAINER ? ['scene'] : []));  // persistent layers aren't overlays
   for (const { t, boxes } of samples) {
     const live = boxes.filter(b => !skip.has(b.type) && b.type !== 'captions' && !b.parent);
     if (live.length > 3) { const k = 'clutter' + Math.round(t); if (!seen.has(k)) { seen.add(k); out.push(`CLUTTER  ${t.toFixed(1)}s  ${live.length} overlays at once: ${live.map(b => b.id).join(', ')}`); } }
@@ -177,8 +212,9 @@ function lintSfx(sfx) {
   await page.evaluate(css => { document.getElementById('fontcss').textContent = css; }, fontCss());
   await page.evaluate(() => document.fonts.ready);
   console.log('fonts ready');
-  const sfx = await page.evaluate(p => build(p), P);
-  console.log(`built: ${sfx.length} sfx events`);
+  const sfxAll = await page.evaluate(p => build(p), P);
+  const sfx = thinSfx(sfxAll);
+  console.log(`built: ${sfx.length} sfx events (${sfxAll.length - sfx.length} dropped by sfxMix)`);
   // preload every font face actually used so the first frames don't fall back
   await page.evaluate(async () => { await Promise.all([...document.fonts].map(f => f.load().catch(() => 0))); });
   console.log('fonts preloaded');
@@ -199,13 +235,14 @@ function lintSfx(sfx) {
   const footAt = t => (P.elements || []).filter(e => e.type === 'footage' && t >= e.t && t <= e.t + e.d);
   // base frame at time t: the video frame (overlay mode) or bg.png + footage windows (explainer)
   const baseFrame = (t, out, look = '') => {
-    if (!EXPLAINER) return spawnSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(t), '-i', video, '-vf', `scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H}${look}`, '-frames:v', '1', out]);
+    const gr = P.gradeFilter ? ',' + P.gradeFilter : '';
+    if (!EXPLAINER) return spawnSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(t), '-i', video, '-vf', `scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H}${gr}${look}`, '-frames:v', '1', out]);
     const win = PIC ? footAt(t) : [], args = ['-v', 'error', '-y', '-i', BGPNG], fc = [];
     let last = '[0]';
     win.forEach((e, i) => {
       const [x, y, w, h] = e.rect, st = (e.src ?? e.t) + (t - e.t);
       args.push('-ss', String(st), '-i', video);
-      fc.push(`[${i + 1}:v]scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h}[f${i}]`, `${last}[f${i}]overlay=${x}:${y}[b${i}]`);
+      fc.push(`[${i + 1}:v]scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h}${gr}[f${i}]`, `${last}[f${i}]overlay=${x}:${y}[b${i}]`);
       last = `[b${i}]`;
     });
     fc.push(`${last}null${look}[o]`);
@@ -227,7 +264,13 @@ function lintSfx(sfx) {
       if (gap != null && P.duration - gap >= 1) order.push(`EMPTY    ${gap.toFixed(1)}–${P.duration.toFixed(1)}s  nothing but captions on screen`);
       if ((P.elements || []).some(e => e.type === 'footage') && !PIC) order.push('NOVIDEO  footage windows need a source with a picture (the source is audio only)');
     }
-    const issues = [...order, ...lint(samples), ...lintSfx(sfx)];
+    // no emoji anywhere (the user's rule): use built-in icons (icon/kickerIcon/items[].icon) or img:<file>
+    const EMO = /\p{Extended_Pictographic}/u, emo = [];
+    const scan = (o, where) => { if (typeof o === 'string') { if (EMO.test(o)) emo.push(`EMOJI    ${where}: "${o}" — use an icon name or img:<file> instead`); }
+      else if (o && typeof o === 'object') for (const [k, v] of Object.entries(o)) scan(v, where); };
+    (P.elements || []).forEach(e => scan(e, `${e.id || e.type} (${e.type})`)); scan(P.cover, 'cover');
+    if (sfx.length > P.duration / 2.5) order.push(`SFXDENSE ${sfx.length} sounds in ${P.duration.toFixed(0)}s — keep it to about one every 3 s on talking heads`);
+    const issues = [...order, ...emo, ...lint(samples), ...lintSfx(sfx)];
     console.log(`mode: ${P.mode}  style: ${P.style}  elements: ${(P.elements || []).length}  sfx: ${sfx.length}  duration: ${P.duration}s`);
     for (const e of P.elements || []) console.log(`  ${String(e.t ?? e.items?.[0]?.t).padStart(6)}s  ${e.type.padEnd(10)} ${e.id || ''} ${e.text || e.label || (e.lines || []).join(' / ') || e.title || ''}`);
     console.log(issues.length ? 'ISSUES:\n' + issues.join('\n') : 'no layout issues');
@@ -284,7 +327,7 @@ function lintSfx(sfx) {
           !demo && st && { type: 'steps', t: 0, y: 760, items: [{ t: 0, label: st.items[0].label, sub: st.items[0].sub }], total: st.total ?? st.items.length, end: 99, sfx: false },
           k === 'warmguide' && { type: 'segbar', t: 0, y: 40, items: [{ t: 0 }], total: 7, end: 99, sfx: false },
           k === 'hud' && { type: 'readout', t: 0, d: 99, x: 760, y: 560, lines: ['x² + y² = r²', 'ok:error 0.000', 'ok:clean ✓'], typewriter: false, sfx: false },
-          !demo && { type: 'keyword', t: 0, d: 99, x: 540, y: 1560, text: kw?.text || 'نکته مهم', emoji: kw?.emoji || '💡', sfx: false, wiggle: false },
+          !demo && { type: 'keyword', t: 0, d: 99, x: 540, y: 1560, text: kw?.text || 'نکته مهم', icon: kw?.icon || 'bulb', sfx: false, wiggle: false },
           { type: 'keyword', t: 0, d: 99, x: 540, y: 1840, text: D.label, style: 'plain', rotate: 0, sfx: false, wiggle: false, size: 58 },
         ].filter(Boolean);
         const chunks = [{ s: 0, e: 99, y: demo ? 1400 : 1290, words: sub.map((w, j) => ({ w: w.w, s: j < 5 ? 0 : 99, key: j === 1, acc: j === 2 })) }];

@@ -23,12 +23,15 @@ Talk to the user in their language (usually Persian). Keep the progress updates 
 
 ## Why the edit should feel "exactly in place" — and not samey
 
-Viewers notice when a graphic or sound is half a second off, or when it has nothing to do with what's being said. That is what makes an edit look amateur. Earlier edits were criticized for exactly that: decorative badges appeared over the speaker's face that didn't match what he was saying. Later, the user also said the edits had started to look **repetitive**. Four ideas fix both, and the tools enforce most of them:
+Viewers notice when a graphic or sound is half a second off, or when it has nothing to do with what's being said. That is what makes an edit look amateur. Earlier edits were criticized for exactly that: decorative badges appeared over the speaker's face that didn't match what he was saying. Later, the user also said the edits had started to look **repetitive**, then that there were **too many, too loud sound effects**, **no intro**, **no colour correction**, and **emoji he doesn't want**. These ideas fix all of that, and the tools enforce most of them:
 
 1. **Anchor to the words.** Any text that echoes speech uses a word anchor (`"t": "w:رایگان"`), so it pops on the syllable, not near it. Hand-typed seconds are only for purely visual events.
 2. **Anchor to the picture.** Clicks, page changes and layout zooms come from `motion.json` events (`"t": "m:m12"`) and from the timestamped contact sheets you read yourself. A click SFX without a visible click is noise.
 3. **Protect the face.** Declare the face and PIP rectangles in `plan.avoid`. `render.js check` then flags any element that covers them. Fix every `COVERS` warning before rendering.
-4. **Let the user choose the look, then vary within it.** Ask for a style at the very start (Step 1). Then don't fall back on the same recipe every time: vary the hook format, which components carry the ideas, and the transitions. `references/styles.md` has the per-style playbook and a list of hook formats.
+4. **Keep the voice clear: few, quiet sounds.** The user said the edits had too many sound effects and they were too loud. `render.js` now thins and lowers them automatically (`sfxMix`, below) and compose ducks them under the voice — don't fight that: add manual `sfx` only for the hook, a section change, the payoff and the CTA, at −14…−20 dB, and mute (`"sfx": false`) components that don't need one. `check` warns `SFXDENSE` above ~1 sound per 2.5 s.
+5. **No emoji.** The user doesn't want emoji anywhere in the edit. Use the built-in icons (`icon` / `kickerIcon` / `items[].icon` names, see `references/components.md`) or an image (`"icon": "img:<file>"`, PNG/SVG next to the plan). `check` flags every emoji as `EMOJI`; fix them all.
+6. **Always open with an intro and grade the picture.** Every edit starts with an intro move (style default: flash / split / iris / glitch / fade, plus a short punch-out of the footage) — render.js adds one if the plan has none; tune it with `"intro": {"kind": "iris"}` or `false`. The footage gets a colour grade (`"grade"`: natural · vivid · warm · cool · cinematic · bright, a raw ffmpeg filter, or `false`); the style picks a default. For dim rooms prefer `bright` or `vivid`; check the preview, which shows the grade.
+7. **Let the user choose the look, then vary within it.** Ask for a style at the very start (Step 1). Then don't fall back on the same recipe every time: vary the hook format, which components carry the ideas, and the transitions. `references/styles.md` has the per-style playbook and a list of hook formats.
 
 ## Step 1 — ask first: edit type + style (before any work)
 
@@ -120,7 +123,7 @@ Write `<workdir>/plan.json`. All components, their props and default SFX are in 
     {"type": "title", "t": 0, "d": 3.8, "y": 90, "kicker": "آموزش ۶۰ ثانیه‌ای", "lines": ["`VPN` *رایگان*"], "sub": "با سرورهای فایرفاکس"},
     {"type": "transition", "t": "m:m3-0.1"},
     {"type": "steps", "items": [{"t": "w:گوگل", "label": "جستجو در گوگل", "sub": "`vpn firefox github`"}], "hide": [[29.0, 34.1]]},
-    {"type": "keyword", "t": "w:رایگان", "x": 540, "y": 1640, "text": "رایگان", "emoji": "🎁"},
+    {"type": "keyword", "t": "w:رایگان", "x": 540, "y": 1640, "text": "رایگان", "icon": "gift"},
     {"type": "success", "t": "w:وصل", "x": 405, "y": 678, "title": "وصل شدی!"},
     {"type": "cta", "t": 57.4, "items": [{"text": "سیو کن", "icon": "save"}, {"text": "فالو کن", "icon": "follow"}]}
   ],
@@ -148,6 +151,8 @@ node <skill>/scripts/render.js "<workdir>/plan.json" preview 1 5.5 15.8 21.1 27.
 - `OFFFRAME`
 - `CLUTTER`: more than 3 overlays at once
 - `SFXPILE`: sounds stacked inside 0.35 s
+- `SFXDENSE`: too many sounds overall (more than ~1 per 2.5 s)
+- `EMOJI`: an emoji in any text/icon prop — replace it with an icon name or `img:<file>`
 - `ORDER`: a word anchor hit an earlier occurrence, so use `w:word#2`
 - `EMPTY` (explainer): a stretch ≥ 1 s with nothing but captions on screen
 - `NOVIDEO` (explainer): `footage` windows but the source is audio only
@@ -167,6 +172,8 @@ Run the full render in the background. `compose.py` does the following:
 - overlays the graphics
 - applies `voice` cleanup if set
 - mixes the SFX bed under the voice, plus music with ducking if set: `"music": {"file": "...", "db": -20}`
+- applies the colour grade (`grade`) to the footage
+- ducks the SFX bed under the voice
 - normalizes to −14 LUFS
 
 In explainer mode compose stacks `build/bg.png` → footage windows → overlay and takes only the voice from the source (an audio file is fine); camera moves are already inside the overlay.
@@ -205,4 +212,5 @@ Proof-read the printed chunks. Fix Whisper spellings with `--fix`; a multi-word 
 - Sources that aren't 1080×1920 (e.g. 608×1080 phone exports) are upscaled/cropped to the plan size by compose and preview. Plan coordinates are always in plan-size pixels, so multiply coordinates read off source frames by `1080 / source_width`.
 - Handheld phone footage of a monitor: the screen drifts, so screen-pinned elements (click, highlight, arrows) won't stay on target. Use structure (steps), word-anchored stickers in the margins, and full-frame transitions instead.
 - Titles get a dark top scrim by default (`"scrim": false` to drop it). It keeps them readable over bright screens.
+- Sound levels: component defaults are already pulled down by `sfxMix.gain` (−8 dB) and one sound per element; `"sfxMix": {"gain": -10, "minGap": 0.8, "perElement": 1, "duck": true}` tunes it (or the brand kit). Never raise the overall SFX level without the user asking.
 - Keep the speaker's own voice untouched (no EQ/compression beyond loudness normalization) unless the user chose voice cleanup.

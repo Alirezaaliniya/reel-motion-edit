@@ -12,15 +12,16 @@ Text props accept `*highlight*` (brand gradient / primary colour), `` `LTR run` 
 |---|---|---|---|
 | `title` | hook title, word-by-word | `lines[]`, `kicker`, `kickerIcon`, `sub`, `y` (top, default 100), `anim`: slam·rise·glitch·blur, `wordGap`, `jitter`, `scrim` (dark top gradient, default on), `scrimH` | impact, whoosh, pop per word, glitch, swoosh out |
 | `steps` | persistent numbered step chip with progress dots, flips between steps | `items[{t,label,sub,y?}]`, `total`, `y` (top, 150), `hide[[a,b]]`, `end` | whoosh + pop per step |
-| `keyword` | sticker/neon word that echoes speech | `text`, `emoji`, `style`: sticker·neon·outline·gradient·plain, `from`: pop·left·right·drop·up, `rotate`, `size` | pop / whoosh |
-| `note` | tip card («نکته») | `icon` (emoji), `title`, `text` | notify |
+| `keyword` | sticker/neon word that echoes speech | `text`, `icon` (icon name or `img:<file>`; no emoji), `style`: sticker·neon·outline·gradient·plain, `from`: pop·left·right·drop·up, `rotate`, `size` | pop / whoosh |
+| `note` | tip card («نکته») | `icon` (icon name or `img:`, default bulb), `title`, `text` | notify |
 | `callout` | pill label, optional drawn arrow | `text`, `icon`, `arrow: {from:[x,y], to:[x,y], curve}` | pop (+ swipe) |
 | `highlight` | box/circle around a UI target with dimmed surroundings | `rect:[x,y,w,h]`, `shape`: rect·circle·scribble (hand-drawn loop, drawn on), `dim` (0–1, default .35), `label`, `pulse` | pop |
 | `click` | ripple on a mouse click | `x`, `y` | click |
 | `arrow` | hand-drawn arrow | `from`, `to`, `curve`, `width` | swipe |
 | `counter` | number count-up | `from`, `to`, `prefix`, `suffix`, `decimals`, `label`, `count` (sec), `persian` (digits, default true) | ticks + ding |
-| `icon` | big emoji or built-in icon | `icon` (emoji or: download check warn star click save follow like share comment lock globe bolt search), `anim`: bounce·pulse·spin | bubble |
-| `compare` | ❌ old → ✅ new | `bad`, `good`, `gap` | error + ding |
+| `icon` | big built-in icon or image | `icon` (a name below, or `img:<file>`), `size`, `color`, `anim`: bounce·pulse·spin | bubble |
+| `intro` | opening move (added automatically when missing) | `kind`: split·iris·flash·glitch·fade (style default), `dur`, `color`, `x`,`y` (iris centre) | whoosh_heavy / impact |
+| `compare` | old (struck) → new | `bad`, `good`, `gap` | error + ding |
 | `success` | confetti burst + result card | `x`,`y` (burst origin), `title`, `sub`, `cardY`, `confetti` | success, impact, sparkle |
 | `cta` | end buttons | `items[{text, icon, color?}]`, `y` (default 1060) | pops + ding |
 | `lowerthird` | name / role | `name`, `role`, `x`, `y` | whoosh |
@@ -36,6 +37,12 @@ Text props accept `*highlight*` (brand gradient / primary colour), `` `LTR run` 
 
 Scene shapes, explainer workflow and per-style recipes: `references/explainer.md`.
 
+**Icons** (use these instead of emoji — the user doesn't want emoji): download check x warn star click save follow
+like heart share send comment lock globe bolt search truck box money coin up down chart deal fire bulb pointdown
+clock phone cart gift rocket question user map play. Any icon prop also takes `img:<path>` (PNG/SVG/WebP, path
+relative to the plan) for a real logo or photo, e.g. the courier companies' logos. Icons take the element's text
+colour (`color` overrides).
+
 Global plan keys:
 - `mode`: `overlay` (default, graphics over the source video) or `explainer` (whole frame is graphics; the source
   may be audio only). `bg`: `{color, gradient, image}` overrides the style's explainer background.
@@ -45,6 +52,10 @@ Global plan keys:
 - `theme`: overrides on top of the preset (brand colors / fonts).
 - `handle`: `{text, corner: tl|tr|bl|br, logo?, opacity?}`, a persistent @username watermark (or from the brand kit).
 - `fxProps`: settings for the preset's look layers, e.g. `{"newsbar": {"tag": "خبر فوری", "text": "…"}}`.
+- `intro`: `false`, or `{kind, dur, color}` to tune the automatic intro (overlay mode also gets a 0.35 s punch-out).
+- `grade`: colour grade of the footage — `natural` · `vivid` · `warm` · `cool` · `cinematic` · `bright`
+  (`assets/grades.json`), a raw ffmpeg filter string, or `false`. Default from the style (`grade` in styles.json).
+- `sfxMix`: `{gain: -8, minGap: 0.6, perElement: 1, duck: true}` — the automatic sound restraint (see SKILL.md).
 - `voice`: `"enhance"` for voice cleanup in compose. `music`: `{file, db, duck}`.
 - `cover`: `{lines, sub, kicker, y, blur}` for `render.js cover T`.
 - `brand`: `false` to ignore `~/.config/reel-motion-edit/brand.json` for this video.

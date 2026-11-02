@@ -8,6 +8,10 @@ Reads build/plan.resolved.json, build/sfx.json and build/overlay.mov written by 
 - SFX are summed in numpy into build/sfx_track.wav (gain per event in dB, relative to -4 dB).
 - music: {file, db:-20, duck:true} is looped/trimmed and ducked under the voice.
 - voice: "enhance" (or --voice enhance) cleans the voice: rumble cut, denoise, presence boost, gentle compression.
+- grade: the colour grade resolved by render.js (P.gradeFilter, from plan.grade / the style) is applied to the
+  footage before the graphics, in both modes.
+- the SFX bed is ducked under the voice (sidechain), so the speaker always stays clear; plan.sfxMix.duck: false
+  turns it off.
 - loudness is normalized to -14 LUFS / -1.5 dBTP (Instagram/TikTok target).
 - mode "explainer": the picture is build/bg.png + footage windows (elements of type "footage", the source
   video cropped into their rect with rounded corners) + overlay.mov; the source only supplies the voice
@@ -116,6 +120,7 @@ def main():
 
     sfx_track(ev, dur, b / "sfx_track.wav")
     inputs = ["-i", video, "-i", str(b / "overlay.mov"), "-i", str(b / "sfx_track.wav")]
+    grade = ("," + P["gradeFilter"]) if P.get("gradeFilter") else ""
     if P.get("mode") == "explainer":
         # base = style background still; footage windows from the source video; graphics on top
         inputs += ["-loop", "1", "-framerate", str(fps), "-i", str(b / "bg.png")]
@@ -131,7 +136,7 @@ def main():
             inputs += ["-loop", "1", "-framerate", str(fps), "-i", str(mask)]
             mi = 4 + i
             fc.append(f"[0:v]trim=start={src}:duration={d},setpts=PTS-STARTPTS+{t0}/TB,"
-                      f"scale={w}:{h}:force_original_aspect_ratio=increase:flags=lanczos,crop={w}:{h},setsar=1,format=yuva420p[fv{i}]")
+                      f"scale={w}:{h}:force_original_aspect_ratio=increase:flags=lanczos,crop={w}:{h},setsar=1{grade},format=yuva420p[fv{i}]")
             fc.append(f"[{mi}:v]format=gray,trim=duration={dur},setpts=PTS-STARTPTS[mk{i}]")
             fc.append(f"[fv{i}][mk{i}]alphamerge,fade=t=in:st={t0}:d=0.3:alpha=1,fade=t=out:st={t0 + d - 0.3}:d=0.3:alpha=1[fw{i}]")
             fc.append(f"{last}[fw{i}]overlay={x}:{y}:eof_action=pass:repeatlast=0[base{i + 1}]")
@@ -140,7 +145,7 @@ def main():
     else:
         cam = camera_filter(P.get("camera"), W, H, fps)
         # sources that aren't plan-sized (e.g. 608x1080 phone exports) are upscaled/cropped to fill the frame
-        fit = f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H},setsar=1"
+        fit = f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H},setsar=1{grade}"
         v = f"[0:v]{fit},{cam},format=yuv420p[cv];[cv][1:v]" if cam else f"[0:v]{fit}[cv];[cv][1:v]"
         fc = [f"{v}overlay=0:0:format=auto,format=yuv420p[v]"]
     # voice: untouched by default; "enhance" = rumble cut, denoise, presence, gentle compression
@@ -148,7 +153,12 @@ def main():
     if (a.voice or P.get("voice")) == "enhance":
         voice += (",highpass=f=80,afftdn=nf=-25:tn=1,equalizer=f=250:t=q:w=1:g=-2,equalizer=f=3500:t=q:w=1.2:g=2.5"
                   ",acompressor=threshold=-20dB:ratio=3:attack=8:release=160:makeup=2")
-    mix = [f"[0:a]{voice}[voice]", "[2:a]anull[fx]"]
+    mix = [f"[0:a]{voice}[voice]"]
+    if (P.get("sfxMix") or {}).get("duck", True):
+        # the voice keys a compressor on the SFX bed: effects dip while he talks, come back in the gaps
+        mix += ["[voice]asplit[voice][vk]", "[2:a][vk]sidechaincompress=threshold=0.02:ratio=4:attack=10:release=300:makeup=1[fx]"]
+    else:
+        mix.append("[2:a]anull[fx]")
     labels = "[voice][fx]"
     mu = P.get("music")
     if mu:

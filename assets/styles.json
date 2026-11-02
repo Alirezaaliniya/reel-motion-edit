@@ -9,7 +9,9 @@
     "captions": "karaoke",
     "fx": [],
     "sfxMap": {},
-    "sfxGain": 0
+    "sfxGain": 0,
+    "intro": "split",
+    "grade": "vivid"
   },
   "bold": {
     "label": "پاپ جسور",
@@ -21,7 +23,9 @@
     "captions": "pop",
     "fx": [],
     "sfxMap": {"whoosh": "whoosh_heavy", "swoosh_out": "whoosh_short"},
-    "sfxGain": 1
+    "sfxGain": 0,
+    "intro": "flash",
+    "grade": "vivid"
   },
   "neon": {
     "label": "نئون تکنولوژی",
@@ -33,7 +37,9 @@
     "captions": "kinetic",
     "fx": ["scanlines", "vignette"],
     "sfxMap": {"pop": "digital_blip", "pop_hi": "digital_blip", "bubble": "digital_blip", "tick": "digital_blip", "notify": "digital_seq", "ding": "digital_seq", "swipe": "glitch"},
-    "sfxGain": 0
+    "sfxGain": 0,
+    "intro": "glitch",
+    "grade": "cool"
   },
   "minimal": {
     "label": "مینیمال تمیز",
@@ -45,7 +51,9 @@
     "captions": "minimal",
     "fx": [],
     "sfxMap": {"pop": "soft_pop", "pop_hi": "soft_pop", "bubble": "soft_pop", "whoosh": "soft_whoosh", "whoosh_short": "soft_whoosh", "whoosh_heavy": "soft_whoosh", "swoosh_out": "soft_whoosh", "swipe": "soft_whoosh", "impact": null, "glitch": null, "sparkle": null, "error": "tick", "notify": "soft_pop"},
-    "sfxGain": -3
+    "sfxGain": -3,
+    "intro": "fade",
+    "grade": "natural"
   },
   "doodle": {
     "label": "دست‌نویس",
@@ -57,7 +65,9 @@
     "captions": "boxed",
     "fx": [],
     "sfxMap": {"pop": "scribble", "pop_hi": "scribble", "bubble": "scribble", "whoosh": "paper", "whoosh_short": "paper", "whoosh_heavy": "paper", "swoosh_out": "paper", "swipe": "scribble", "glitch": null, "impact": null},
-    "sfxGain": 0
+    "sfxGain": 0,
+    "intro": "iris",
+    "grade": "warm"
   },
   "retro": {
     "label": "رترو VHS",
@@ -69,7 +79,9 @@
     "captions": "boxed",
     "fx": ["vhs"],
     "sfxMap": {"whoosh": "static", "whoosh_short": "static", "whoosh_heavy": "tape_stop", "swoosh_out": "tape_stop", "pop": "blips", "pop_hi": "blips"},
-    "sfxGain": 0
+    "sfxGain": 0,
+    "intro": "glitch",
+    "grade": "warm"
   },
   "news": {
     "label": "خبری / رسمی",
@@ -81,7 +93,9 @@
     "captions": "karaoke",
     "fx": ["newsbar"],
     "sfxMap": {"impact": "sting", "pop": "tick", "pop_hi": "tick", "bubble": "tick", "success": "sting", "sparkle": null, "glitch": null},
-    "sfxGain": 0
+    "sfxGain": 0,
+    "intro": "split",
+    "grade": "natural"
   },
   "lineglow": {
     "label": "لاین‌آرت سینمایی",
@@ -96,7 +110,9 @@
     "captions": "reveal",
     "fx": ["dust", "vignette"],
     "sfxMap": {"pop": "soft_pop", "pop_hi": "soft_pop", "bubble": "soft_pop", "tick": "soft_tick", "whoosh": "air", "whoosh_short": "air", "whoosh_heavy": "low_boom", "swoosh_out": "air", "swipe": "air", "impact": "low_boom", "glitch": null, "error": "soft_tick", "notify": "shimmer", "ding": "shimmer", "success": "shimmer", "sparkle": "shimmer", "draw": "draw_soft"},
-    "sfxGain": -3
+    "sfxGain": -3,
+    "intro": "fade",
+    "grade": "natural"
   },
   "hud": {
     "label": "دیتا / HUD",
@@ -111,7 +127,9 @@
     "captions": "reveal",
     "fx": ["vignette"],
     "sfxMap": {"pop": "digital_blip", "pop_hi": "digital_blip", "bubble": "digital_blip", "tick": "soft_tick", "notify": "digital_seq", "ding": "digital_seq", "success": "digital_seq", "whoosh": "soft_whoosh", "whoosh_short": "soft_whoosh", "whoosh_heavy": "low_boom", "swoosh_out": "soft_whoosh", "swipe": "soft_whoosh", "impact": "low_boom", "glitch": "digital_blip", "sparkle": null, "draw": "draw_soft"},
-    "sfxGain": -2
+    "sfxGain": -2,
+    "intro": "fade",
+    "grade": "cool"
   },
   "warmguide": {
     "label": "آموزشی کرم-نارنجی",
@@ -126,7 +144,9 @@
     "captions": "accent",
     "fx": [],
     "sfxMap": {"pop": "soft_pop", "pop_hi": "soft_pop", "bubble": "soft_pop", "whoosh": "soft_whoosh", "whoosh_short": "soft_whoosh", "whoosh_heavy": "soft_whoosh", "swoosh_out": "soft_whoosh", "swipe": "paper", "impact": null, "glitch": null, "error": "soft_tick", "draw": "scribble"},
-    "sfxGain": -2
+    "sfxGain": -2,
+    "intro": "iris",
+    "grade": "warm"
   },
   "pictogram": {
     "label": "اینفوگرافیک پیکتوگرامی",
@@ -141,6 +161,8 @@
     "captions": "reveal",
     "fx": [],
     "sfxMap": {"pop": "soft_tick", "pop_hi": "soft_tick", "bubble": "soft_pop", "tick": "soft_tick", "whoosh": "air", "whoosh_short": "air", "whoosh_heavy": "low_boom", "swoosh_out": "air", "swipe": "air", "impact": "low_boom", "glitch": null, "notify": "soft_pop", "ding": "shimmer", "success": "shimmer", "sparkle": null, "draw": "draw_soft"},
-    "sfxGain": -3
+    "sfxGain": -3,
+    "intro": "fade",
+    "grade": "natural"
   }
 }

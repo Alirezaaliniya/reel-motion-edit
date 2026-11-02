@@ -9,6 +9,14 @@ Every overlay should answer "why is this on screen *right now*?". The answer mus
 If it is just decoration (generic feature badges, floating icons, particles over the speaker), cut it. On talking-head
 sections, less is more: one keyword sticker for the single most important word of a sentence beats four badges.
 
+## No emoji
+- Never put emoji in titles, stickers, notes, CTAs or covers. Use the icon set or `img:` images (real logos are better
+  than any emoji: e.g. the courier companies' logos next to their names).
+
+## Intro and grade
+- Every video opens with an intro move (auto) — then the hook title lands on top of it in the first 0.3 s.
+- Grade the footage: phone/webcam video in a dim room looks better with `vivid` or `bright`; keep skin natural.
+
 ## Placement
 - Never cover the eyes or mouth. On full-face shots use the band above the head and the chest area, and keep
   stickers to the sides (x < 300 or x > 780). Declare the face in `avoid` so `check` enforces this.
@@ -28,6 +36,9 @@ sections, less is more: one keyword sticker for the single most important word o
 - Transitions start at the first frame of a layout change (motion event), not in the middle of it.
 
 ## Sound
+- **Less, and quieter.** The voice must always be clear: aim for ~1 sound every 3 s on a talking head, only on the
+  hook, section changes, the payoff and the CTA. Pops on every sticker are noise. Levels −14…−20 dB; the engine already
+  lowers defaults (sfxMix) and compose ducks the bed under speech.
 - An SFX belongs to something you can *see* happen: an entrance, a click, a page change, a success. No sound
   without a visual, and not every visual needs one (repeated ripples → quieter, −8…−12 dB).
 - Hierarchy: voice ≫ hits (impact/success) > movement (whoosh) > UI (pop/click/tick).

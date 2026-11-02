@@ -43,9 +43,9 @@ The first 1–3 s decide retention. Pick the format that fits what the speaker a
 
 1. **Promise title**: "`VPN` *رایگان*" plus a sub-line (default).
 2. **Question**: the speaker asks ("ویندسکرایب داری؟"). Show the question as the title, then pop the answer as a keyword when it comes.
-3. **Problem first**: open on the error or pain on screen. Glitch transition, red neon keyword, then «راه حل 💡».
+3. **Problem first**: open on the error or pain on screen. Glitch transition, red neon keyword, then «راه حل» with the `bulb` icon.
 4. **Number hook**: `counter` on the spoken number (۵۰ گیگ, ۳ ثانیه, ۱۰ برابر) as the first element.
-5. **Before → after**: `compare` (پولی ❌ → رایگان ✅) in the first 2 s.
+5. **Before → after**: `compare` (پولی → رایگان) in the first 2 s.
 6. **Result first**: show the payoff frame/success card first, then "بذار نشونت بدم چطوری" and the steps.
 7. **POV / you**: kicker "اگه تو هم…" plus a title addressed to the viewer.
 
