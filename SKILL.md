@@ -1,18 +1,23 @@
 ---
 name: reel-motion-edit
-description: Edits a talking-head / screen-recording video (Instagram Reel, Shorts, TikTok, Camtasia export, tutorial) into a motion-graphics cut in a style the user picks from 7 presets (modern gradient, bold pop, neon tech, clean minimal, hand-drawn doodle, retro VHS, broadcast news). It adds text and graphics timed to the spoken words, sound effects that land on real on-screen events, creative transitions, camera punch-ins, a CTA ending, and optional styled subtitles, voice cleanup, pause trimming, a cover image and an @handle watermark. Persian/RTL is the first-class case, with bundled Persian display fonts. Use this whenever the user hands over a video file and asks to "edit", "motion graphic", "add effects/elements/sound effects", "make it engaging", or says things like «ادیت موشن گرافیک», «افکت صوتی بذار», «المان اضافه کن», «ترنزیشن», «زیرنویس خلاقانه», «سبک ادیت» — even if they don't name this skill.
+description: Edits a talking-head / screen-recording video or a voice-over (Instagram Reel, Shorts, TikTok, Camtasia export, tutorial) into a motion-graphics cut in a style the user picks at the start from 11 presets — 7 overlay styles on the footage (modern gradient, bold pop, neon tech, clean minimal, hand-drawn doodle, retro VHS, broadcast news) and 4 full-frame animated explainer styles (cinematic line-art, data HUD, warm cream tutorial, pictogram infographic) — or one Claude recommends. It adds text and graphics timed to the spoken words, self-drawing illustrations, sound effects that land on real events, transitions, camera moves, a CTA ending, and optional styled subtitles, voice cleanup, pause trimming, a cover image, the user's own mascot and an @handle watermark. Persian/RTL is the first-class case, with bundled Persian fonts. Use this whenever the user hands over a video or voice-over and asks to "edit", "motion graphic", "explainer", "animate", "add effects/elements/sound effects", "make it engaging", or says things like «ادیت موشن گرافیک», «افکت صوتی بذار», «المان اضافه کن», «ترنزیشن», «زیرنویس خلاقانه», «سبک ادیت», «انیمیشن توضیحی», «موشن روی ویس» — even if they don't name this skill.
 ---
 
 # Reel motion-graphics edit
 
-Turns a raw vertical video into a finished motion-graphics edit:
+Turns a raw vertical video (or a voice-over) into a finished motion-graphics edit:
 
 ```
-setup → analyze → ASK: style (style board) + prep options → beat sheet → plan.json
+ASK FIRST: edit type + style (or "suggest one") → setup + analyze (in the background)
+→ style board / recommendation (if asked) + prep options → beat sheet → plan.json
 → check + preview loop → render overlay → compose → verify → OFFER: subtitles + extras
 ```
 
 The overlay is HTML/GSAP rendered frame-by-frame with a transparent background (`assets/engine.html`), so Persian shaping, fonts and gradients are pixel-perfect. You never hand-write animation code: you write a **plan.json** that lists components and their times. The engine animates them in the chosen **style preset**, which sets the look, motion, transitions and sound palette, and gives each component its default sound effects.
+
+There are two **modes**:
+- **overlay** (default): graphics on top of the user's footage (talking head, screen recording).
+- **explainer** (`"mode": "explainer"`): the whole frame is graphics — self-drawing line art, diagrams, UI cards, a word-by-word subtitle — driven by the voice. The source can be an audio file; the real video can still appear in `footage` windows. Read `references/explainer.md` whenever this mode is chosen.
 
 Talk to the user in their language (usually Persian). Keep the progress updates short.
 
@@ -23,52 +28,68 @@ Viewers notice when a graphic or sound is half a second off, or when it has noth
 1. **Anchor to the words.** Any text that echoes speech uses a word anchor (`"t": "w:رایگان"`), so it pops on the syllable, not near it. Hand-typed seconds are only for purely visual events.
 2. **Anchor to the picture.** Clicks, page changes and layout zooms come from `motion.json` events (`"t": "m:m12"`) and from the timestamped contact sheets you read yourself. A click SFX without a visible click is noise.
 3. **Protect the face.** Declare the face and PIP rectangles in `plan.avoid`. `render.js check` then flags any element that covers them. Fix every `COVERS` warning before rendering.
-4. **Let the user choose the look, then vary within it.** Ask for a style before designing (Step 2). Then don't fall back on the same recipe every time: vary the hook format, which components carry the ideas, and the transitions. `references/styles.md` has the per-style playbook and a list of hook formats.
+4. **Let the user choose the look, then vary within it.** Ask for a style at the very start (Step 1). Then don't fall back on the same recipe every time: vary the hook format, which components carry the ideas, and the transitions. `references/styles.md` has the per-style playbook and a list of hook formats.
 
-## Step 0 — setup (first run on a machine)
+## Step 1 — ask first: edit type + style (before any work)
+
+As soon as the user hands over the file, ask with AskUserQuestion — before setup or analysis, so nothing is designed in the wrong direction. Skip a question the user already answered in their message, or that the brand kit (`style`) answers, unless they ask for something different. Ask both in one call:
+
+- **Q1 — edit type** (skip when the source is audio only: that is always explainer):
+  - *Graphics on my video* (overlay) — text, stickers, steps, SFX over the footage.
+  - *Full animated explainer* — the frame becomes drawings/diagrams driven by the voice; the face can appear in windows.
+  - *Not sure — suggest* — decide after reading the transcript.
+- **Q2 — style**:
+  - *Suggest one for me (Recommended)* — after the analysis you recommend with a one-line reason and show the style board.
+  - *Show me the style board first* — render it (Step 3) and ask again with the best 4 for this video.
+  - *Overlay styles* — description lists: گرادیانی مدرن `gradient` · پاپ جسور `bold` · نئون `neon` · مینیمال `minimal` · دست‌نویس `doodle` · رترو VHS `retro` · خبری `news`.
+  - *Explainer styles* — لاین‌آرت سینمایی `lineglow` · دیتا / HUD `hud` · آموزشی کرم-نارنجی `warmguide` · اینفوگرافیک پیکتوگرامی `pictogram`.
+  Say in the question that a style name can be typed via "Other". If the user picks a *family*, ask one follow-up with that family's styles (4 max per question: recommend the best fit first, the rest via "Other").
+
+`assets/styles.json` has each style's `label`, `en` and `feel`; use them for one-line descriptions. If the user doesn't care ("just edit it"), pick for them, say which and why, and go. **How to recommend** is in `references/styles.md` ("Recommending a style"). For explainer styles, the reference examples are in `references/` (`سبک 1.mp4` lineglow, `سبک 2.mp4` hud, `سبک 3.mp4` warmguide, `سبک 4.mp4` pictogram).
+
+If warmguide (or any style) should show the user's own character, ask for a transparent PNG of it (`plan.mascot` / brand kit `mascot`). Never recreate a character from someone else's video.
+
+## Step 2 — setup (first run on a machine)
 
 ```bash
 python <skill>/scripts/setup.py
 ```
 
-Installs faster-whisper, puppeteer-core and gsap into `~/.cache/reel-motion-edit/`, synthesizes the SFX library, and downloads the Whisper model (`large-v3-turbo`, ~1.6 GB; it resumes and falls back to hf-mirror.com if huggingface.co is blocked or drops). This is the "download what you need" step, so do it without asking. Tell the user in one line what is downloading. Run it in the background: the model can take a while on slow connections. Meanwhile you can do the visual analysis with `analyze.py --no-transcript`, then rerun it for the transcript later. Re-run `scripts/sfx.py ~/.cache/reel-motion-edit/sfx` after updating the skill, so new style sounds exist.
+Installs faster-whisper, puppeteer-core and gsap into `~/.cache/reel-motion-edit/`, synthesizes the SFX library, and downloads the Whisper model (`large-v3-turbo`, ~1.6 GB; it resumes and falls back to hf-mirror.com if huggingface.co is blocked or drops). This is the "download what you need" step, so do it without asking. Tell the user in one line what is downloading. Run it in the background (you can start it while the Step 1 question is open): the model can take a while on slow connections. Meanwhile you can do the visual analysis with `analyze.py --no-transcript`, then rerun it for the transcript later. Re-run `scripts/sfx.py ~/.cache/reel-motion-edit/sfx` after updating the skill, so new style sounds exist. Set `CHROME_PATH` if Chrome/Edge isn't in a standard location.
 
-If you find a useful extra asset (a font, an icon set, a royalty-free SFX or music track), download it into the work dir. Note its license in `<workdir>/CREDITS.txt`. Prefer OFL/CC0 sources (Google Fonts, Pixabay/Freesound CC0). Bundled fonts: Vazirmatn (body), Lalezar (display), Changa (tech), Lemonada (playful), Noto Kufi Arabic (formal). Fonts the user has installed locally (e.g. Morabba, IRANSansX, Yekan Bakh) can be added via `plan.fonts` and are often the most on-brand choice. Look in `%LOCALAPPDATA%\Microsoft\Windows\Fonts` and `C:\Windows\Fonts`.
+If you find a useful extra asset (a font, an icon set, a royalty-free SFX or music track), download it into the work dir. Note its license in `<workdir>/CREDITS.txt`. Prefer OFL/CC0 sources (Google Fonts, Pixabay/Freesound CC0). Bundled fonts: Vazirmatn (body), Lalezar (display), Changa (tech), Lemonada (playful), Noto Kufi Arabic (formal), Estedad (rounded geometric, explainer styles), JetBrains Mono (Latin monospace for HUD readouts). Fonts the user has installed locally (e.g. Morabba, IRANSansX, Yekan Bakh) can be added via `plan.fonts` and are often the most on-brand choice. Look in `%LOCALAPPDATA%\Microsoft\Windows\Fonts` and `C:\Windows\Fonts`.
 
-**Brand kit.** If `~/.config/reel-motion-edit/brand.json` exists, render.js applies it automatically: `style`, `theme` (brand colors), `fonts`, `handle` (@username watermark), `handleCorner`, `logo`. The plan overrides it; `"brand": false` ignores it for one video. When the user tells you a lasting preference (their handle, a style they always want, brand colors), offer to save it there.
+**Brand kit.** If `~/.config/reel-motion-edit/brand.json` exists, render.js applies it automatically: `style`, `theme` (brand colors), `fonts`, `handle` (@username watermark), `handleCorner`, `logo`, `mascot`. The plan overrides it; `"brand": false` ignores it for one video. When the user tells you a lasting preference (their handle, a style they always want, brand colors, their mascot image), offer to save it there.
 
-## Step 1 — analyze
+## Step 2b — analyze
 
 Make a work dir next to the video (`<video dir>/<video name>_edit/`) and run:
 
 ```bash
-python <skill>/scripts/analyze.py "<video>" "<workdir>" --lang fa
+python <skill>/scripts/analyze.py "<video or audio>" "<workdir>" --lang fa
 ```
 
-Then **read** `analysis/transcript.txt` and every `analysis/sheets/sheet_*.jpg` (10 s each, 0.5 s per cell, timestamped). The motion events printed by the script (`m0 … mN`, `cut`/`change`) are candidates. Confirm each one against the sheets, because a scroll also shows up as "change".
+Then **read** `analysis/transcript.txt` and every `analysis/sheets/sheet_*.jpg` (10 s each, 0.5 s per cell, timestamped). The motion events printed by the script (`m0 … mN`, `cut`/`change`) are candidates. Confirm each one against the sheets, because a scroll also shows up as "change". An audio-only source has no sheets or motion events: the transcript is your only clock.
 
 Whisper sometimes misspells Persian or English product names. Note corrections (they matter for captions and for word anchors: anchor on how Whisper spelled the word).
 
-## Step 2 — ask the user: style + prep options (before designing anything)
+## Step 3 — style board / recommendation + prep options
 
-Different videos and audiences want different looks, and the user wants to choose. Build a **style board**: one representative frame of *their* video rendered in all 7 presets, with a title, step chip, sticker and subtitle line. Write a minimal plan first (video + a title + one keyword + steps if the video has steps), then run:
+If the user asked for a suggestion or the board (Step 1), build a **style board**: one representative frame rendered in every preset. Write a minimal plan first (video + `mode` + a title + one keyword + steps if the video has steps), then run:
 
 ```bash
 node <skill>/scripts/render.js "<workdir>/plan.json" styleboard <T>    # → build/styleboard.jpg
 ```
 
-Pick T where the frame is typical (not a transition). Send the image to the user (SendUserFile, display render), then ask with AskUserQuestion. Skip the style question if the brand kit already has a `style`, unless the user asks for something different.
+In overlay mode it shows a frame of *their* video in all 11 presets (the explainer ones as a tinted panel); in explainer mode it shows the 4 explainer styles on their own backgrounds with a demo drawing and their subtitle look. Pick T where the frame is typical (not a transition). Send the image (SendUserFile, display render), give your recommendation with a one-line reason based on *this* content, and confirm with AskUserQuestion (recommended first, three contrasting alternatives, others via "Other"). If the user already named a style, skip the board.
 
-- **Q1 — style** (4 options max: recommend the best fit for this content first, with a one-line reason, plus three contrasting alternatives; say the others can be typed via "Other"). Presets: `gradient` modern gradient, `bold` pop/Hormozi, `neon` tech/cyber, `minimal` clean Apple-like, `doodle` hand-drawn, `retro` VHS, `news` broadcast. Descriptions are in `assets/styles.json` (`label`, `feel`).
-- **Q2 — prep options** (multiSelect), only the ones that apply:
-  - *Trim pauses (jump cuts)*: `tighten.py` removes silences longer than ~0.45 s. Best for talking-head videos. On screen recordings, warn that silent stretches may be where the clicking happens. It changes the timeline, so it runs **before** analysis: re-run analyze on the tightened file.
+Ask the **prep options** (multiSelect) in the same call, only the ones that apply:
+  - *Trim pauses (jump cuts)*: `tighten.py` removes silences longer than ~0.45 s. Best for talking-head videos and voice-overs (audio-only files work too). On screen recordings, warn that silent stretches may be where the clicking happens. It changes the timeline, so it runs **before** analysis: re-run analyze on the tightened file.
   - *Voice cleanup*: `"voice": "enhance"` (denoise, rumble cut, presence, gentle compression). Recommend it for phone or room audio.
   - *@handle watermark*: ask for the handle if the brand kit doesn't have one.
   - *Background music*: only if the user has a track or wants you to find a CC0 one. It's ducked under the voice automatically.
 
-If the user just wants the edit and doesn't care, pick for them, say which style you picked and why, and go.
-
-## Step 3 — beat sheet (think before designing)
+## Step 4 — beat sheet (think before designing)
 
 Write `<workdir>/beats.md`: one line per beat with time range, what is **said**, what is **shown**, and the layout (full face / screen + PIP bottom-left / handheld screen / …). Mark:
 - the **hook** (first 1–3 s): pick a hook format from `references/styles.md`, a different one than last time if you know it
@@ -80,7 +101,9 @@ Write `<workdir>/beats.md`: one line per beat with time range, what is **said**,
 
 Read `references/styles.md` (the chosen style's playbook) and `references/creative-direction.md` (pacing, placement, SFX rules). They're short and they're the difference between "busy" and "pro".
 
-## Step 4 — plan.json
+**Explainer mode:** the beat sheet is one line per sentence: words → the picture metaphor → how it builds (which word reveals which part) → the transition to the next scene. Read `references/explainer.md` first; it has the scene shapes and per-style recipes.
+
+## Step 5 — plan.json
 
 Write `<workdir>/plan.json`. All components, their props and default SFX are in `references/components.md`. Read it before writing the plan. Minimal shape:
 
@@ -107,11 +130,13 @@ Write `<workdir>/plan.json`. All components, their props and default SFX are in 
 }
 ```
 
+**Explainer plans** add `"mode": "explainer"` and are mostly `scene` elements (built-in pictogram `items` and/or raw `svg`), plus `readout`, `segbar`, `ui`, `choice`, `counter`, `title`, `footage` windows and captions planned from the start. See `examples/plan.explainer.json` and `references/explainer.md`. Run `check` until there is no `EMPTY` gap.
+
 **Let the style decide the look.** Leave visual props (`theme` colors, keyword `style`/`rotate`/`from`, transition `kind`, title `anim`, caption style) unset unless you have a semantic reason (red for an error, a brand color). The preset fills them in, and that is what makes styles feel different. A transition without `kind` cycles through the style's transitions. `theme` in the plan only overrides the preset (e.g. the product's brand color).
 
 Text syntax: `*word*` or `*two words*` = highlight, `` `latin` `` = isolated LTR run (keeps "VPN"/URLs from flipping inside RTL text).
 
-## Step 5 — check, preview, fix (loop)
+## Step 6 — check, preview, fix (loop)
 
 ```bash
 node <skill>/scripts/render.js "<workdir>/plan.json" check
@@ -124,10 +149,12 @@ node <skill>/scripts/render.js "<workdir>/plan.json" preview 1 5.5 15.8 21.1 27.
 - `CLUTTER`: more than 3 overlays at once
 - `SFXPILE`: sounds stacked inside 0.35 s
 - `ORDER`: a word anchor hit an earlier occurrence, so use `w:word#2`
+- `EMPTY` (explainer): a stretch ≥ 1 s with nothing but captions on screen
+- `NOVIDEO` (explainer): `footage` windows but the source is audio only
 
 Fix every issue. Then look at `build/preview.jpg`: pick times mid-animation for each important element, and check that callouts and ripples sit exactly on their targets. Read coordinates off full-resolution frames (`ffmpeg -ss T -i video -frames:v 1 f.png`) rather than guessing from thumbnails. Iterate until it's right. Previews are cheap, full renders are not.
 
-## Step 6 — render and compose
+## Step 7 — render and compose
 
 ```bash
 node <skill>/scripts/render.js "<workdir>/plan.json" full        # build/overlay.mov (≈3–6 min / minute of video)
@@ -142,13 +169,15 @@ Run the full render in the background. `compose.py` does the following:
 - mixes the SFX bed under the voice, plus music with ducking if set: `"music": {"file": "...", "db": -20}`
 - normalizes to −14 LUFS
 
+In explainer mode compose stacks `build/bg.png` → footage windows → overlay and takes only the voice from the source (an audio file is fine); camera moves are already inside the overlay.
+
 Never overwrite the source video. Write a new file, with a version suffix (`- edit v2`) on re-renders.
 
-## Step 7 — verify
+## Step 8 — verify
 
 Make a contact sheet of the output (`ffmpeg -i out.mp4 -vf "fps=1/2,scale=216:-1,tile=10x3" sheet.jpg`) and look at it. Check that the duration matches and that audio is present. Report honestly what you checked (frames) and what you couldn't (you can't listen; the SFX timing is verified against the event list, not by ear).
 
-## Step 8 — offer subtitles and extras (always, at the end)
+## Step 9 — offer subtitles and extras (always, at the end)
 
 Once the edit is delivered, ask with AskUserQuestion (multiSelect where it fits). Only offer what wasn't already done:
 - **Subtitles**: 3–4 styles from `references/caption-styles.md`, with the chosen style's default (`captions` in styles.json) recommended first and the reason based on *this* video.
@@ -166,6 +195,9 @@ python <skill>/scripts/captions.py "<workdir>" --style karaoke --zones "0-14.6:1
 Proof-read the printed chunks. Fix Whisper spellings with `--fix`; a multi-word source merges tokens. Add `"captions": {"file": "captions.json"}` to the plan (style defaults to the preset's; set `"style"` to override), run `check` (captions must not cover the face or the stickers either), then render and compose again as a new version.
 
 ## Gotchas
+
+- Explainer scenes are drawn in frame pixels (1080×1920). Keep drawings in y 300–1300 so the title above and the subtitle below stay clear; preview mid-draw times to check the build-up order.
+- The mascot is always the user's own image. Characters, logos or illustrations from reference videos are never redrawn or traced.
 
 - Elements in screen coordinates (click, highlight, callout arrows) misalign if a camera move zooms the same section. Use camera moves on talking-head sections only.
 - Camtasia-style animated zooms between face and screen last ~0.5 s. Put the transition element at the *start* of the zoom, and don't put text on screen in that window.

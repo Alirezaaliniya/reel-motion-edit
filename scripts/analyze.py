@@ -1,5 +1,7 @@
 """Analyzes a source video so overlays and SFX can be timed to real events.
 
+The source may also be an audio file (voice-over for an explainer): then sheets/motion are skipped.
+
 usage: python analyze.py <video> <workdir> [--lang fa] [--model large-v3-turbo] [--step 0.5] [--force]
 
 Writes into <workdir>/analysis/:
@@ -23,9 +25,12 @@ def run(cmd, **k):
 def probe(video):
     out = run(["ffprobe", "-v", "error", "-show_streams", "-show_format", "-of", "json", video]).stdout
     j = json.loads(out)
-    v = next(s for s in j["streams"] if s["codec_type"] == "video")
+    v = next((s for s in j["streams"] if s["codec_type"] == "video" and s.get("disposition", {}).get("attached_pic") != 1), None)
+    if v is None:  # audio-only source (mp3 / wav / m4a voice-over)
+        return {"width": None, "height": None, "fps": None, "has_video": False, "duration": float(j["format"]["duration"]),
+                "has_audio": any(s["codec_type"] == "audio" for s in j["streams"])}
     num, den = map(int, v["r_frame_rate"].split("/"))
-    return {"width": int(v["width"]), "height": int(v["height"]), "fps": round(num / den, 3),
+    return {"width": int(v["width"]), "height": int(v["height"]), "fps": round(num / den, 3), "has_video": True,
             "duration": float(j["format"]["duration"]),
             "has_audio": any(s["codec_type"] == "audio" for s in j["streams"])}
 
@@ -120,11 +125,15 @@ def main():
     info = probe(a.video); (out / "info.json").write_text(json.dumps(info, indent=1))
     print("info:", info, flush=True)
 
-    print("contact sheets…", flush=True); sheets(a.video, out / "sheets", info["duration"], a.step)
-    print("motion…", flush=True)
-    mo = motion(a.video, info["duration"]); (out / "motion.json").write_text(json.dumps(mo))
-    for e in mo["events"]:
-        print(f'  {e["id"]:>4} {e["t"]:7.2f}s {e["kind"]:<6} {e["score"]}')
+    if info["has_video"]:
+        print("contact sheets…", flush=True); sheets(a.video, out / "sheets", info["duration"], a.step)
+        print("motion…", flush=True)
+        mo = motion(a.video, info["duration"]); (out / "motion.json").write_text(json.dumps(mo))
+        for e in mo["events"]:
+            print(f'  {e["id"]:>4} {e["t"]:7.2f}s {e["kind"]:<6} {e["score"]}')
+    else:
+        print("audio-only source: no sheets/motion (explainer mode)", flush=True)
+        (out / "motion.json").write_text(json.dumps({"rate": 10, "diff": [], "events": []}))
 
     if info["has_audio"]:
         wav = out / "audio.wav"

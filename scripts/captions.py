@@ -1,18 +1,21 @@
 """Groups whisper word timings into caption chunks for the engine's captions layer.
 
 usage: python captions.py <workdir> --style pop [--max-words 3] [--zones "0-14.6:1400,29.4-33.8:1400"] [--default-y 1170]
-                          [--keywords "رایگان,VPN"] [--fix "اشتباه=درست,..."]
+                          [--keywords "رایگان,VPN"] [--accent "هوش,AI"] [--alt "انسان"] [--fix "اشتباه=درست,..."]
 
 Writes <workdir>/captions.json and prints the chunks so they can be proof-read.
 --zones maps time ranges to a caption y (e.g. lower on full-face shots, above a PIP on screen shots).
---keywords marks words for the 'kinetic' style (and gets highlighted in others).
+--keywords marks words for the 'kinetic' style (and gets highlighted in others); in 'reveal' they turn bold.
+--accent / --alt colour words with the style's primary / secondary colour (reveal, accent styles;
+  e.g. hud: AI words teal, human/wrong words red).
 --fix applies corrections to whisper output; a multi-word source ("وی پی این=VPN") merges those tokens.
 """
 import argparse, sys, json
 from pathlib import Path
 
 PUNCT = ".!?؟،,"
-STYLE_DEFAULTS = {"pop": 3, "karaoke": 5, "kinetic": 4, "minimal": 7, "boxed": 4}
+STYLE_DEFAULTS = {"pop": 3, "karaoke": 5, "kinetic": 4, "minimal": 7, "boxed": 4, "reveal": 9, "accent": 3}
+MAX_SEC = {"reveal": 4.5, "minimal": 3.0}
 
 
 def main():
@@ -21,17 +24,20 @@ def main():
     ap.add_argument("workdir"); ap.add_argument("--style", default="karaoke")
     ap.add_argument("--max-words", type=int); ap.add_argument("--zones", default="")
     ap.add_argument("--default-y", type=int, default=1170); ap.add_argument("--keywords", default="")
-    ap.add_argument("--fix", default="")
+    ap.add_argument("--fix", default=""); ap.add_argument("--accent", default=""); ap.add_argument("--alt", default="")
     a = ap.parse_args()
     wd = Path(a.workdir)
     segs = json.loads((wd / "analysis" / "transcript.json").read_text(encoding="utf-8"))
     fixes = dict(p.split("=", 1) for p in a.fix.split(",") if "=" in p)
     keys = {k.strip() for k in a.keywords.split(",") if k.strip()}
+    accs = {k.strip() for k in a.accent.split(",") if k.strip()}
+    alts = {k.strip() for k in a.alt.split(",") if k.strip()}
     zones = []
     for z in filter(None, a.zones.split(",")):
         rng, y = z.split(":"); s, e = rng.split("-"); zones.append((float(s), float(e), int(y)))
     maxw = a.max_words or STYLE_DEFAULTS.get(a.style, 4)
-    maxc = {3: 18, 4: 24, 5: 30}.get(maxw, 34)
+    maxc = {3: 18, 4: 24, 5: 30}.get(maxw, 34 if maxw <= 7 else 56)
+    maxs = MAX_SEC.get(a.style, 2.2)
 
     # whisper segments ≈ sentences; chunks never cross them
     words = [{"w": w["w"].strip(), "s": w["s"], "e": w["e"], "seg": k}
@@ -57,7 +63,7 @@ def main():
         units.append(cur)
 
     def fits(ws):
-        return len(ws) <= maxw and len(" ".join(x["w"] for x in ws)) <= maxc and ws[-1]["e"] - ws[0]["s"] <= 2.2
+        return len(ws) <= maxw and len(" ".join(x["w"] for x in ws)) <= maxc and ws[-1]["e"] - ws[0]["s"] <= maxs
 
     chunks = []
     for u in units:
@@ -73,7 +79,9 @@ def main():
             chunks.append({"s": round(s0, 2), "e": round(p[-1]["e"] + 0.1, 2), "y": y,
                            "words": [{"w": w["w"].rstrip(PUNCT) if a.style in ("pop", "kinetic") else w["w"],
                                       "s": round(w["s"], 2),
-                                      **({"key": True} if w["w"].rstrip(PUNCT) in keys else {})} for w in p]})
+                                      **({"key": True} if w["w"].rstrip(PUNCT) in keys else {}),
+                                      **({"acc": True} if w["w"].rstrip(PUNCT) in accs else {}),
+                                      **({"alt": True} if w["w"].rstrip(PUNCT) in alts else {})} for w in p]})
     for x, nx in zip(chunks, chunks[1:]):
         x["e"] = min(x["e"], round(nx["s"] - 0.02, 2))
     (wd / "captions.json").write_text(json.dumps(chunks, ensure_ascii=False, indent=1), encoding="utf-8")

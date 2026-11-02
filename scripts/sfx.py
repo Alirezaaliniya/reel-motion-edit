@@ -155,6 +155,19 @@ def build(out):
         place(seq, tone(f, .9, 3.5, ((1, 1), (2, .6), (3, .45), (4, .3), (5, .2))), .12 * i)
     S("sting", lp(seq, 5000), gain=.7)
 
+    # explainer palettes (lineglow / hud / warmguide / pictogram)
+    # draw: a pencil line being drawn (scene draw-on); draw_soft: the same, airy and quiet
+    n = int(SR * .7); x = bp(rng.standard_normal(n), np.full(n, 4200.0)); env = np.sin(np.pi * np.linspace(0, 1, n)) ** .8
+    S("draw", x * env * (0.75 + 0.25 * np.sin(np.linspace(0, 40, n))), gain=.45)
+    S("draw_soft", lp(x * env, 3000), gain=.3, width=1)
+    S("soft_tick", lp(click_one(), 3500), gain=.35)
+    S("air", lp(whoosh(.8, 250, 1800, 2.8), 2200), gain=.35, width=1)
+    tt = t(1.8); S("low_boom", lp(np.sin(2 * np.pi * np.cumsum(np.geomspace(90, 38, len(tt))) / SR) * np.exp(-tt * 2.6), 400), gain=.7)
+    n = int(SR * 1.6); sh = np.zeros(n)
+    for k in range(10):
+        place(sh, tone(rng.choice([1568, 1760, 2093, 2349, 2637]), 1.0, 4.5) * rng.uniform(.25, .6), k * .07)
+    S("shimmer", lp(sh, 6000) * np.linspace(1, .6, n), gain=.45, width=1)
+
     print("sfx:", " ".join(sorted(f[:-4] for f in os.listdir(out) if f.endswith(".wav"))))
 
 

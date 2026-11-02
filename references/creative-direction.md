@@ -43,6 +43,16 @@ sections, less is more: one keyword sticker for the single most important word o
 - `lightleak`: warm, emotional, intro/outro.
 - `flash`: hard cut on a beat or impact.
 
+## Explainer mode (whole frame is graphics)
+- The voice is the clock: change the picture on sentence starts, never mid-word.
+- One idea = one picture metaphor. Build it up in 2–3 reveals (`at` offsets on the words that introduce each
+  part) instead of showing everything at once; the viewer's eye follows what is being drawn.
+- Keep a visual through-line: reuse the same figure / circle / colour coding across scenes, so the story feels
+  like one drawing that evolves (zoom into a detail, start the next scene from it).
+- Colour has meaning or it isn't used (hud: teal right vs red wrong). Most strokes stay in the line colour.
+- Sound stays quiet and airy: `draw` sounds at −13 dB, a low boom only for the one big reveal, shimmer at the end.
+- `check` must show no `EMPTY` gaps. Full details: `references/explainer.md`.
+
 ## Creative moves that work in tutorial reels
 - Hook title slam + 1 camera punch-in on the promise word.
 - Step chip that flips on each step, so the viewer always knows where they are.

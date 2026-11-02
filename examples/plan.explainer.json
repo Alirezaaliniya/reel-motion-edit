@@ -1,0 +1,22 @@
+{
+ "video": "D:/voice/ai-circle.m4a",
+ "mode": "explainer",
+ "style": "hud",
+ "size": [1080, 1920], "fps": 30,
+ "voice": "enhance",
+ "captions": {"file": "captions.json"},
+ "camera": [{"t": "w:میلیون", "d": 3, "type": "drift", "scale": 1.06, "cx": 540, "cy": 700}],
+ "elements": [
+  {"type": "scene", "t": 0, "end": "w:هوش-0.1", "draw": 1.4, "svg": "<circle cx='540' cy='700' r='150'/><text class='mono dim' x='540' y='900' style='font-size:22px'>HUMAN</text>"},
+  {"type": "scene", "t": "w:هوش", "end": "w:میلیون-0.1", "svg": "<circle cx='330' cy='700' r='130'/><text class='mono dim' x='330' y='880' style='font-size:22px'>HUMAN</text><circle class='acc bold' cx='760' cy='700' r='130' data-at='0.4'/><line class='acc thin' x1='760' y1='700' x2='760' y2='570' data-at='1'/><text class='mono acc' x='760' y='540' style='font-size:22px' data-at='0.4'>AI</text>"},
+  {"type": "readout", "t": "w:تمیز", "d": 2.4, "x": 760, "y": 930, "align": "center", "lines": ["x² + y² = r²", "ok:error 0.000", "ok:clean ✓", "ok:fast ✓", "ok:perfect ✓"]},
+  {"type": "scene", "t": "w:میلیون", "d": 3.6, "svg": "<circle class='acc' cx='400' cy='560' r='70'/><circle class='acc' cx='540' cy='560' r='70'/><circle class='acc' cx='680' cy='560' r='70'/><circle class='acc' cx='400' cy='710' r='70' data-at='.3'/><circle class='acc' cx='540' cy='710' r='70' data-at='.3'/><circle class='acc' cx='680' cy='710' r='70' data-at='.3'/><circle class='acc' cx='400' cy='860' r='70' data-at='.6'/><circle class='acc' cx='540' cy='860' r='70' data-at='.6'/><circle class='acc' cx='680' cy='860' r='70' data-at='.6'/><text class='mono acc' x='540' y='440' style='font-size:22px'>PROMPT: \"draw a circle\"</text>"},
+  {"type": "counter", "t": "w:میلیون", "d": 3.6, "x": 540, "y": 1100, "from": 9, "to": 1000000, "count": 2.6, "label": "USERS · SAME PROMPT"},
+  {"type": "transition", "t": "w:ولی-0.2", "kind": "fade"},
+  {"type": "scene", "t": "w:ولی", "d": 5, "items": [
+    {"shape": "ring", "x": 540, "y": 700, "r": 170, "cls": "alt"},
+    {"shape": "label", "from": [700, 640], "to": [860, 520], "text": "GAP 18 PX", "tcls": "mono alt", "at": 1.2}]},
+  {"type": "keyword", "t": "w:کمیاب", "d": 2.6, "y": 1080, "text": "بی‌نقص دیگه *کمیاب* نیست"},
+  {"type": "ui", "kind": "pill", "t": "w:کامنت", "y": 1000, "text": "کامنت بذار", "keyword": "امضا"}
+ ]
+}

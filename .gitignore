@@ -3,3 +3,5 @@ __pycache__/
 *.skill
 build/
 node_modules/
+references/*.mp4
+_ref_sheets/
