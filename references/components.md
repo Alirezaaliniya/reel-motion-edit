@@ -20,6 +20,7 @@ Text props accept `*highlight*` (brand gradient / primary colour), `` `LTR run` 
 | `arrow` | hand-drawn arrow | `from`, `to`, `curve`, `width` | swipe |
 | `counter` | number count-up | `from`, `to`, `prefix`, `suffix`, `decimals`, `label`, `count` (sec), `persian` (digits, default true) | ticks + ding |
 | `icon` | big built-in icon or image | `icon` (a name below, or `img:<file>`), `size`, `color`, `anim`: bounce·pulse·spin | bubble |
+| `cutaway` | hides the footage for [t, t+d]; the elements listed after it build an animated graphic on top | `bg`: style · CSS colour/gradient · blur (compose blurs + darkens the real footage), `enter`/`exit`: wipe·zoom·fade | whoosh |
 | `intro` | opening move (added automatically when missing) | `kind`: split·iris·flash·glitch·fade (style default), `dur`, `color`, `x`,`y` (iris centre) | whoosh_heavy / impact |
 | `compare` | old (struck) → new | `bad`, `good`, `gap` | error + ding |
 | `success` | confetti burst + result card | `x`,`y` (burst origin), `title`, `sub`, `cardY`, `confetti` | success, impact, sparkle |
@@ -56,7 +57,7 @@ Global plan keys:
 - `grade`: colour correction of the footage — visible: `punchy` (contrast + colour, warm skin, vignette), `glow`
   (lifted shadows, warm), `film` (dark teal background, warm face); subtle: `natural` · `vivid` · `warm` · `cool` ·
   `cinematic` · `bright` (`assets/grades.json`); a raw ffmpeg filter string, or `false`. Default from the style.
-- `sfxMix`: `{gain: -8, minGap: 0.6, perElement: 1, duck: true}` — the automatic sound restraint (see SKILL.md).
+- `sfxMix`: `{gain: 0, minGap: 0.6, perElement: 1, duck: false}` — fewer sounds at normal level (see SKILL.md).
 - `voice`: `"enhance"` for voice cleanup in compose. `music`: `{file, db, duck}`.
 - `cover`: `{lines, sub, kicker, y, blur}` for `render.js cover T`.
 - `brand`: `false` to ignore `~/.config/reel-motion-edit/brand.json` for this video.

@@ -13,6 +13,12 @@ sections, less is more: one keyword sticker for the single most important word o
 - Never put emoji in titles, stickers, notes, CTAs or covers. Use the icon set or `img:` images (real logos are better
   than any emoji: e.g. the courier companies' logos next to their names).
 
+## Cutaways (graphics instead of the face)
+- When the speaker explains *how something works*, a *comparison* or a *process*, cut away from the face to an animated
+  graphic for 4–10 s: diagram with arrows, bar chart, phone/panel mockup that fills in, logos on cards.
+- Design it as a picture, never a text list. Every part appears on the word that names it; the subtitle keeps running.
+- 2–4 per minute; come back to the face for the hook, opinions, jokes and the CTA.
+
 ## Intro and grade
 - Every video opens with an intro move (auto) — then the hook title lands on top of it in the first 0.3 s.
 - Grade the footage: phone/webcam video in a dim room looks better with `vivid` or `bright`; keep skin natural.
@@ -36,9 +42,8 @@ sections, less is more: one keyword sticker for the single most important word o
 - Transitions start at the first frame of a layout change (motion event), not in the middle of it.
 
 ## Sound
-- **Less, and quieter.** The voice must always be clear: aim for ~1 sound every 3 s on a talking head, only on the
-  hook, section changes, the payoff and the CTA. Pops on every sticker are noise. Levels −14…−20 dB; the engine already
-  lowers defaults (sfxMix) and compose ducks the bed under speech.
+- **Fewer sounds, normal level.** Aim for ~1 sound every 3 s on a talking head: the hook, section changes, the
+  payoff, the CTA. Pops on every sticker are noise. Keep the default levels (the user wants them audible).
 - An SFX belongs to something you can *see* happen: an entrance, a click, a page change, a success. No sound
   without a visual, and not every visual needs one (repeated ripples → quieter, −8…−12 dB).
 - Hierarchy: voice ≫ hits (impact/success) > movement (whoosh) > UI (pop/click/tick).

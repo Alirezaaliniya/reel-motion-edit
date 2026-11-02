@@ -25,7 +25,7 @@ const puppeteer = require(path.join(NM, 'puppeteer-core'));
 const BROWSERS = [process.env.CHROME_PATH, 'C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
   '/usr/bin/google-chrome', '/usr/bin/chromium'];
-const DEF_D = { scene: 4, readout: 2.5, ui: 3, choice: 3, panel: 4, footage: 4, title: 3.5, keyword: 1.6, note: 3, callout: 2.5, highlight: 2.5, arrow: 2, counter: 2.6, icon: 1.6, compare: 2.6, success: 3.2, lowerthird: 3 };
+const DEF_D = { cutaway: 4, scene: 4, readout: 2.5, ui: 3, choice: 3, panel: 4, footage: 4, title: 3.5, keyword: 1.6, note: 3, callout: 2.5, highlight: 2.5, arrow: 2, counter: 2.6, icon: 1.6, compare: 2.6, success: 3.2, lowerthird: 3 };
 
 const [planPath, mode = 'check', ...rest] = process.argv.slice(2);
 const planDir = path.dirname(path.resolve(planPath));
@@ -123,10 +123,11 @@ fs.writeFileSync(path.join(build, 'plan.resolved.json'), JSON.stringify(P, null,
 /* ---------- sound restraint ----------
    The user's rule: few, quiet sound effects so the voice is always clear. After the engine registers every
    component's default sounds, keep at most `perElement` per element (loudest first), drop any sound closer than
-   `minGap` s to the previous kept one (manual plan.sfx always stays), and pull everything down by `gain` dB.
-   plan.sfxMix = {gain: -8, minGap: 0.6, perElement: 1} by default. */
+   `minGap` s to the previous kept one (manual plan.sfx always stays), and shift everything by `gain` dB.
+   plan.sfxMix = {gain: 0, minGap: 0.6, perElement: 1} by default (the user asked to keep the original loudness,
+   only fewer sounds). */
 function thinSfx(list) {
-  const m = { gain: -8, minGap: .6, perElement: 1, ...(BRAND.sfxMix || {}), ...(plan.sfxMix || {}) };
+  const m = { gain: 0, minGap: .6, perElement: 1, ...(BRAND.sfxMix || {}), ...(plan.sfxMix || {}) };
   const by = {};
   for (const e of list) (by[e.src] = by[e.src] || []).push(e);
   let keep = [];
@@ -171,15 +172,17 @@ function fontCss() {
 /* ---------- lint ---------- */
 function lint(samples) {
   const W = P.size?.[0] || 1080, H = P.size?.[1] || 1920, out = [];
-  const seen = new Set(), skip = new Set(['progress', 'transition', 'intro', 'click', 'fx', 'handle', 'panel', 'footage', 'segbar', 'mascot'].concat(EXPLAINER ? ['scene'] : []));  // persistent layers aren't overlays
+  const seen = new Set(), skip = new Set(['progress', 'transition', 'intro', 'cutaway', 'click', 'fx', 'handle', 'panel', 'footage', 'segbar', 'mascot'].concat(EXPLAINER ? ['scene'] : []));  // persistent layers aren't overlays
   for (const { t, boxes } of samples) {
     const live = boxes.filter(b => !skip.has(b.type) && b.type !== 'captions' && !b.parent);
-    if (live.length > 3) { const k = 'clutter' + Math.round(t); if (!seen.has(k)) { seen.add(k); out.push(`CLUTTER  ${t.toFixed(1)}s  ${live.length} overlays at once: ${live.map(b => b.id).join(', ')}`); } }
+    const inCut = (P.elements || []).some(c => c.type === 'cutaway' && t >= c.t && t <= c.t + c.d);  // a cutaway graphic is one composition
+    if (live.length > 3 && !inCut) { const k = 'clutter' + Math.round(t); if (!seen.has(k)) { seen.add(k); out.push(`CLUTTER  ${t.toFixed(1)}s  ${live.length} overlays at once: ${live.map(b => b.id).join(', ')}`); } }
     for (const b of boxes) {
       if (skip.has(b.type)) continue;
       if (b.x < -8 || b.y < -8 || b.x + b.w > W + 8 || b.y + b.h > H + 8) { const k = 'oob' + b.id; if (!seen.has(k)) { seen.add(k); out.push(`OFFFRAME ${t.toFixed(1)}s  ${b.id} box=[${[b.x, b.y, b.w, b.h].map(Math.round)}]`); } }
       for (const z of P.avoid || []) {
         if (t < z.from || t > z.to) continue;
+        if ((P.elements || []).some(c => c.type === 'cutaway' && c.bg !== 'blur' && t >= c.t && t <= c.t + c.d)) continue;
         const [zx, zy, zw, zh] = z.rect;
         const ix = Math.max(0, Math.min(b.x + b.w, zx + zw) - Math.max(b.x, zx)), iy = Math.max(0, Math.min(b.y + b.h, zy + zh) - Math.max(b.y, zy));
         const frac = ix * iy / Math.max(1, Math.min(b.w * b.h, zw * zh));
@@ -235,7 +238,8 @@ function lintSfx(sfx) {
   const footAt = t => (P.elements || []).filter(e => e.type === 'footage' && t >= e.t && t <= e.t + e.d);
   // base frame at time t: the video frame (overlay mode) or bg.png + footage windows (explainer)
   const baseFrame = (t, out, look = '') => {
-    const gr = P.gradeFilter ? ',' + P.gradeFilter : '';
+    const blurred = (P.elements || []).some(c => c.type === 'cutaway' && c.bg === 'blur' && t >= c.t && t <= c.t + c.d);
+    const gr = (P.gradeFilter ? ',' + P.gradeFilter : '') + (blurred && !EXPLAINER ? ',boxblur=26:3,eq=brightness=-0.12' : '');
     if (!EXPLAINER) return spawnSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(t), '-i', video, '-vf', `scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H}${gr}${look}`, '-frames:v', '1', out]);
     const win = PIC ? footAt(t) : [], args = ['-v', 'error', '-y', '-i', BGPNG], fc = [];
     let last = '[0]';

@@ -10,8 +10,9 @@ Reads build/plan.resolved.json, build/sfx.json and build/overlay.mov written by 
 - voice: "enhance" (or --voice enhance) cleans the voice: rumble cut, denoise, presence boost, gentle compression.
 - grade: the colour grade resolved by render.js (P.gradeFilter, from plan.grade / the style) is applied to the
   footage before the graphics, in both modes.
-- the SFX bed is ducked under the voice (sidechain), so the speaker always stays clear; plan.sfxMix.duck: false
-  turns it off.
+- plan.sfxMix.duck: true ducks the SFX bed under the voice (sidechain). Off by default: the user wants the
+  effects at their normal level.
+- cutaway elements with bg "blur" blur + darken the footage for their time range.
 - loudness is normalized to -14 LUFS / -1.5 dBTP (Instagram/TikTok target).
 - mode "explainer": the picture is build/bg.png + footage windows (elements of type "footage", the source
   video cropped into their rect with rounded corners) + overlay.mov; the source only supplies the voice
@@ -145,7 +146,9 @@ def main():
     else:
         cam = camera_filter(P.get("camera"), W, H, fps)
         # sources that aren't plan-sized (e.g. 608x1080 phone exports) are upscaled/cropped to fill the frame
-        fit = f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H},setsar=1{grade}"
+        blur = "".join(f",boxblur=26:3:enable='between(t,{e['t']},{e['t'] + e['d']})',eq=brightness=-0.12:enable='between(t,{e['t']},{e['t'] + e['d']})'"
+                       for e in P.get("elements", []) if e.get("type") == "cutaway" and e.get("bg") == "blur")
+        fit = f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H},setsar=1{grade}{blur}"
         v = f"[0:v]{fit},{cam},format=yuv420p[cv];[cv][1:v]" if cam else f"[0:v]{fit}[cv];[cv][1:v]"
         fc = [f"{v}overlay=0:0:format=auto,format=yuv420p[v]"]
     # voice: untouched by default; "enhance" = rumble cut, denoise, presence, gentle compression
@@ -154,7 +157,7 @@ def main():
         voice += (",highpass=f=80,afftdn=nf=-25:tn=1,equalizer=f=250:t=q:w=1:g=-2,equalizer=f=3500:t=q:w=1.2:g=2.5"
                   ",acompressor=threshold=-20dB:ratio=3:attack=8:release=160:makeup=2")
     mix = [f"[0:a]{voice}[voice]"]
-    if (P.get("sfxMix") or {}).get("duck", True):
+    if (P.get("sfxMix") or {}).get("duck", False):
         # the voice keys a compressor on the SFX bed: effects dip while he talks, come back in the gaps
         mix += ["[voice]asplit[voice][vk]", "[2:a][vk]sidechaincompress=threshold=0.02:ratio=4:attack=10:release=300:makeup=1[fx]"]
     else:

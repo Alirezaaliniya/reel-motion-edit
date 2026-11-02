@@ -75,6 +75,8 @@ svg.arw{left:0;top:0;width:var(--W);height:var(--H);overflow:visible}
 .counter .lb{font:800 40px var(--body);margin-top:6px;text-shadow:0 3px 12px rgba(0,0,0,.8)}
 .icon{font-size:var(--sz,150px);line-height:1;color:var(--bg,var(--txt));filter:drop-shadow(0 10px 24px rgba(0,0,0,.5))}
 .st-bold .icon{color:var(--bg,var(--p));filter:drop-shadow(8px 9px 0 #000)}
+.st-bold .ui{background:#fff;color:#000;border:6px solid #000;border-radius:26px;box-shadow:12px 12px 0 #000;font-weight:900}
+.st-bold .ui .ck b{background:var(--p);color:#000;border:3px solid #000}
 /* intro: the opening move of every edit */
 .intro{left:0;top:0;width:var(--W);height:var(--H);overflow:hidden}
 .intro .half{position:absolute;left:0;width:100%;height:50.5%;background:var(--intro,#000)}
@@ -288,8 +290,8 @@ svg.arw{left:0;top:0;width:var(--W);height:var(--H);overflow:visible}
 .ui .chips{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
 .ui .chip{display:flex;align-items:center;gap:10px;padding:8px 20px;border-radius:999px;background:rgba(127,127,127,.12);font:700 28px var(--body)}
 .ui .chip i{width:16px;height:16px;border-radius:4px;background:var(--p)}
-.ui .ck{display:flex;align-items:center;gap:16px;padding:6px 0}
-.ui .ck b{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--ok);color:#fff;font:900 24px var(--body);transform:scale(0)}
+.ui .ck{display:flex;align-items:center;gap:.45em;padding:.18em 0}
+.ui .ck b{width:1.15em;height:1.15em;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--ok);color:#fff;font:900 .7em var(--body);transform:scale(0)}
 .ui .inp{display:flex;align-items:center;gap:16px}
 .ui .inp .tx{flex:1;min-height:52px;font:700 36px var(--body)}
 .ui .inp .tx::after{content:'';display:inline-block;width:3px;height:1em;background:currentColor;vertical-align:-.12em;margin-right:4px;opacity:var(--cur,1)}
@@ -1091,6 +1093,7 @@ C.ui = (s) => {
   else if (k === 'pill') html = `${icon(s.icon || 'comment')}<span>${rich(s.text || '')}</span>${s.keyword ? `<span class="k">«${rich(s.keyword)}»</span>` : ''}`;
   const d = mk('ui ' + k, html, s);
   if (s.w) d.style.setProperty('--w', s.w + 'px');
+  if (s.size) d.style.fontSize = s.size + 'px';
   place(d, s, W / 2, 900); show(d, s.t);
   tl.fromTo(d, {autoAlpha: 0, y: 70, scale: .92}, {autoAlpha: 1, y: 0, scale: 1, duration: .5, ease: 'back.out(1.6)', ...IR}, s.t);
   fx.push([0, 'whoosh_short', -10]);
@@ -1152,6 +1155,30 @@ C.panel = (s) => {
   tl.fromTo(d, {autoAlpha: 1, ...from}, {autoAlpha: 1, yPercent: 0, duration: .5, ease: 'power3.out', ...IR}, s.t);
   hide(d, s.t + s.d, .4);
   sfx(s, [[0, 'whoosh_short', -10]]);
+};
+
+// cutaway: the footage is hidden for [t, t+d] and the frame belongs to an animated graphic (a diagram, a chart,
+// a checklist…) while the voice carries on. List the elements that make up the graphic AFTER the cutaway so they
+// draw on top of it. bg: "style" (the style's explainer background, or a dark radial), a CSS colour/gradient, or
+// "blur" (compose.py blurs + darkens the real footage behind a light tint instead of covering it).
+C.cutaway = (s) => {
+  const d = mk('cutaway', '', s);
+  Object.assign(d.style, {left: 0, top: 0, width: W + 'px', height: H + 'px'});
+  const bg = s.bg || 'style';
+  d.style.background = bg === 'blur' ? 'rgba(0,0,0,.35)' : bg !== 'style' ? bg
+    : STY.bg ? (STY.bg.gradient ? `${STY.bg.gradient},${STY.bg.color || '#000'}` : STY.bg.color)
+    : 'radial-gradient(ellipse 80% 55% at 50% 40%,color-mix(in srgb,var(--p) 22%,#111) 0%,#0b0b0d 70%)';
+  show(d, s.t); tl.set(d, {opacity: 1}, s.t - .2);
+  const k = s.enter || 'wipe', dur = .4;
+  if (k === 'wipe') tl.fromTo(d, {clipPath: 'inset(0 0 0 100%)', opacity: 1}, {clipPath: 'inset(0 0 0 0%)', opacity: 1, duration: dur, ease: 'power3.inOut', ...IR}, s.t - dur * .5);
+  else if (k === 'zoom') tl.fromTo(d, {autoAlpha: 0, scale: 1.15}, {autoAlpha: 1, scale: 1, duration: dur, ...IR}, s.t - dur * .5);
+  else tl.fromTo(d, {autoAlpha: 0}, {autoAlpha: 1, duration: dur, ...IR}, s.t - dur * .5);
+  tl.set(d, {visibility: 'visible'}, s.t - dur * .5 - .001);
+  const ex = s.exit || 'wipe', e = s.t + s.d;
+  if (ex === 'wipe') tl.to(d, {clipPath: 'inset(0 100% 0 0)', duration: dur, ease: 'power3.inOut'}, e - dur * .5);
+  else tl.to(d, {autoAlpha: 0, duration: dur}, e - dur * .5);
+  tl.set(d, {visibility: 'hidden'}, e + dur * .5);
+  sfx(s, [[-dur * .5, 'whoosh', -8]]);
 };
 
 // frame drawn around a footage window; compose.py puts the source video inside rect for [t, t+d]
