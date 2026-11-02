@@ -57,7 +57,7 @@ python <skill>/scripts/setup.py
 
 Installs faster-whisper, puppeteer-core and gsap into `~/.cache/reel-motion-edit/`, synthesizes the SFX library, and downloads the Whisper model (`large-v3-turbo`, ~1.6 GB; it resumes and falls back to hf-mirror.com if huggingface.co is blocked or drops). This is the "download what you need" step, so do it without asking. Tell the user in one line what is downloading. Run it in the background (you can start it while the Step 1 question is open): the model can take a while on slow connections. Meanwhile you can do the visual analysis with `analyze.py --no-transcript`, then rerun it for the transcript later. Re-run `scripts/sfx.py ~/.cache/reel-motion-edit/sfx` after updating the skill, so new style sounds exist. Set `CHROME_PATH` if Chrome/Edge isn't in a standard location.
 
-If you find a useful extra asset (a font, an icon set, a royalty-free SFX or music track), download it into the work dir. Note its license in `<workdir>/CREDITS.txt`. Prefer OFL/CC0 sources (Google Fonts, Pixabay/Freesound CC0). Bundled fonts: Vazirmatn (body), Lalezar (display), Changa (tech), Lemonada (playful), Noto Kufi Arabic (formal), Estedad (rounded geometric, explainer styles), JetBrains Mono (Latin monospace for HUD readouts). Fonts the user has installed locally (e.g. Morabba, IRANSansX, Yekan Bakh) can be added via `plan.fonts` and are often the most on-brand choice. Look in `%LOCALAPPDATA%\Microsoft\Windows\Fonts` and `C:\Windows\Fonts`.
+If you find a useful extra asset (a font, an icon set, a royalty-free SFX or music track), download it into the work dir. Note its license in `<workdir>/CREDITS.txt`. Prefer OFL/CC0 sources (Google Fonts, Pixabay/Freesound CC0). Bundled fonts: Vazirmatn (body), Lalezar (display), Changa (tech), Lemonada (playful), Noto Kufi Arabic (formal), Estedad (rounded geometric, explainer styles), JetBrains Mono (Latin monospace for HUD readouts). **The user's own fonts** live in `assets/fonts/user/<Family>/` (git-ignored, never published — most are commercial): currently `Peyda` (Thin…Black, Persian digits), `Hasti` (Heavy, display), `Pinar` and `Morabba` (variable). They load automatically; use them via `theme` (e.g. `{"display": "Hasti", "body": "Peyda"}`) and prefer them over the bundled fonts, because the user finds those more beautiful. A file ending in a weight word (`-Bold`, `-Black`…) becomes that weight; other files are treated as variable. To add another font, copy it into a new family folder there. Fonts can also be added per video via `plan.fonts`. Look in `%LOCALAPPDATA%\Microsoft\Windows\Fonts` and `C:\Windows\Fonts`.
 
 **Brand kit.** If `~/.config/reel-motion-edit/brand.json` exists, render.js applies it automatically: `style`, `theme` (brand colors), `fonts`, `handle` (@username watermark), `handleCorner`, `logo`, `mascot`. The plan overrides it; `"brand": false` ignores it for one video. When the user tells you a lasting preference (their handle, a style they always want, brand colors, their mascot image), offer to save it there.
 
@@ -134,7 +134,7 @@ Write `<workdir>/plan.json`. All components, their props and default SFX are in 
 
 **Let the style decide the look.** Leave visual props (`theme` colors, keyword `style`/`rotate`/`from`, transition `kind`, title `anim`, caption style) unset unless you have a semantic reason (red for an error, a brand color). The preset fills them in, and that is what makes styles feel different. A transition without `kind` cycles through the style's transitions. `theme` in the plan only overrides the preset (e.g. the product's brand color).
 
-Text syntax: `*word*` or `*two words*` = highlight, `` `latin` `` = isolated LTR run (keeps "VPN"/URLs from flipping inside RTL text).
+Text syntax: `*word*` or `*two words*` = highlight, `` `latin` `` = isolated LTR run (keeps "VPN"/URLs from flipping inside RTL text), `~word~` = struck through (line drawn on), `^word^` = secondary colour.
 
 ## Step 6 — check, preview, fix (loop)
 
@@ -198,7 +198,6 @@ Proof-read the printed chunks. Fix Whisper spellings with `--fix`; a multi-word 
 
 - Explainer scenes are drawn in frame pixels (1080×1920). Keep drawings in y 300–1300 so the title above and the subtitle below stay clear; preview mid-draw times to check the build-up order.
 - The mascot is always the user's own image. Characters, logos or illustrations from reference videos are never redrawn or traced.
-
 - Elements in screen coordinates (click, highlight, callout arrows) misalign if a camera move zooms the same section. Use camera moves on talking-head sections only.
 - Camtasia-style animated zooms between face and screen last ~0.5 s. Put the transition element at the *start* of the zoom, and don't put text on screen in that window.
 - `steps.hide` hides the step chip during full-face sections and brings it back after.

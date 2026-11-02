@@ -115,9 +115,21 @@ function fontCss() {
     const [fam, sub] = path.parse(f).name.split('.');
     if (sub) extra.push([fam, path.join(fd, f)]); else fonts[fam] = path.join(fd, f);
   }
+  const face = (fam, p, range, wt = '100 1000') => `@font-face{font-family:"${fam}";src:url("${url.pathToFileURL(p).href}");font-weight:${wt};font-display:block${range ? ';unicode-range:' + range : ''}}`;
+  // assets/fonts/user/<Family>/*: the user's own (often commercial) fonts, git-ignored. A file whose name ends in a
+  // weight word (Thin…Black/Heavy) becomes that weight of <Family>; any other file (variable font) covers 100–1000.
+  const WT = { thin: 100, hairline: 100, extralight: 200, ultralight: 200, light: 300, regular: 400, normal: 400, book: 400, medium: 500,
+    semibold: 600, demibold: 600, bold: 700, extrabold: 800, ultrabold: 800, black: 900, heavy: 900 };
+  const user = [], ud = path.join(fd, 'user');
+  if (fs.existsSync(ud)) for (const fam of fs.readdirSync(ud)) {
+    const dir = path.join(ud, fam); if (!fs.statSync(dir).isDirectory()) continue;
+    for (const f of fs.readdirSync(dir)) if (/\.(ttf|otf|woff2?)$/i.test(f)) {
+      const m = path.parse(f).name.toLowerCase().replace(/[^a-z]/g, ' ').trim().split(/\s+/).pop();
+      user.push(face(fam, path.join(dir, f), null, WT[m] ?? '100 1000'));
+    }
+  }
   Object.assign(fonts, P.fonts || {});
-  const face = (fam, p, range) => `@font-face{font-family:"${fam}";src:url("${url.pathToFileURL(p).href}");font-weight:100 1000;font-display:block${range ? ';unicode-range:' + range : ''}}`;
-  return [...Object.entries(fonts).map(([fam, p]) => face(fam, p)),
+  return [...user, ...Object.entries(fonts).map(([fam, p]) => face(fam, p)),
     ...extra.map(([fam, p]) => face(fam, p, 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215'))].join('\n');
 }
 
