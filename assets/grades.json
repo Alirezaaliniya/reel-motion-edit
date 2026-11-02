@@ -1,9 +1,12 @@
 {
- "_doc": "ffmpeg colour grades applied to the source footage (compose.py, previews, footage windows). plan.grade: a name, a raw ffmpeg filter string, or false.",
+ "_doc": "ffmpeg colour grades applied to the source footage (compose.py, previews, footage windows). plan.grade: a name, a raw ffmpeg filter string, or false. The light ones (natural, vivid, warm, cool, bright) are subtle; punchy / glow / film are the visible corrections \u2014 the user found the subtle ones invisible, so default to a visible one.",
  "natural": "eq=brightness=0.015:contrast=1.06:saturation=1.12:gamma=1.03,unsharp=5:5:0.35:5:5:0",
  "vivid": "eq=brightness=0.02:contrast=1.09:saturation=1.25:gamma=1.04,curves=all='0/0 0.25/0.23 0.75/0.79 1/1',unsharp=5:5:0.45:5:5:0",
  "warm": "eq=brightness=0.015:contrast=1.07:saturation=1.15:gamma=1.03,colorbalance=rs=0.03:bs=-0.03:rm=0.035:gm=0.01:bm=-0.035:rh=0.02:bh=-0.02,unsharp=5:5:0.35:5:5:0",
  "cool": "eq=brightness=0.01:contrast=1.08:saturation=1.1:gamma=1.02,colorbalance=rs=-0.02:bs=0.04:rm=-0.02:bm=0.03,unsharp=5:5:0.35:5:5:0",
  "cinematic": "eq=contrast=1.12:saturation=0.95:gamma=0.98,colorbalance=rs=-0.03:gs=0.0:bs=0.05:rh=0.05:gh=0.02:bh=-0.04,curves=all='0/0.02 0.25/0.21 0.75/0.8 1/0.98',unsharp=5:5:0.35:5:5:0",
- "bright": "eq=brightness=0.05:contrast=1.04:saturation=1.15:gamma=1.12,unsharp=5:5:0.35:5:5:0"
+ "bright": "eq=brightness=0.05:contrast=1.04:saturation=1.15:gamma=1.12,unsharp=5:5:0.35:5:5:0",
+ "punchy": "eq=brightness=0.05:contrast=1.14:saturation=1.2:gamma=1.18,vibrance=intensity=0.25,colorbalance=rm=0.04:gm=0.0:bm=-0.04:rh=0.02:bh=-0.03,curves=all='0/0 0.2/0.17 0.5/0.52 0.8/0.86 1/1',unsharp=5:5:0.6:5:5:0,vignette=PI/5",
+ "glow": "eq=brightness=0.08:contrast=1.1:saturation=1.15:gamma=1.28,vibrance=intensity=0.3,colorbalance=rs=0.02:bs=0.03:rm=0.05:bm=-0.05,curves=all='0/0.02 0.25/0.26 0.75/0.82 1/1',unsharp=5:5:0.6:5:5:0",
+ "film": "eq=contrast=1.2:saturation=1.1:gamma=1.12,colorbalance=rs=-0.04:bs=0.06:rm=0.05:bm=-0.03:rh=0.05:bh=-0.05,curves=all='0/0 0.25/0.2 0.75/0.82 1/1',vibrance=intensity=0.2,unsharp=5:5:0.6:5:5:0,vignette=PI/4.5"
 }

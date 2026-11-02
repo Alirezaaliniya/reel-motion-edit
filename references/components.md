@@ -53,8 +53,9 @@ Global plan keys:
 - `handle`: `{text, corner: tl|tr|bl|br, logo?, opacity?}`, a persistent @username watermark (or from the brand kit).
 - `fxProps`: settings for the preset's look layers, e.g. `{"newsbar": {"tag": "خبر فوری", "text": "…"}}`.
 - `intro`: `false`, or `{kind, dur, color}` to tune the automatic intro (overlay mode also gets a 0.35 s punch-out).
-- `grade`: colour grade of the footage — `natural` · `vivid` · `warm` · `cool` · `cinematic` · `bright`
-  (`assets/grades.json`), a raw ffmpeg filter string, or `false`. Default from the style (`grade` in styles.json).
+- `grade`: colour correction of the footage — visible: `punchy` (contrast + colour, warm skin, vignette), `glow`
+  (lifted shadows, warm), `film` (dark teal background, warm face); subtle: `natural` · `vivid` · `warm` · `cool` ·
+  `cinematic` · `bright` (`assets/grades.json`); a raw ffmpeg filter string, or `false`. Default from the style.
 - `sfxMix`: `{gain: -8, minGap: 0.6, perElement: 1, duck: true}` — the automatic sound restraint (see SKILL.md).
 - `voice`: `"enhance"` for voice cleanup in compose. `music`: `{file, db, duck}`.
 - `cover`: `{lines, sub, kicker, y, blur}` for `render.js cover T`.
