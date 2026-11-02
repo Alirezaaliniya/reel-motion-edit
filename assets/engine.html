@@ -19,6 +19,7 @@ html,body{width:var(--W);height:var(--H);background:transparent;overflow:hidden;
 .ic{display:inline-block;width:1em;height:1em;flex:none}
 .ic svg{width:100%;height:100%;display:block}
 .ic.img img{width:100%;height:100%;object-fit:contain;display:block}
+.ic.img.fit{height:auto} .ic.img.fit img{height:auto}
 .kw .ic{width:.95em;height:.95em} .note .ic{width:64px;height:64px;color:var(--hl)}
 
 /* title */
@@ -647,7 +648,7 @@ C.counter = (s) => {
 
 C.icon = (s) => {
   const sz = s.size || 150, inner = ICONS[s.icon] ? ICONS[s.icon] : isImg(s.icon) ? `<img src="${String(s.icon).replace(/^img:/, '')}">` : esc(s.icon);
-  const d = mk('icon', ICONS[s.icon] || isImg(s.icon) ? `<div style="width:${sz}px;height:${sz}px" class="ic${isImg(s.icon) ? ' img' : ''}">${inner}</div>` : inner, s);
+  const d = mk('icon', ICONS[s.icon] || isImg(s.icon) ? (isImg(s.icon) ? `<div style="width:${sz}px" class="ic img fit">${inner}</div>` : `<div style="width:${sz}px;height:${sz}px" class="ic">${inner}</div>`) : inner, s);
   place(d, s, W / 2, 400); show(d, s.t);
   tl.fromTo(d, {autoAlpha: 0, scale: 0, rotate: -30}, {autoAlpha: 1, scale: 1, rotate: 0, duration: .5, ease: 'back.out(2.5)', ...IR}, s.t);
   const a = s.anim || 'bounce';
@@ -847,26 +848,28 @@ C.progress = (s) => {
 };
 
 C.captions = (s, chunks) => {
-  const d = mk('cap ' + (s.style || 'karaoke'), '', s);
-  chunks.forEach(ch => {
-    tl.call(() => {
-      const inner = ch.words.map(w => `<span class="wd${w.key ? ' key' : ''}${w.acc ? ' acc' : ''}${w.alt ? ' alt' : ''}">${esc(w.w)}</span>`).join(' ');
-      d.innerHTML = s.style === 'karaoke' ? `<span class="ln">${inner}</span>` : inner;
-      d.style.top = ch.y + 'px';
-      if (s.style === 'pop') d.querySelectorAll('.wd').forEach(w => gsap.set(w, {autoAlpha: 0}));
-    }, null, Math.max(0, ch.s - .001));
+  // one element per chunk, every animation on the main timeline (free gsap tweens don't advance while
+  // render.js seeks frame by frame, which left pop words invisible in full renders)
+  const st = s.style || 'karaoke';
+  chunks.forEach((ch, ci) => {
+    const inner = ch.words.map(w => `<span class="wd${w.key ? ' key' : ''}${w.acc ? ' acc' : ''}${w.alt ? ' alt' : ''}">${esc(w.w)}</span>`).join(' ');
+    const d = mk('cap ' + st, st === 'karaoke' ? `<span class="ln">${inner}</span>` : inner, {...s, id: ci ? `${s.id}_${ci}` : s.id});
+    d.style.top = ch.y + 'px';
+    const els = [...d.querySelectorAll('.wd')];
     show(d, ch.s);
-    if (s.style === 'reveal') tl.fromTo(d, {autoAlpha: 0}, {autoAlpha: 1, duration: .22, ...IR}, ch.s);
-    else if (s.style === 'accent') tl.fromTo(d, {autoAlpha: 0, y: 24}, {autoAlpha: 1, y: 0, duration: .2, ease: 'back.out(2)', ...IR}, ch.s);
-    else if (s.style !== 'pop') tl.fromTo(d, {autoAlpha: 0, scale: .88}, {autoAlpha: 1, scale: 1, duration: .16, ease: 'back.out(2)', ...IR}, ch.s);
+    if (st === 'reveal') tl.fromTo(d, {autoAlpha: 0}, {autoAlpha: 1, duration: .22, ...IR}, ch.s);
+    else if (st === 'accent') tl.fromTo(d, {autoAlpha: 0, y: 24}, {autoAlpha: 1, y: 0, duration: .2, ease: 'back.out(2)', ...IR}, ch.s);
+    else if (st !== 'pop') tl.fromTo(d, {autoAlpha: 0, scale: .88}, {autoAlpha: 1, scale: 1, duration: .16, ease: 'back.out(2)', ...IR}, ch.s);
     else tl.set(d, {autoAlpha: 1}, ch.s);
-    ch.words.forEach((w, k) => tl.call(() => {
-      const els = d.querySelectorAll('.wd');
-      els.forEach((e, j) => { e.classList.toggle('on', j === k); e.classList.toggle('done', j <= k); });
-      if (s.style === 'pop' && els[k]) gsap.fromTo(els[k], {autoAlpha: 0, scale: 1.6, y: 20}, {autoAlpha: 1, scale: 1, y: 0, duration: .12});
-      if (s.style === 'kinetic' && els[k] && w.key) gsap.fromTo(els[k], {scale: 1.5}, {scale: 1, duration: .15});
-    }, null, Math.max(ch.s, w.s)));
+    if (st === 'pop') els.forEach(e => gsap.set(e, {autoAlpha: 0}));
+    ch.words.forEach((w, k) => {
+      const at = Math.max(ch.s, w.s);
+      tl.call(() => els.forEach((e, j) => { e.classList.toggle('on', j === k); e.classList.toggle('done', j <= k); }), null, at);
+      if (st === 'pop') tl.fromTo(els[k], {autoAlpha: 0, scale: 1.6, y: 20}, {autoAlpha: 1, scale: 1, y: 0, duration: .12, ...IR}, at);
+      if (st === 'kinetic' && w.key) tl.fromTo(els[k], {scale: 1.5}, {scale: 1, duration: .15, ...IR}, at);
+    });
     tl.to(d, {autoAlpha: 0, duration: .1}, ch.e);
+    tl.set(d, {visibility: 'hidden'}, ch.e + .11);
   });
 };
 
