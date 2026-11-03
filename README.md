@@ -77,6 +77,7 @@ references/components.md      plan.json component catalog + SFX list
 references/creative-direction.md  placement, timing, sound & transition rules
 references/caption-styles.md  subtitle styles and when to recommend each
 references/explainer.md       explainer mode: scenes, pictogram shapes, per-style recipes
+references/cutaway-edit.md    talking head + designed animated cutaways (diagram, chart, phone mockup, logos)
 scripts/setup.py              dependencies, SFX synthesis, Whisper model download
 scripts/analyze.py            probe, transcript, motion events, contact sheets
 scripts/render.js             time anchors, layout check, previews, overlay render
@@ -90,6 +91,7 @@ assets/engine.html            the GSAP component engine
 assets/fonts/                 OFL fonts (+ their licenses)
 examples/plan.example.json    a complete plan for a 60 s tutorial reel
 examples/plan.explainer.json  an explainer (voice-over → hud diagrams) plan
+examples/plan.cutaway.json    a talking-head edit with three animated cutaways, logos and pop subtitles
 ```
 
 ## License

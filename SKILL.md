@@ -39,6 +39,7 @@ Viewers notice when a graphic or sound is half a second off, or when it has noth
 As soon as the user hands over the file, ask with AskUserQuestion — before setup or analysis, so nothing is designed in the wrong direction. Skip a question the user already answered in their message, or that the brand kit (`style`) answers, unless they ask for something different. Ask both in one call:
 
 - **Q1 — edit type** (skip when the source is audio only: that is always explainer):
+  - *My video + animated cutaways (Recommended for talking heads)* — overlay edit where the explanation parts cut away from the face to designed animated graphics (diagram, chart, phone mockup, logos). The user's favourite recipe: follow `references/cutaway-edit.md`.
   - *Graphics on my video* (overlay) — text, stickers, steps, SFX over the footage.
   - *Full animated explainer* — the frame becomes drawings/diagrams driven by the voice; the face can appear in windows.
   - *Not sure — suggest* — decide after reading the transcript.
@@ -104,6 +105,8 @@ Write `<workdir>/beats.md`: one line per beat with time range, what is **said**,
 - the **safe zones** per layout: where overlays can sit without hiding the face, the cursor or the thing being demonstrated
 
 Read `references/styles.md` (the chosen style's playbook) and `references/creative-direction.md` (pacing, placement, SFX rules). They're short and they're the difference between "busy" and "pro".
+
+**Cutaway edit:** also mark the 2–4 explanation stretches that become cutaways and the picture each one gets; `references/cutaway-edit.md` has the layout bands, ready-made blocks (flow diagram, price bars, phone mockup, logo cards) and the approved plan as `examples/plan.cutaway.json`.
 
 **Explainer mode:** the beat sheet is one line per sentence: words → the picture metaphor → how it builds (which word reveals which part) → the transition to the next scene. Read `references/explainer.md` first; it has the scene shapes and per-style recipes.
 

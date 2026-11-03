@@ -1,0 +1,493 @@
+{
+ "video": "D:/videos/my-reel.mp4",
+ "size": [
+  1080,
+  1920
+ ],
+ "fps": 30,
+ "style": "bold",
+ "theme": {
+  "display": "Hasti",
+  "body": "Peyda"
+ },
+ "avoid": [
+  {
+   "name": "face",
+   "from": 0,
+   "to": 78.6,
+   "rect": [
+    230,
+    500,
+    560,
+    720
+   ]
+  }
+ ],
+ "elements": [
+  {
+   "type": "title",
+   "t": 0,
+   "end": "w:خب-0.1",
+   "y": 60,
+   "kicker": "فروشگاه‌دارها",
+   "lines": [
+    "هنوز با *پست*",
+    "می‌فرستی؟"
+   ],
+   "kickerIcon": "box"
+  },
+  {
+   "type": "keyword",
+   "t": "w:پاچت-0.05",
+   "d": 1.4,
+   "x": 540,
+   "y": 1530,
+   "text": "ضرر!",
+   "rotate": -6,
+   "icon": "money"
+  },
+  {
+   "type": "keyword",
+   "t": "w:سرویس",
+   "d": 2.4,
+   "x": 540,
+   "y": 300,
+   "text": "سرویس‌های واسط",
+   "size": 96
+  },
+  {
+   "type": "keyword",
+   "t": "w:سرفتر",
+   "d": 1.6,
+   "x": 600,
+   "y": 1530,
+   "text": "به‌صرفه‌تر",
+   "rotate": 4,
+   "from": "pop",
+   "icon": "check"
+  },
+  {
+   "type": "title",
+   "t": "w:خب#2",
+   "end": "w:یه-0.1",
+   "y": 150,
+   "lines": [
+    "*چی* هستن؟"
+   ],
+   "jitter": false
+  },
+  {
+   "type": "icon",
+   "t": "w:تاپین",
+   "end": "w:ممکنه",
+   "anim": "pulse",
+   "x": 285,
+   "y": 235,
+   "icon": "img:logos/card_tapin.png",
+   "size": 420
+  },
+  {
+   "type": "icon",
+   "t": "w:کود",
+   "end": "w:ممکنه",
+   "anim": "pulse",
+   "x": 805,
+   "y": 250,
+   "icon": "img:logos/card_kod24.png",
+   "size": 400
+  },
+  {
+   "type": "icon",
+   "t": "w:آماده",
+   "end": "w:ممکنه",
+   "anim": "pulse",
+   "x": 540,
+   "y": 365,
+   "icon": "img:logos/card_amadast.png",
+   "size": 170
+  },
+  {
+   "type": "title",
+   "t": "w:دقیقا-0.3",
+   "end": "w:بحاله-0.8",
+   "y": 150,
+   "lines": [
+    "چی‌کار *می‌کنن*؟"
+   ],
+   "jitter": false
+  },
+  {
+   "type": "keyword",
+   "t": "w:آپشن",
+   "d": 1.8,
+   "x": 540,
+   "y": 280,
+   "text": "یه آپشن خفن دیگه",
+   "size": 84,
+   "icon": "fire"
+  },
+  {
+   "type": "keyword",
+   "t": "w:جمعوریه",
+   "d": 2.4,
+   "x": 540,
+   "y": 1530,
+   "text": "جمع‌آوری از درِ خونه",
+   "size": 80,
+   "icon": "truck"
+  },
+  {
+   "type": "icon",
+   "t": "w:جمعوری",
+   "d": 1.8,
+   "x": 540,
+   "y": 330,
+   "icon": "truck",
+   "size": 170
+  },
+  {
+   "type": "note",
+   "t": "w:کپشن-0.2",
+   "d": 9.2,
+   "x": 540,
+   "y": 1560,
+   "icon": "pointdown",
+   "title": "کپشن رو بخون",
+   "text": "مقایسهٔ کامل این شرکت‌ها رو نوشتم"
+  },
+  {
+   "type": "keyword",
+   "t": "w:بفرست#2",
+   "d": 3.4,
+   "x": 540,
+   "y": 300,
+   "text": "بفرست برای دوستت",
+   "size": 84,
+   "icon": "send"
+  },
+  {
+   "type": "keyword",
+   "t": "w:قدیمی",
+   "d": 2.0,
+   "x": 540,
+   "y": 1530,
+   "text": "روش ~قدیمی~",
+   "strikeAt": 0.5,
+   "size": 84
+  },
+  {
+   "type": "cta",
+   "t": "w:آموزش",
+   "y": 1530,
+   "items": [
+    {
+     "text": "فالو کن",
+     "icon": "follow"
+    },
+    {
+     "text": "سیو کن",
+     "icon": "save"
+    }
+   ]
+  },
+  {
+   "type": "icon",
+   "t": "w:ممکنه",
+   "end": "w:خب#3-0.1",
+   "x": 540,
+   "y": 270,
+   "icon": "img:logos/card_postex.png",
+   "size": 420,
+   "anim": "pulse"
+  },
+  {
+   "type": "cutaway",
+   "t": "w:یه-0.1",
+   "end": "w:چند-0.1"
+  },
+  {
+   "type": "icon",
+   "t": "w:یه",
+   "end": "w:چند-0.2",
+   "x": 540,
+   "y": 390,
+   "icon": "cart",
+   "size": 150,
+   "anim": "pulse",
+   "sfx": false
+  },
+  {
+   "type": "keyword",
+   "t": "w:یه+0.2",
+   "end": "w:چند-0.2",
+   "x": 540,
+   "y": 520,
+   "text": "فروشگاه تو",
+   "style": "plain",
+   "size": 56,
+   "rotate": 0,
+   "wiggle": false,
+   "sfx": false
+  },
+  {
+   "type": "scene",
+   "t": "w:سری",
+   "end": "w:چند-0.2",
+   "svg": "<path class='bold' d='M540 580 L540 650'/><path class='bold' d='M520 632 L540 655 L560 632'/>",
+   "sfx": false
+  },
+  {
+   "type": "keyword",
+   "t": "w:سرویس#3",
+   "end": "w:چند-0.2",
+   "x": 540,
+   "y": 730,
+   "text": "سرویس واسط",
+   "icon": "deal",
+   "size": 80,
+   "rotate": 0,
+   "wiggle": false
+  },
+  {
+   "type": "scene",
+   "t": "w:پوست#2-0.2",
+   "end": "w:چند-0.2",
+   "svg": "<path class='bold' d='M540 800 L540 840 L300 840 L300 900'/><path class='bold' d='M280 882 L300 905 L320 882'/><path class='bold' data-at='0.6' d='M540 840 L780 840 L780 900'/><path class='bold' data-at='0.6' d='M760 882 L780 905 L800 882'/>",
+   "sfx": false
+  },
+  {
+   "type": "keyword",
+   "t": "w:پوست#2",
+   "end": "w:چند-0.2",
+   "x": 300,
+   "y": 980,
+   "text": "پست",
+   "rotate": -3,
+   "size": 76,
+   "wiggle": false
+  },
+  {
+   "type": "keyword",
+   "t": "w:تیپاکس",
+   "end": "w:چند-0.2",
+   "x": 780,
+   "y": 980,
+   "text": "تیپاکس",
+   "rotate": 3,
+   "size": 76,
+   "wiggle": false
+  },
+  {
+   "type": "keyword",
+   "t": "w:هملو",
+   "end": "w:چند-0.2",
+   "x": 540,
+   "y": 1110,
+   "text": "+ بقیهٔ شرکت‌های حمل‌ونقل",
+   "style": "plain",
+   "size": 46,
+   "rotate": 0,
+   "wiggle": false,
+   "icon": "truck",
+   "sfx": false
+  },
+  {
+   "type": "keyword",
+   "t": "w:قرارداد",
+   "end": "w:چند-0.2",
+   "x": 540,
+   "y": 250,
+   "text": "قرارداد دارن",
+   "icon": "check",
+   "size": 64,
+   "rotate": -2,
+   "wiggle": false
+  },
+  {
+   "type": "cutaway",
+   "t": "w:بحاله-0.72",
+   "end": "w:مورد+0.6",
+   "enter": "zoom"
+  },
+  {
+   "type": "scene",
+   "t": "w:بحاله-0.6",
+   "end": "w:مورد+0.5",
+   "draw": 0.9,
+   "svg": "<rect class='bold' x='210' y='340' width='440' height='840' rx='60'/><rect class='fill' x='370' y='362' width='120' height='18' rx='9'/><text text-anchor='middle' x='430' y='450' style='font-size:44px;font-weight:900;fill:var(--p)'>پنل ارسال</text><line class='thin dim' x1='250' y1='480' x2='610' y2='480'/><g data-at='6.0'><rect x='250' y='510' width='360' height='150' rx='22' style='fill:#fff;stroke:none' data-fill='1'/><rect x='494' y='537' width='96' height='96' rx='18' style='fill:var(--p);stroke:none' data-fill='1'/><path d='M542 555 l30 16 v34 l-30 16 l-30 -16 v-34 z M512 571 l30 16 l30 -16 M542 587 v34' style='stroke:#000;stroke-width:5'/><text text-anchor='middle' x='372' y='580' style='font-size:34px;font-weight:900;fill:#000'>سفارش ۱۲۴۸</text><text text-anchor='middle' x='372' y='626' style='font-size:27px;font-weight:700;fill:#666'>تهران ← شیراز</text></g><g data-at='6.4'><rect x='330' y='676' width='200' height='52' rx='26' style='fill:#22C55E;stroke:none' data-fill='1'/><text text-anchor='middle' x='430' y='712' style='font-size:30px;font-weight:900;fill:#fff'>ثبت شد</text></g><g data-at='6.8'><rect x='250' y='750' width='360' height='200' rx='22' style='fill:#fff;stroke:none' data-fill='1'/><text text-anchor='middle' x='430' y='800' style='font-size:28px;font-weight:700;fill:#666'>کد رهگیری</text><rect x='282' y='820' width='4' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='293' y='820' width='7' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='304' y='820' width='3' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='315' y='820' width='6' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='326' y='820' width='4' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='337' y='820' width='8' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='348' y='820' width='3' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='359' y='820' width='5' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='370' y='820' width='4' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='381' y='820' width='7' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='392' y='820' width='3' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='403' y='820' width='6' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='414' y='820' width='4' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='425' y='820' width='8' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='436' y='820' width='3' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='447' y='820' width='5' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='458' y='820' width='4' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='469' y='820' width='7' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='480' y='820' width='3' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='491' y='820' width='6' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='502' y='820' width='4' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='513' y='820' width='8' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='524' y='820' width='3' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='535' y='820' width='5' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='546' y='820' width='4' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='557' y='820' width='7' height='64' style='fill:#000;stroke:none' data-fill='1'/><rect x='568' y='820' width='3' height='64' style='fill:#000;stroke:none' data-fill='1'/><text text-anchor='middle' x='430' y='925' direction='ltr' style='font-family:var(--mono),monospace;font-size:30px;font-weight:600;fill:#000;letter-spacing:.1em'>24891573600</text></g><g data-at='8.1'><path class='acc bold' d='M640 850 C 720 840, 770 790, 820 720'/><path class='acc bold' d='M796 728 L822 714 L828 744'/></g><g data-at='8.3'><rect x='680' y='900' width='330' height='120' rx='28' style='fill:var(--p);stroke:none' data-fill='1'/><text text-anchor='middle' x='845' y='948' style='font-size:30px;font-weight:900;fill:#000'>کد رهگیری‌ت:</text><text text-anchor='middle' x='845' y='994' direction='ltr' style='font-family:var(--mono),monospace;font-size:27px;font-weight:600;fill:#000'>24891573600</text></g>",
+   "sfx": false
+  },
+  {
+   "type": "icon",
+   "t": "w:کارورت-0.2",
+   "end": "w:مورد+0.5",
+   "x": 860,
+   "y": 600,
+   "icon": "user",
+   "size": 150,
+   "anim": "pulse",
+   "sfx": false
+  },
+  {
+   "type": "keyword",
+   "t": "w:کارورت",
+   "end": "w:مورد+0.5",
+   "x": 860,
+   "y": 740,
+   "text": "مشتری",
+   "style": "plain",
+   "size": 50,
+   "rotate": 0,
+   "wiggle": false,
+   "sfx": false
+  },
+  {
+   "type": "keyword",
+   "t": "w:پنل",
+   "end": "w:سفت-0.3",
+   "x": 860,
+   "y": 560,
+   "text": "پنل اختصاصی",
+   "rotate": 4,
+   "size": 60,
+   "wiggle": false
+  },
+  {
+   "type": "cutaway",
+   "t": "w:واقع-0.5",
+   "end": "w:آپشن-0.1"
+  },
+  {
+   "type": "scene",
+   "t": "w:واقع-0.4",
+   "end": "w:آپشن-0.2",
+   "draw": 0.8,
+   "svg": "<line class='bold' x1='170' y1='1080' x2='910' y2='1080'/><rect class='fill alt' x='240' y='520' width='200' height='560' rx='14' data-at='0.9'/><rect class='bold alt' x='240' y='520' width='200' height='560' rx='14' data-at='0.9'/><rect class='fill acc' x='640' y='860' width='200' height='220' rx='14' data-at='4.4'/><rect class='bold acc' x='640' y='860' width='200' height='220' rx='14' data-at='4.4'/><text x='340' y='1150' style='font-size:44px;font-weight:900'>اداره پست</text><text x='340' y='1205' style='font-size:34px' class='dim' data-at='1.4'>یا تیپاکس</text><text x='740' y='1150' style='font-size:44px;font-weight:900' data-at='3.6'>سرویس واسط</text>",
+   "sfx": false
+  },
+  {
+   "type": "keyword",
+   "t": "w:بیشتر",
+   "end": "w:آپشن-0.2",
+   "x": 340,
+   "y": 440,
+   "text": "گرون‌تر",
+   "icon": "up",
+   "rotate": -4,
+   "size": 72,
+   "wiggle": false
+  },
+  {
+   "type": "keyword",
+   "t": "w:پایین#2",
+   "end": "w:آپشن-0.2",
+   "x": 740,
+   "y": 780,
+   "text": "ارزون‌تر",
+   "icon": "down",
+   "rotate": 4,
+   "size": 72,
+   "wiggle": false
+  },
+  {
+   "type": "keyword",
+   "t": "w:مبلغ",
+   "d": 2.6,
+   "x": 540,
+   "y": 300,
+   "text": "قیمت لحظه‌ای",
+   "icon": "chart",
+   "size": 80
+  },
+  {
+   "type": "keyword",
+   "t": "w:پایین",
+   "d": 1.4,
+   "x": 540,
+   "y": 1530,
+   "text": "پایین‌تر",
+   "icon": "down",
+   "rotate": 4
+  }
+ ],
+ "camera": [
+  {
+   "t": "w:پوست",
+   "d": 0.9,
+   "type": "punch",
+   "scale": 1.12,
+   "cx": 540,
+   "cy": 820
+  },
+  {
+   "t": "w:پاچت",
+   "d": 0.35,
+   "type": "shake",
+   "amp": 14
+  },
+  {
+   "t": "w:سرفتر",
+   "d": 1.0,
+   "type": "punch",
+   "scale": 1.1,
+   "cx": 540,
+   "cy": 820
+  },
+  {
+   "t": "w:تاپین",
+   "d": 2.4,
+   "type": "zoom",
+   "scale": 1.08,
+   "cx": 540,
+   "cy": 860
+  },
+  {
+   "t": "w:پنل",
+   "d": 1.0,
+   "type": "punch",
+   "scale": 1.1,
+   "cx": 540,
+   "cy": 820
+  },
+  {
+   "t": "w:بیشتر",
+   "d": 0.9,
+   "type": "punch",
+   "scale": 1.12,
+   "cx": 540,
+   "cy": 820
+  },
+  {
+   "t": "w:جمعوریه",
+   "d": 1.2,
+   "type": "punch",
+   "scale": 1.12,
+   "cx": 540,
+   "cy": 820
+  },
+  {
+   "t": "w:بفرست#2",
+   "d": 1.0,
+   "type": "punch",
+   "scale": 1.1,
+   "cx": 540,
+   "cy": 820
+  }
+ ],
+ "sfx": [
+  {
+   "t": "w:پاچت",
+   "name": "impact",
+   "db": -14
+  }
+ ],
+ "handle": {
+  "text": "@nias_ir",
+  "corner": "tl"
+ },
+ "captions": {
+  "file": "captions.json",
+  "style": "pop"
+ },
+ "grade": "punchy"
+}
