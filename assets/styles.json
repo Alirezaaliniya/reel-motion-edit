@@ -1,6 +1,7 @@
 {
   "gradient": {
-    "label": "گرادیانی مدرن", "en": "Modern gradient",
+    "label": "گرادیانی مدرن",
+    "en": "Modern gradient",
     "feel": "colorful brand gradients, glossy chips, confetti; safe default for tech tutorials",
     "theme": {"primary": "#FF7139", "secondary": "#9059FF", "accent": "#FF2A8A", "ok": "#2BD67B", "dark": "#14121F", "highlight": "#FFD23F", "display": "Lalezar", "body": "Vazirmatn"},
     "defaults": {"title": {"anim": "slam"}, "keyword": {"style": "sticker"}},
@@ -8,10 +9,13 @@
     "captions": "karaoke",
     "fx": [],
     "sfxMap": {},
-    "sfxGain": 0
+    "sfxGain": 0,
+    "intro": "split",
+    "grade": "punchy"
   },
   "bold": {
-    "label": "پاپ جسور", "en": "Bold pop (Hormozi / MrBeast)",
+    "label": "پاپ جسور",
+    "en": "Bold pop (Hormozi / MrBeast)",
     "feel": "huge yellow+black type with thick strokes, hard shadows, punchy zooms and loud pops; max energy, max retention",
     "theme": {"primary": "#FFD400", "secondary": "#FF3B30", "accent": "#FFD400", "ok": "#22C55E", "dark": "#0A0A0A", "highlight": "#FFD400", "text": "#FFFFFF", "display": "Lalezar", "body": "Vazirmatn"},
     "defaults": {"title": {"anim": "slam"}, "keyword": {"style": "sticker", "from": "pop", "rotate": -5}},
@@ -19,10 +23,13 @@
     "captions": "pop",
     "fx": [],
     "sfxMap": {"whoosh": "whoosh_heavy", "swoosh_out": "whoosh_short"},
-    "sfxGain": 1
+    "sfxGain": 0,
+    "intro": "flash",
+    "grade": "punchy"
   },
   "neon": {
-    "label": "نئون تکنولوژی", "en": "Neon tech / cyber",
+    "label": "نئون تکنولوژی",
+    "en": "Neon tech / cyber",
     "feel": "dark glass panels, cyan-magenta glow, glitch hits, scanlines and digital blips; hacker / tech vibe",
     "theme": {"primary": "#00E5FF", "secondary": "#B026FF", "accent": "#FF2BD6", "ok": "#39FF88", "dark": "#05060F", "highlight": "#00E5FF", "display": "Changa", "body": "Vazirmatn"},
     "defaults": {"title": {"anim": "glitch"}, "keyword": {"style": "neon", "rotate": 0, "from": "up"}},
@@ -30,10 +37,13 @@
     "captions": "kinetic",
     "fx": ["scanlines", "vignette"],
     "sfxMap": {"pop": "digital_blip", "pop_hi": "digital_blip", "bubble": "digital_blip", "tick": "digital_blip", "notify": "digital_seq", "ding": "digital_seq", "swipe": "glitch"},
-    "sfxGain": 0
+    "sfxGain": 0,
+    "intro": "glitch",
+    "grade": "film"
   },
   "minimal": {
-    "label": "مینیمال تمیز", "en": "Clean minimal (Apple-like)",
+    "label": "مینیمال تمیز",
+    "en": "Clean minimal (Apple-like)",
     "feel": "white cards, soft shadows, one accent color, slow smooth moves and quiet sounds; premium and calm",
     "theme": {"primary": "#0A84FF", "secondary": "#0A84FF", "accent": "#5E5CE6", "ok": "#30D158", "dark": "#111111", "highlight": "#0A84FF", "text": "#111111", "display": "Vazirmatn", "body": "Vazirmatn"},
     "defaults": {"title": {"anim": "rise", "jitter": false}, "keyword": {"style": "plain", "rotate": 0, "from": "up", "wiggle": false}, "highlight": {"dim": 0.15, "pulse": false}, "success": {"confetti": 0}},
@@ -41,10 +51,13 @@
     "captions": "minimal",
     "fx": [],
     "sfxMap": {"pop": "soft_pop", "pop_hi": "soft_pop", "bubble": "soft_pop", "whoosh": "soft_whoosh", "whoosh_short": "soft_whoosh", "whoosh_heavy": "soft_whoosh", "swoosh_out": "soft_whoosh", "swipe": "soft_whoosh", "impact": null, "glitch": null, "sparkle": null, "error": "tick", "notify": "soft_pop"},
-    "sfxGain": -3
+    "sfxGain": -3,
+    "intro": "fade",
+    "grade": "glow"
   },
   "doodle": {
-    "label": "دست‌نویس", "en": "Hand-drawn doodle",
+    "label": "دست‌نویس",
+    "en": "Hand-drawn doodle",
     "feel": "marker strokes, wobbly outlines, scribbled circles and arrows, paper-and-pencil sounds; friendly, teacher-like",
     "theme": {"primary": "#FF5A36", "secondary": "#2D7FF9", "accent": "#FFC93C", "ok": "#22A06B", "dark": "#1B1B1B", "highlight": "#FFC93C", "display": "Lemonada", "body": "Vazirmatn"},
     "defaults": {"title": {"anim": "rise", "jitter": false}, "keyword": {"style": "sticker", "rotate": -3, "from": "pop"}, "highlight": {"shape": "scribble", "dim": 0}},
@@ -52,10 +65,13 @@
     "captions": "boxed",
     "fx": [],
     "sfxMap": {"pop": "scribble", "pop_hi": "scribble", "bubble": "scribble", "whoosh": "paper", "whoosh_short": "paper", "whoosh_heavy": "paper", "swoosh_out": "paper", "swipe": "scribble", "glitch": null, "impact": null},
-    "sfxGain": 0
+    "sfxGain": 0,
+    "intro": "iris",
+    "grade": "glow"
   },
   "retro": {
-    "label": "رترو VHS", "en": "Retro VHS / 90s",
+    "label": "رترو VHS",
+    "en": "Retro VHS / 90s",
     "feel": "VHS grain, REC timecode, RGB-split type, sunset colors, tape-stop and static sounds; nostalgic, playful",
     "theme": {"primary": "#FF6B35", "secondary": "#00C2B8", "accent": "#FF2E88", "ok": "#7CFC00", "dark": "#120B1F", "highlight": "#FFD23F", "display": "Lalezar", "body": "Vazirmatn"},
     "defaults": {"title": {"anim": "glitch"}, "keyword": {"style": "sticker", "rotate": -2}},
@@ -63,10 +79,13 @@
     "captions": "boxed",
     "fx": ["vhs"],
     "sfxMap": {"whoosh": "static", "whoosh_short": "static", "whoosh_heavy": "tape_stop", "swoosh_out": "tape_stop", "pop": "blips", "pop_hi": "blips"},
-    "sfxGain": 0
+    "sfxGain": 0,
+    "intro": "glitch",
+    "grade": "film"
   },
   "news": {
-    "label": "خبری / رسمی", "en": "Broadcast news",
+    "label": "خبری / رسمی",
+    "en": "Broadcast news",
     "feel": "navy and red bars, squared labels, headline banner, bottom ticker, broadcast stings; serious, credible",
     "theme": {"primary": "#D7192F", "secondary": "#0B1F44", "accent": "#D7192F", "ok": "#1E9E5A", "dark": "#0B1F44", "highlight": "#FFC400", "display": "NotoKufiArabic", "body": "Vazirmatn"},
     "defaults": {"title": {"anim": "rise", "jitter": false}, "keyword": {"style": "sticker", "rotate": 0, "from": "right", "wiggle": false}, "success": {"confetti": 0}},
@@ -74,6 +93,76 @@
     "captions": "karaoke",
     "fx": ["newsbar"],
     "sfxMap": {"impact": "sting", "pop": "tick", "pop_hi": "tick", "bubble": "tick", "success": "sting", "sparkle": null, "glitch": null},
-    "sfxGain": 0
+    "sfxGain": 0,
+    "intro": "split",
+    "grade": "punchy"
+  },
+  "lineglow": {
+    "label": "لاین‌آرت سینمایی",
+    "en": "Cinematic line-art (white-on-black story)",
+    "feel": "pure black, thin white line drawings that draw themselves, soft light beams, glow and star dust, slow camera drift, whole sentence subtitle that lights up word by word; reflective, philosophical, storytelling",
+    "explainer": true,
+    "progress": false,
+    "bg": {"color": "#000000"},
+    "theme": {"primary": "#FFFFFF", "secondary": "#BFC4CC", "accent": "#FFFFFF", "ok": "#FFFFFF", "dark": "#000000", "highlight": "#FFFFFF", "text": "#FFFFFF", "display": "Estedad", "body": "Estedad", "mono": "JetBrainsMono", "line": "#F2F2F2", "dim": "rgba(255,255,255,.28)"},
+    "defaults": {"title": {"anim": "blur", "jitter": false, "scrim": false}, "keyword": {"style": "plain", "rotate": 0, "from": "up", "wiggle": false}, "scene": {"glow": 0.6, "draw": 1.2}, "counter": {"gradient": false}, "success": {"confetti": 0}, "highlight": {"dim": 0, "pulse": false}},
+    "transitions": ["fade", "dissolve"],
+    "captions": "reveal",
+    "fx": ["dust", "vignette"],
+    "sfxMap": {"pop": "soft_pop", "pop_hi": "soft_pop", "bubble": "soft_pop", "tick": "soft_tick", "whoosh": "air", "whoosh_short": "air", "whoosh_heavy": "low_boom", "swoosh_out": "air", "swipe": "air", "impact": "low_boom", "glitch": null, "error": "soft_tick", "notify": "shimmer", "ding": "shimmer", "success": "shimmer", "sparkle": "shimmer", "draw": "draw_soft"},
+    "sfxGain": -3,
+    "intro": "fade",
+    "grade": "film"
+  },
+  "hud": {
+    "label": "دیتا / HUD",
+    "en": "Data HUD (diagram explainer)",
+    "feel": "charcoal radial background, thin self-drawing strokes, teal = right/AI vs red = wrong/human, tiny monospace readouts (ERROR 0.000, USERS · SAME PROMPT), live counters, key words bold or teal in the subtitle; analytical, smart, tech-essay",
+    "explainer": true,
+    "progress": false,
+    "bg": {"color": "#0E0F11", "gradient": "radial-gradient(ellipse 85% 60% at 50% 38%,#24262A 0%,#141517 55%,#0A0A0B 100%)"},
+    "theme": {"primary": "#3FD6B0", "secondary": "#FF4D5E", "accent": "#3FD6B0", "ok": "#3FD6B0", "dark": "#0E0F11", "highlight": "#FFFFFF", "text": "#E9EBEE", "display": "Estedad", "body": "Estedad", "mono": "JetBrainsMono", "line": "#D9DCE0", "dim": "rgba(233,235,238,.32)"},
+    "defaults": {"title": {"anim": "rise", "jitter": false, "scrim": false}, "keyword": {"style": "plain", "rotate": 0, "from": "up", "wiggle": false}, "scene": {"glow": 0.25, "draw": 0.9}, "counter": {"gradient": false, "persian": false}, "success": {"confetti": 0}, "highlight": {"dim": 0, "pulse": false}},
+    "transitions": ["fade", "scan"],
+    "captions": "reveal",
+    "fx": ["vignette"],
+    "sfxMap": {"pop": "digital_blip", "pop_hi": "digital_blip", "bubble": "digital_blip", "tick": "soft_tick", "notify": "digital_seq", "ding": "digital_seq", "success": "digital_seq", "whoosh": "soft_whoosh", "whoosh_short": "soft_whoosh", "whoosh_heavy": "low_boom", "swoosh_out": "soft_whoosh", "swipe": "soft_whoosh", "impact": "low_boom", "glitch": "digital_blip", "sparkle": null, "draw": "draw_soft"},
+    "sfxGain": -2,
+    "intro": "fade",
+    "grade": "film"
+  },
+  "warmguide": {
+    "label": "آموزشی کرم-نارنجی",
+    "en": "Warm guide (cream paper + orange)",
+    "feel": "warm cream paper with a soft orange glow, big heavy headline with one orange word, segmented step bar on top (مرحله ۱…۷), clean UI mock cards (terminal, toggles, app icons, file chips), optional mascot of the creator in the corner, short 2-3 word subtitle with an orange keyword; friendly step-by-step tutorial",
+    "explainer": true,
+    "progress": false,
+    "bg": {"color": "#F7F0E6", "gradient": "radial-gradient(ellipse 70% 45% at 55% 62%,rgba(244,170,120,.28) 0%,rgba(247,240,230,0) 70%),linear-gradient(#F8F2E9,#F4ECE0)"},
+    "theme": {"primary": "#D9653B", "secondary": "#2F2723", "accent": "#D9653B", "ok": "#3BA55C", "dark": "#2F2723", "highlight": "#D9653B", "text": "#2F2723", "display": "Estedad", "body": "Estedad", "mono": "JetBrainsMono", "line": "#2F2723", "dim": "rgba(47,39,35,.35)", "card": "#FFFFFF"},
+    "defaults": {"title": {"anim": "rise", "jitter": false, "scrim": false}, "keyword": {"style": "plain", "rotate": 0, "from": "up", "wiggle": false}, "scene": {"glow": 0, "draw": 0.8}, "counter": {"gradient": false}, "success": {"confetti": 24}, "highlight": {"dim": 0, "pulse": false, "shape": "scribble"}},
+    "transitions": ["slide", "fade"],
+    "captions": "accent",
+    "fx": [],
+    "sfxMap": {"pop": "soft_pop", "pop_hi": "soft_pop", "bubble": "soft_pop", "whoosh": "soft_whoosh", "whoosh_short": "soft_whoosh", "whoosh_heavy": "soft_whoosh", "swoosh_out": "soft_whoosh", "swipe": "paper", "impact": null, "glitch": null, "error": "soft_tick", "draw": "scribble"},
+    "sfxGain": -2,
+    "intro": "iris",
+    "grade": "glow"
+  },
+  "pictogram": {
+    "label": "اینفوگرافیک پیکتوگرامی",
+    "en": "Pictogram infographic (Isotype stick figures)",
+    "feel": "black background, flat white outline pictograms: people on pedestals with numbers, crowds, choice cards with radio dots, label lines, phones and rooms; a calm social-science / psychology data story with whole-sentence subtitle lighting up",
+    "explainer": true,
+    "progress": false,
+    "bg": {"color": "#000000"},
+    "theme": {"primary": "#FFFFFF", "secondary": "#9A9A9A", "accent": "#FFFFFF", "ok": "#FFFFFF", "dark": "#000000", "highlight": "#FFFFFF", "text": "#FFFFFF", "display": "Estedad", "body": "Estedad", "mono": "JetBrainsMono", "line": "#EDEDED", "dim": "rgba(255,255,255,.28)"},
+    "defaults": {"title": {"anim": "rise", "jitter": false, "scrim": false}, "keyword": {"style": "plain", "rotate": 0, "from": "up", "wiggle": false}, "scene": {"glow": 0.1, "draw": 0.7}, "counter": {"gradient": false}, "success": {"confetti": 0}, "highlight": {"dim": 0, "pulse": false}},
+    "transitions": ["fade", "dissolve"],
+    "captions": "reveal",
+    "fx": [],
+    "sfxMap": {"pop": "soft_tick", "pop_hi": "soft_tick", "bubble": "soft_pop", "tick": "soft_tick", "whoosh": "air", "whoosh_short": "air", "whoosh_heavy": "low_boom", "swoosh_out": "air", "swipe": "air", "impact": "low_boom", "glitch": null, "notify": "soft_pop", "ding": "shimmer", "success": "shimmer", "sparkle": null, "draw": "draw_soft"},
+    "sfxGain": -3,
+    "intro": "fade",
+    "grade": "film"
   }
 }

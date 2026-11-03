@@ -55,15 +55,19 @@ def main():
 
     # trim/atrim per kept segment + concat keeps audio and video cut at the same points
     # (aselect doesn't reliably drop audio frames)
+    # audio-only voice-overs (explainer mode) are cut the same way without a picture; write e.g. out.m4a/.wav
+    vid = "video" in subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v", "-show_entries", "stream=codec_type", "-of", "csv=p=0", a.video],
+                                    capture_output=True, text=True).stdout
     parts, labels = [], ""
     for i, (s, e) in enumerate(keep):
-        parts.append(f"[0:v]trim={s}:{e},setpts=PTS-STARTPTS[v{i}];[0:a]atrim={s}:{e},asetpts=PTS-STARTPTS[a{i}]")
-        labels += f"[v{i}][a{i}]"
+        parts.append((f"[0:v]trim={s}:{e},setpts=PTS-STARTPTS[v{i}];" if vid else "") + f"[0:a]atrim={s}:{e},asetpts=PTS-STARTPTS[a{i}]")
+        labels += (f"[v{i}]" if vid else "") + f"[a{i}]"
     out = Path(a.out)
     script = out.with_suffix(".filter.txt")
-    script.write_text(";".join(parts) + f";{labels}concat=n={len(keep)}:v=1:a=1[v][a]", encoding="utf-8")
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", a.video, "-/filter_complex", str(script), "-map", "[v]", "-map", "[a]",
-                    "-c:v", "libx264", "-crf", "16", "-preset", "medium", "-c:a", "aac", "-b:a", "192k", str(out)], check=True)
+    script.write_text(";".join(parts) + f";{labels}concat=n={len(keep)}:v={int(vid)}:a=1" + ("[v][a]" if vid else "[a]"), encoding="utf-8")
+    vmap = ["-map", "[v]", "-c:v", "libx264", "-crf", "16", "-preset", "medium"] if vid else []
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", a.video, "-/filter_complex", str(script), *vmap, "-map", "[a]",
+                    *(["-c:a", "aac", "-b:a", "192k"] if out.suffix.lower() not in (".wav",) else []), str(out)], check=True)
     out.with_suffix(".cuts.json").write_text(json.dumps({"source": a.video, "keep": keep}, indent=1))
     print("tightened →", out)
 

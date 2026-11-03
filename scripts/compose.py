@@ -8,7 +8,15 @@ Reads build/plan.resolved.json, build/sfx.json and build/overlay.mov written by 
 - SFX are summed in numpy into build/sfx_track.wav (gain per event in dB, relative to -4 dB).
 - music: {file, db:-20, duck:true} is looped/trimmed and ducked under the voice.
 - voice: "enhance" (or --voice enhance) cleans the voice: rumble cut, denoise, presence boost, gentle compression.
+- grade: the colour grade resolved by render.js (P.gradeFilter, from plan.grade / the style) is applied to the
+  footage before the graphics, in both modes.
+- plan.sfxMix.duck: true ducks the SFX bed under the voice (sidechain). Off by default: the user wants the
+  effects at their normal level.
+- cutaway elements with bg "blur" blur + darken the footage for their time range.
 - loudness is normalized to -14 LUFS / -1.5 dBTP (Instagram/TikTok target).
+- mode "explainer": the picture is build/bg.png + footage windows (elements of type "footage", the source
+  video cropped into their rect with rounded corners) + overlay.mov; the source only supplies the voice
+  (it may be an audio file). Camera moves were already applied inside the overlay by the engine.
 """
 import argparse, sys, json, subprocess, wave
 from pathlib import Path
@@ -83,6 +91,20 @@ def camera_filter(moves, W, H, fps):
             f":interpolation=cubic:sense=source:eval=frame")
 
 
+def has_stream(path, kind):
+    r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", kind[0], "-show_entries", "stream=codec_type", "-of", "csv=p=0", path],
+                       capture_output=True, text=True)
+    return kind in r.stdout
+
+
+def round_mask(w, h, r, out):
+    """white rounded rectangle on black: the alpha matte of a footage window"""
+    r = max(0, min(r, w // 2, h // 2))
+    e = (f"if(lte(hypot(max(0,max({r}-X,X-({w - 1 - r}))),max(0,max({r}-Y,Y-({h - 1 - r})))),{r}),255,0)") if r else "255"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"color=black:s={w}x{h}", "-vf", f"format=gray,geq=lum='{e}'",
+                    "-frames:v", "1", str(out)], check=True)
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser()
@@ -99,22 +121,53 @@ def main():
 
     sfx_track(ev, dur, b / "sfx_track.wav")
     inputs = ["-i", video, "-i", str(b / "overlay.mov"), "-i", str(b / "sfx_track.wav")]
-    cam = camera_filter(P.get("camera"), W, H, fps)
-    # sources that aren't plan-sized (e.g. 608x1080 phone exports) are upscaled/cropped to fill the frame
-    fit = f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H},setsar=1"
-    v = f"[0:v]{fit},{cam},format=yuv420p[cv];[cv][1:v]" if cam else f"[0:v]{fit}[cv];[cv][1:v]"
-    fc = [f"{v}overlay=0:0:format=auto,format=yuv420p[v]"]
+    grade = ("," + P["gradeFilter"]) if P.get("gradeFilter") else ""
+    if P.get("mode") == "explainer":
+        # base = style background still; footage windows from the source video; graphics on top
+        inputs += ["-loop", "1", "-framerate", str(fps), "-i", str(b / "bg.png")]
+        fc = [f"[3:v]trim=duration={dur},setsar=1,format=yuv420p[base0]"]
+        last, k = "[base0]", 0
+        wins = [e for e in P.get("elements", []) if e.get("type") == "footage"]
+        if wins and not has_stream(video, "video"):
+            print("warning: footage windows skipped, the source has no picture"); wins = []
+        for i, e in enumerate(wins):
+            x, y, w, h = [int(round(v)) for v in e["rect"]]
+            t0, d = float(e["t"]), float(e["d"]); src = float(e.get("src", t0))
+            mask = b / f"mask_{i}.png"; round_mask(w, h, int(e.get("radius", 36)), mask)
+            inputs += ["-loop", "1", "-framerate", str(fps), "-i", str(mask)]
+            mi = 4 + i
+            fc.append(f"[0:v]trim=start={src}:duration={d},setpts=PTS-STARTPTS+{t0}/TB,"
+                      f"scale={w}:{h}:force_original_aspect_ratio=increase:flags=lanczos,crop={w}:{h},setsar=1{grade},format=yuva420p[fv{i}]")
+            fc.append(f"[{mi}:v]format=gray,trim=duration={dur},setpts=PTS-STARTPTS[mk{i}]")
+            fc.append(f"[fv{i}][mk{i}]alphamerge,fade=t=in:st={t0}:d=0.3:alpha=1,fade=t=out:st={t0 + d - 0.3}:d=0.3:alpha=1[fw{i}]")
+            fc.append(f"{last}[fw{i}]overlay={x}:{y}:eof_action=pass:repeatlast=0[base{i + 1}]")
+            last = f"[base{i + 1}]"
+        fc.append(f"{last}[1:v]overlay=0:0:format=auto,format=yuv420p[v]")
+    else:
+        cam = camera_filter(P.get("camera"), W, H, fps)
+        # sources that aren't plan-sized (e.g. 608x1080 phone exports) are upscaled/cropped to fill the frame
+        blur = "".join(f",boxblur=26:3:enable='between(t,{e['t']},{e['t'] + e['d']})',eq=brightness=-0.12:enable='between(t,{e['t']},{e['t'] + e['d']})'"
+                       for e in P.get("elements", []) if e.get("type") == "cutaway" and e.get("bg") == "blur")
+        fit = f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H},setsar=1{grade}{blur}"
+        v = f"[0:v]{fit},{cam},format=yuv420p[cv];[cv][1:v]" if cam else f"[0:v]{fit}[cv];[cv][1:v]"
+        fc = [f"{v}overlay=0:0:format=auto,format=yuv420p[v]"]
     # voice: untouched by default; "enhance" = rumble cut, denoise, presence, gentle compression
     voice = "aresample=44100,aformat=channel_layouts=stereo"
     if (a.voice or P.get("voice")) == "enhance":
         voice += (",highpass=f=80,afftdn=nf=-25:tn=1,equalizer=f=250:t=q:w=1:g=-2,equalizer=f=3500:t=q:w=1.2:g=2.5"
                   ",acompressor=threshold=-20dB:ratio=3:attack=8:release=160:makeup=2")
-    mix = [f"[0:a]{voice}[voice]", "[2:a]anull[fx]"]
+    mix = [f"[0:a]{voice}[voice]"]
+    if (P.get("sfxMix") or {}).get("duck", False):
+        # the voice keys a compressor on the SFX bed: effects dip while he talks, come back in the gaps
+        mix += ["[voice]asplit[voice][vk]", "[2:a][vk]sidechaincompress=threshold=0.02:ratio=4:attack=10:release=300:makeup=1[fx]"]
+    else:
+        mix.append("[2:a]anull[fx]")
     labels = "[voice][fx]"
     mu = P.get("music")
     if mu:
+        mi = len([x for x in inputs if x == "-i"])
         inputs += ["-stream_loop", "-1", "-i", mu["file"]]
-        mix.append(f"[3:a]aresample=44100,aformat=channel_layouts=stereo,volume={mu.get('db', -20)}dB,afade=t=out:st={dur - 1.5}:d=1.5[mraw]")
+        mix.append(f"[{mi}:a]aresample=44100,aformat=channel_layouts=stereo,volume={mu.get('db', -20)}dB,afade=t=out:st={dur - 1.5}:d=1.5[mraw]")
         if mu.get("duck", True):
             mix.append("[voice]asplit[voice][vkey]")
             mix.append("[mraw][vkey]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=350[mus]")
