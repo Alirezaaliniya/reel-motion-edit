@@ -10,8 +10,8 @@ Text props accept `*highlight*` (brand gradient / primary colour), `` `LTR run` 
 
 | type | what it is | key props | default SFX |
 |---|---|---|---|
-| `title` | hook title, word-by-word | `lines[]`, `kicker`, `kickerIcon`, `sub`, `y` (top, default 100), `anim`: slam·rise·glitch·blur, `wordGap`, `jitter`, `scrim` (dark top gradient, default on), `scrimH` | impact, whoosh, pop per word, glitch, swoosh out |
-| `steps` | persistent numbered step chip with progress dots, flips between steps | `items[{t,label,sub,y?}]`, `total`, `y` (top, 150), `hide[[a,b]]`, `end` | whoosh + pop per step |
+| `title` | hook title, word-by-word | `lines[]`, `kicker`, `kickerIcon`, `sub`, `y` (top, default 260 = inside the Reels safe area), `anim`: slam·rise·glitch·blur, `wordGap`, `jitter`, `scrim` (dark top gradient, default on), `scrimH` | impact, whoosh, pop per word, glitch, swoosh out |
+| `steps` | persistent numbered step chip with progress dots, flips between steps | `items[{t,label,sub,y?}]`, `total`, `y` (top, default 270, inside the safe area), `hide[[a,b]]`, `end` | whoosh + pop per step |
 | `keyword` | sticker/neon word that echoes speech | `text`, `icon` (icon name or `img:<file>`; no emoji), `style`: sticker·neon·outline·gradient·plain, `from`: pop·left·right·drop·up, `rotate`, `size` | pop / whoosh |
 | `note` | tip card («نکته») | `icon` (icon name or `img:`, default bulb), `title`, `text` | notify |
 | `callout` | pill label, optional drawn arrow | `text`, `icon`, `arrow: {from:[x,y], to:[x,y], curve}` | pop (+ swipe) |
@@ -99,3 +99,25 @@ stroke colour), `dim` (dim strokes / unspoken caption words), `card` (ui card ba
 font family), `body` (UI/body font family), `mono` (readouts). Bundled families: `Vazirmatn` `Lalezar` `Changa`
 `Lemonada` `NotoKufiArabic` `Estedad` (rounded geometric, explainer styles) `JetBrainsMono` (Latin monospace).
 A file named `Family.latin.woff2` next to `Family.woff2` adds a Latin subset to the same family. Add more with `fonts: {"Family": "path.ttf"}`.
+
+## `ui` kind `page` — screen mockups (cutaways)
+
+`{type: "ui", kind: "page", t, d|end, x, y (centre, default 760), w (900), h (min body height), frame: browser|admin|phone,
+url, header, side[] (admin sidebar), sideOn (index), rows[], cursor[], hi[], modal, enter: pop|rise}`.
+
+- `rows[]`: `{row: h, text}` · `{row: field, label, value, ltr, typeAt (false = already filled)}` · `{row: toggle, label, sub, on: <offset>|true}` ·
+  `{row: button, text, press: <offset>, dim}` · `{row: item, icon, title, sub, badge, bad}` · `{row: empty, icon, text}` ·
+  `{row: alert, text, cls: err|ok|info, icon}` · `{row: chip, items[]}`. Every row takes `at` (seconds after `t`).
+- `cursor[]`: `{at, row, fx (0–1 across the row, default .3), move (s), click (default true)}` — moves to that row and clicks.
+- `hi[]`: `{at, row, d, color}` — a ring around a row.
+- `modal`: `{at, icon, title, text, button, sfx}` — dims the page and pops a dialog.
+- Default SFX: whoosh on entrance, typing per typed field, click per toggle/cursor click, pop per ring, notify on the modal.
+  In a busy cutaway mute some with `"sfx": false` and add the few that matter by hand.
+- The frame look follows the style (neon glow, bold black offset border, minimal soft shadow, doodle hand border, HUD dark UI…).
+
+## `shot` — a real screenshot in a frame
+
+`{type: "shot", src: "img:shots/local/x.png", imgW (png width), t, d|end, x, y, w (screen width), vh (visible height),
+frame: phone|browser|none, url (browser bar), enter: pop|rise|none, start (image px scrolled at the start),
+scroll[{at, y, dur}], hi[{at, rect:[x,y,w,h] image px, sy, d, color}], cursor[{at, x, y, sy, move, click}], zoom{at, to, d}}`.
+Use the user's local site for the images (see `references/cutaway-edit.md` → "Capturing real screens").

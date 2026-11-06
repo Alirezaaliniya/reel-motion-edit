@@ -1,6 +1,6 @@
 ---
 name: reel-motion-edit
-description: Edits a talking-head / screen-recording video or a voice-over (Instagram Reel, Shorts, TikTok, Camtasia export, tutorial) into a motion-graphics cut in a style the user picks at the start from 11 presets — 7 overlay styles on the footage (modern gradient, bold pop, neon tech, clean minimal, hand-drawn doodle, retro VHS, broadcast news) and 4 full-frame animated explainer styles (cinematic line-art, data HUD, warm cream tutorial, pictogram infographic) — or one Claude recommends. It adds text and graphics timed to the spoken words, self-drawing illustrations, sound effects that land on real events, transitions, camera moves, a CTA ending, and optional styled subtitles, voice cleanup, pause trimming, a cover image, the user's own mascot and an @handle watermark. Persian/RTL is the first-class case, with bundled Persian fonts. Use this whenever the user hands over a video or voice-over and asks to "edit", "motion graphic", "explainer", "animate", "add effects/elements/sound effects", "make it engaging", or says things like «ادیت موشن گرافیک», «افکت صوتی بذار», «المان اضافه کن», «ترنزیشن», «زیرنویس خلاقانه», «سبک ادیت», «انیمیشن توضیحی», «موشن روی ویس» — even if they don't name this skill.
+description: Edits a talking-head / screen-recording video or a voice-over (Instagram Reel, Shorts, TikTok, Camtasia export, tutorial) into a motion-graphics cut in a style the user picks at the start from 11 presets — 7 overlay styles on the footage (modern gradient, bold pop, neon tech, clean minimal, hand-drawn doodle, retro VHS, broadcast news) and 4 full-frame animated explainer styles (cinematic line-art, data HUD, warm cream tutorial, pictogram infographic) — or one Claude recommends. It adds text and graphics timed to the spoken words, self-drawing illustrations, sound effects that land on real events, transitions, camera moves, a CTA ending, and optional styled subtitles, voice cleanup, pause trimming, a cover image, the user's own mascot and an @handle watermark. Persian/RTL is the first-class case, with bundled Persian fonts. Use this whenever the user hands over a video or voice-over and asks to "edit", "motion graphic", "explainer", "animate", "add effects/elements/sound effects", "make it engaging", or says things like «ادیت موشن گرافیک», «افکت صوتی بذار», «المان اضافه کن», «ترنزیشن», «زیرنویس خلاقانه», «سبک ادیت», «انیمیشن توضیحی», «موشن روی ویس», «کات بزن», «این قسمت رو حذف کن», «کادر امن ریلز», «کات‌اوی» — even if they don't name this skill. Every edit is held to three hard rules: creative (no template recipe), all text inside the Instagram Reels safe area, and cutting (retakes, ranges) offered and applied when the user wants it.
 ---
 
 # Reel motion-graphics edit
@@ -36,10 +36,10 @@ Viewers notice when a graphic or sound is half a second off, or when it has noth
 
 ## Step 1 — ask first: edit type + style (before any work)
 
-As soon as the user hands over the file, ask with AskUserQuestion — before setup or analysis, so nothing is designed in the wrong direction. Skip a question the user already answered in their message, or that the brand kit (`style`) answers, unless they ask for something different. Ask both in one call:
+As soon as the user hands over the file, ask with AskUserQuestion — before setup or analysis, so nothing is designed in the wrong direction. **Always ask the edit type** (Q1), even when the style is known: the user wants to decide it for every video. Skip a question only when the user already answered it in their message, or that the brand kit (`style`) answers, unless they ask for something different. Ask both in one call:
 
 - **Q1 — edit type** (skip when the source is audio only: that is always explainer):
-  - *My video + animated cutaways (Recommended for talking heads)* — overlay edit where the explanation parts cut away from the face to designed animated graphics (diagram, chart, phone mockup, logos). The user's favourite recipe: follow `references/cutaway-edit.md`.
+  - *My video + animated cutaways (Recommended for talking heads)* — overlay edit where the explanation parts cut away from the face to designed animated graphics (diagram, chart, phone mockup, logos). Wherever the speaker explains a **product, plugin, setting or a purchase / checkout flow**, the cutaway is a **screen mockup of that feature** (`ui` kind `page`: the WordPress settings page with the toggle being switched on, the checkout form with its login modal, the «my orders» panel empty → filled), built step by step on the words. The user's favourite recipe: follow `references/cutaway-edit.md`.
   - *Graphics on my video* (overlay) — text, stickers, steps, SFX over the footage.
   - *Full animated explainer* — the frame becomes drawings/diagrams driven by the voice; the face can appear in windows.
   - *Not sure — suggest* — decide after reading the transcript.
@@ -53,6 +53,13 @@ As soon as the user hands over the file, ask with AskUserQuestion — before set
 `assets/styles.json` has each style's `label`, `en` and `feel`; use them for one-line descriptions. If the user doesn't care ("just edit it"), pick for them, say which and why, and go. **How to recommend** is in `references/styles.md` ("Recommending a style"). For explainer styles, the reference examples are in `references/` (`سبک 1.mp4` lineglow, `سبک 2.mp4` hud, `سبک 3.mp4` warmguide, `سبک 4.mp4` pictogram).
 
 If warmguide (or any style) should show the user's own character, ask for a transparent PNG of it (`plan.mascot` / brand kit `mascot`). Never recreate a character from someone else's video.
+
+## Four hard rules (the user asked for these on every edit)
+
+1. **Creative, not template.** Every edit needs at least **3 creative moves** that come from *this* video's content, not from the generic recipe: a visual metaphor for the topic (e.g. a lock that breaks for a login error, a loading bar that fails), a text animation that acts out the word (a word that shakes on «خطا», types itself on «تایپ», gets crossed out on «اشتباه»), a "reveal" of the payoff, a match cut or transition that rides on the screen motion, a sound design idea tied to the story (error buzz → success chime). Write them in `beats.md` under **Creative moves** *before* writing the plan, and say them to the user in one line when you deliver. If an element would look the same on any other video, it isn't one of the three.
+2. **Instagram Reels safe area.** All text, stickers, captions, the CTA and the @handle stay inside **x 60–1020, y 250–1500** (plan px, 1080×1920), and out of the right action rail (**x > 930 for y 1150–1500**) where the like/comment/share buttons sit. Nothing readable goes in the top 250 px (header/username) or the bottom 420 px (caption + audio line). `render.js check` reports a `SAFE` issue for any element that leaves the area at any moment of its animation, so fix every `SAFE` line like a `COVERS` line. Engine defaults (title, step chip, handle) already sit inside it. `"safe": {...}` in the plan overrides the numbers; `"safe": false` only for non-Reels exports (YouTube 16:9).
+3. **Cutting when the user wants it.** Always offer cutting in the Step 3 prep options. Also, whenever the user asks to cut, shorten or remove something («کات بزن», «اینجا رو حذف کن», «از ثانیه ۱۰ تا ۱۵ رو بردار», «فقط تا دقیقه ۱»), do it with `tighten.py` (Step 2c). You can also suggest cuts yourself from the transcript: repeated sentences / retakes, "اِ… ببخشید", false starts, a long silent intro, an off-topic tangent. List them with times and get a yes before cutting. Never cut without the user agreeing; pause trimming is a separate opt-in.
+4. **Real screens come from the user's LOCAL site, never from a public website.** When a cutaway shows the plugin, a setting, the checkout, the login form or the customer panel, use real screenshots of the user's own local WordPress (e.g. `http://localhost/<site>/`) that they open for you in the built-in browser — not their public site, not Google, not a competitor. Ask for the local URL if you don't have it. Mockups (`ui` kind `page`) are only a fallback for states the local site can't show (say which, in the delivery message). How to capture: see "Capturing real screens" in `references/cutaway-edit.md`.
 
 ## Step 2 — setup (first run on a machine)
 
@@ -76,9 +83,29 @@ python <skill>/scripts/analyze.py "<video or audio>" "<workdir>" --lang fa
 
 Then **read** `analysis/transcript.txt` and every `analysis/sheets/sheet_*.jpg` (10 s each, 0.5 s per cell, timestamped). The motion events printed by the script (`m0 … mN`, `cut`/`change`) are candidates. Confirm each one against the sheets, because a scroll also shows up as "change". An audio-only source has no sheets or motion events: the transcript is your only clock.
 
+## Step 2c — cut (only if the user wants it)
+
+```bash
+# remove ranges (source seconds), keep only a range, and/or trim pauses — preview with --dry-run first
+python <skill>/scripts/tighten.py "<video>" "<workdir>/cut.mp4" --cut "12.4-15.0,40-42.5" --no-pauses --dry-run
+python <skill>/scripts/tighten.py "<video>" "<workdir>/cut.mp4" --only "3.2-61" --cut "20.1-23.4"
+python <skill>/scripts/tighten.py "<video>" "<workdir>/cut.mp4" --cut "12.4-15.0"       # + pause trimming
+```
+
+Snap cut points to word boundaries from `analysis/transcript.json` (cut at the end of the last kept word + 0.08 s, resume 0.08 s before the next kept word) so no syllable is clipped. Joins get a 40 ms audio fade automatically. Put a `transition` (`flash`/`wipe`) or a camera `punch` on hard visual jumps so the cut feels intentional. Then **re-run analyze.py on `cut.mp4`** and set `"video"` in the plan to it: all times now refer to the cut file. `cut.cuts.json` records the kept source ranges.
+
 Whisper sometimes misspells Persian or English product names. Note corrections (they matter for captions and for word anchors: anchor on how Whisper spelled the word).
 
 ## Step 3 — style board / recommendation + prep options
+
+**Redesign board (cutaway & explainer edits — always).** The user wants to see their own video redesigned before choosing. Once the beat sheet exists, write the plan for the **first cutaway** (its `cutaway` + `ui`/`scene` elements, with the user's fonts in `theme`), pick T in the middle of it when most parts are on screen, and run:
+
+```bash
+node <skill>/scripts/render.js "<workdir>/plan.json" styleboard <T> plan            # every style
+node <skill>/scripts/render.js "<workdir>/plan.json" styleboard <T> plan bold neon minimal doodle   # a shortlist
+```
+
+That renders *this video's* cutaway frame in each style (`build/styleboard.jpg`). Send it, recommend one with a one-line reason, and ask with AskUserQuestion (recommended first + 3 contrasting ones, others via "Other"). Only then design the rest. For a plain overlay edit the classic board below is enough.
 
 If the user asked for a suggestion or the board (Step 1), build a **style board**: one representative frame rendered in every preset. Write a minimal plan first (video + `mode` + a title + one keyword + steps if the video has steps), then run:
 
@@ -89,6 +116,7 @@ node <skill>/scripts/render.js "<workdir>/plan.json" styleboard <T>    # → bui
 In overlay mode it shows a frame of *their* video in all 11 presets (the explainer ones as a tinted panel); in explainer mode it shows the 4 explainer styles on their own backgrounds with a demo drawing and their subtitle look. Pick T where the frame is typical (not a transition). Send the image (SendUserFile, display render), give your recommendation with a one-line reason based on *this* content, and confirm with AskUserQuestion (recommended first, three contrasting alternatives, others via "Other"). If the user already named a style, skip the board.
 
 Ask the **prep options** (multiSelect) in the same call, only the ones that apply:
+  - *Cut parts of the video*: always offer it. Show the cut candidates you found (retakes, false starts, dead intro/outro) with times, or let the user type ranges. Runs `tighten.py --cut/--only` (Step 2c) before the final analysis.
   - *Trim pauses (jump cuts)*: `tighten.py` removes silences longer than ~0.45 s. Best for talking-head videos and voice-overs (audio-only files work too). On screen recordings, warn that silent stretches may be where the clicking happens. It changes the timeline, so it runs **before** analysis: re-run analyze on the tightened file.
   - *Voice cleanup*: `"voice": "enhance"` (denoise, rumble cut, presence, gentle compression). Recommend it for phone or room audio.
   - *@handle watermark*: ask for the handle if the brand kit doesn't have one.
@@ -102,7 +130,8 @@ Write `<workdir>/beats.md`: one line per beat with time range, what is **said**,
 - the **payoff moment** (result shown: "connected", "done", the number)
 - the **CTA** at the end
 - **layout changes** (zoom between camera and screen): transition points
-- the **safe zones** per layout: where overlays can sit without hiding the face, the cursor or the thing being demonstrated
+- the **safe zones** per layout: where overlays can sit without hiding the face, the cursor or the thing being demonstrated, intersected with the Reels safe area (rule 2)
+- a **Creative moves** section: the ≥3 content-specific ideas (rule 1), each with its time and which component/SFX carries it
 
 Read `references/styles.md` (the chosen style's playbook) and `references/creative-direction.md` (pacing, placement, SFX rules). They're short and they're the difference between "busy" and "pro".
 
@@ -124,7 +153,7 @@ Write `<workdir>/plan.json`. All components, their props and default SFX are in 
   "avoid": [{"name": "face", "from": 0, "to": 14.6, "rect": [200, 420, 680, 900]},
             {"name": "pip",  "from": 15, "to": 29.1, "rect": [0, 1300, 510, 620]}],
   "elements": [
-    {"type": "title", "t": 0, "d": 3.8, "y": 90, "kicker": "آموزش ۶۰ ثانیه‌ای", "lines": ["`VPN` *رایگان*"], "sub": "با سرورهای فایرفاکس"},
+    {"type": "title", "t": 0, "d": 3.8, "kicker": "آموزش ۶۰ ثانیه‌ای", "lines": ["`VPN` *رایگان*"], "sub": "با سرورهای فایرفاکس"},
     {"type": "transition", "t": "m:m3-0.1"},
     {"type": "steps", "items": [{"t": "w:گوگل", "label": "جستجو در گوگل", "sub": "`vpn firefox github`"}], "hide": [[29.0, 34.1]]},
     {"type": "keyword", "t": "w:رایگان", "x": 540, "y": 1640, "text": "رایگان", "icon": "gift"},
@@ -157,6 +186,7 @@ node <skill>/scripts/render.js "<workdir>/plan.json" preview 1 5.5 15.8 21.1 27.
 - `SFXPILE`: sounds stacked inside 0.35 s
 - `SFXDENSE`: too many sounds overall (more than ~1 per 2.5 s)
 - `EMOJI`: an emoji in any text/icon prop — replace it with an icon name or `img:<file>`
+- `SAFE`: text outside the Instagram Reels safe area (hard rule 2) — move it in (y 250–1500, x 60–1020, off the right rail)
 - `ORDER`: a word anchor hit an earlier occurrence, so use `w:word#2`
 - `EMPTY` (explainer): a stretch ≥ 1 s with nothing but captions on screen
 - `NOVIDEO` (explainer): `footage` windows but the source is audio only
@@ -186,7 +216,7 @@ Never overwrite the source video. Write a new file, with a version suffix (`- ed
 
 ## Step 8 — verify
 
-Make a contact sheet of the output (`ffmpeg -i out.mp4 -vf "fps=1/2,scale=216:-1,tile=10x3" sheet.jpg`) and look at it. Check that the duration matches and that audio is present. Report honestly what you checked (frames) and what you couldn't (you can't listen; the SFX timing is verified against the event list, not by ear).
+Re-check that no text sits in the top 250 px / bottom 420 px / right rail on the output frames. Make a contact sheet of the output (`ffmpeg -i out.mp4 -vf "fps=1/2,scale=216:-1,tile=10x3" sheet.jpg`) and look at it. Check that the duration matches and that audio is present. Report honestly what you checked (frames) and what you couldn't (you can't listen; the SFX timing is verified against the event list, not by ear).
 
 ## Step 9 — offer subtitles and extras (always, at the end)
 
@@ -200,7 +230,7 @@ Once the edit is delivered, ask with AskUserQuestion (multiSelect where it fits)
 For subtitles:
 
 ```bash
-python <skill>/scripts/captions.py "<workdir>" --style karaoke --zones "0-14.6:1400,29.4-33.8:1400" --default-y 1170 --keywords "رایگان,VPN" --fix "غلط=درست,وی پی این=VPN"
+python <skill>/scripts/captions.py "<workdir>" --style karaoke --zones "0-14.6:1340,29.4-33.8:1340" --default-y 1170 --keywords "رایگان,VPN" --fix "غلط=درست,وی پی این=VPN"
 ```
 
 Proof-read the printed chunks. Fix Whisper spellings with `--fix`; a multi-word source merges tokens. Add `"captions": {"file": "captions.json"}` to the plan (style defaults to the preset's; set `"style"` to override), run `check` (captions must not cover the face or the stickers either), then render and compose again as a new version.
@@ -219,3 +249,6 @@ Proof-read the printed chunks. Fix Whisper spellings with `--fix`; a multi-word 
 - Sound levels: `sfxMix` defaults are `{gain: 0, minGap: 0.6, perElement: 1, duck: false}` — normal loudness, fewer sounds. Change the level only when the user asks (`gain` in dB, `duck: true` to dip effects under speech).
 - Raw `<text>` in scene svg: always set `text-anchor='middle'` (Persian text is RTL, so the default anchor puts it on the wrong side of x) and `direction='ltr'` on Latin/number runs like tracking codes.
 - Keep the speaker's own voice untouched (no EQ/compression beyond loudness normalization) unless the user chose voice cleanup.
+- Phone videos are often stored 1920×1080 with a −90° rotation flag. `analyze.py` reports the displayed size (1080×1920) and ffmpeg auto-rotates. Don't trust a raw `ffprobe` width/height.
+- Text that's too wide for the safe area is fitted automatically: title lines shrink, and wide cards (compare, notes) are capped or scaled to the safe width once the real fonts are loaded. Still read the preview: a shrunken line may be too small to read, and then shortening the text is the better fix.
+- Retake-heavy recordings (the speaker repeats a sentence until it comes out right): keep the **last complete** take of each sentence, unless an earlier one is clearly better, and list what you cut in `beats.md` so the user can ask for any part back.

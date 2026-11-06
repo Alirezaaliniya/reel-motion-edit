@@ -1,6 +1,12 @@
-"""Jump-cut long pauses out of a video BEFORE analysis (talking-head pacing).
+"""Cut a video BEFORE analysis: jump-cut long pauses and/or remove the parts the user asks for.
 
 usage: python tighten.py <video> <out.mp4> [--min-gap 0.45] [--keep 0.12] [--db -35] [--dry-run]
+                         [--cut "12.4-15.0,40-42.5"] [--only "0-58"] [--no-pauses] [--xfade 0.04]
+
+  --cut      remove these source ranges (mistakes, retakes, off-topic bits, dead intro/outro)
+  --only     keep only these source ranges (everything else is dropped)
+  --no-pauses  apply only --cut/--only, don't trim silences
+  --xfade    short audio fade at every join so cuts don't click (seconds, 0 = off)
 
 Pauses longer than --min-gap are shortened to --keep seconds of silence on each side of the cut.
 Writes <out>.cuts.json (kept segments, in source time) so later steps can map times if needed.
@@ -25,6 +31,22 @@ def silences(video, db, min_gap):
     return out
 
 
+def ranges(spec):
+    out = []
+    for part in filter(None, (p.strip() for p in spec.split(","))):
+        s, e = part.split("-"); out.append((float(s), float(e)))
+    return out
+
+
+def merge(rs, dur):
+    rs = sorted((max(0.0, s), min(dur, e)) for s, e in rs if e > s)
+    out = []
+    for s, e in rs:
+        if out and s <= out[-1][1]: out[-1] = (out[-1][0], max(out[-1][1], e))
+        else: out.append((s, e))
+    return out
+
+
 def duration(video):
     return float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", video],
                                 capture_output=True, text=True).stdout.strip())
@@ -36,14 +58,22 @@ def main():
     ap.add_argument("video"); ap.add_argument("out")
     ap.add_argument("--min-gap", type=float, default=0.45); ap.add_argument("--keep", type=float, default=0.12)
     ap.add_argument("--db", type=float, default=-35); ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--cut", default=""); ap.add_argument("--only", default="")
+    ap.add_argument("--no-pauses", action="store_true"); ap.add_argument("--xfade", type=float, default=0.04)
     a = ap.parse_args()
 
     dur = duration(a.video)
+    removed_ranges = [] if a.no_pauses else [(s + a.keep, e - a.keep) for s, e in silences(a.video, a.db, a.min_gap)
+                                             if (e - a.keep) - (s + a.keep) > 0.05]
+    removed_ranges += ranges(a.cut)
+    if a.only:  # everything outside the --only ranges is removed
+        cur = 0.0
+        for s, e in sorted(ranges(a.only)):
+            removed_ranges.append((cur, s)); cur = e
+        removed_ranges.append((cur, dur))
     keep, cur = [], 0.0
-    for s, e in silences(a.video, a.db, a.min_gap):
-        cut_s, cut_e = s + a.keep, e - a.keep
-        if cut_e - cut_s > 0.05:
-            keep.append((round(cur, 3), round(cut_s, 3))); cur = cut_e
+    for s, e in merge(removed_ranges, dur):
+        keep.append((round(cur, 3), round(s, 3))); cur = e
     keep.append((round(cur, 3), round(dur, 3)))
     keep = [(s, e) for s, e in keep if e - s > 0.04]
     removed = dur - sum(e - s for s, e in keep)
@@ -58,9 +88,13 @@ def main():
     # audio-only voice-overs (explainer mode) are cut the same way without a picture; write e.g. out.m4a/.wav
     vid = "video" in subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v", "-show_entries", "stream=codec_type", "-of", "csv=p=0", a.video],
                                     capture_output=True, text=True).stdout
+    def fade(i, ln):  # tiny fades at the joins kill the click of a hard audio cut
+        f = min(a.xfade, ln / 4)
+        if f <= 0: return ""
+        return (f",afade=t=in:d={f}" if i else "") + (f",afade=t=out:st={ln - f:.3f}:d={f}" if i < len(keep) - 1 else "")
     parts, labels = [], ""
     for i, (s, e) in enumerate(keep):
-        parts.append((f"[0:v]trim={s}:{e},setpts=PTS-STARTPTS[v{i}];" if vid else "") + f"[0:a]atrim={s}:{e},asetpts=PTS-STARTPTS[a{i}]")
+        parts.append((f"[0:v]trim={s}:{e},setpts=PTS-STARTPTS[v{i}];" if vid else "") + f"[0:a]atrim={s}:{e},asetpts=PTS-STARTPTS{fade(i, e - s)}[a{i}]")
         labels += (f"[v{i}]" if vid else "") + f"[a{i}]"
     out = Path(a.out)
     script = out.with_suffix(".filter.txt")

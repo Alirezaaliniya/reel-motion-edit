@@ -1,9 +1,10 @@
 // Renders the overlay described by plan.json with assets/engine.html.
 //
-//   node render.js <plan.json> check              resolve times + layout/clutter/sfx lint
+//   node render.js <plan.json> check              resolve times + layout/clutter/safe-area/sfx lint
 //   node render.js <plan.json> preview t1 t2 ...  composite stills over the video → build/preview.jpg
 //   node render.js <plan.json> full               ProRes 4444 alpha track → build/overlay.mov
 //   node render.js <plan.json> styleboard T       the frame at T rendered in every style preset → build/styleboard.jpg
+//   node render.js <plan.json> styleboard T plan [styles…]  the plan's own frame at T (a cutaway redesign) in each style
 //   node render.js <plan.json> cover T            frame T + plan.cover title → build/cover.jpg (1080x1920)
 //
 // plan.mode "explainer" = the whole frame is graphics (voice-over driven; the source can be audio only).
@@ -170,15 +171,31 @@ function fontCss() {
 }
 
 /* ---------- lint ---------- */
+// Reels safe area (plan px). plan.safe overrides any field; "safe": false turns the check off (e.g. a YouTube export).
+// The right action rail (like/comment/share) covers x > 930 in the lower part of the frame.
+const SAFE_SKIP = new Set(['progress', 'transition', 'intro', 'cutaway', 'panel', 'footage', 'scene', 'mascot', 'click', 'fx', 'highlight', 'arrow']);  // drawings and full-frame layers; their text is checked by preview
+const SAFE = plan.safe === false ? null : (() => {
+  const [W, H] = P.size || [1080, 1920], k = H / 1920, q = W / 1080, s = plan.safe || {};
+  return { top: s.top ?? 250 * k, bottom: s.bottom ?? 1500 * k, left: s.left ?? 60 * q, right: s.right ?? 1020 * q,
+    rail: s.rail === false ? null : { x: s.rail?.x ?? 930 * q, from: s.rail?.from ?? 1150 * k, to: s.rail?.to ?? 1500 * k } };
+})();
 function lint(samples) {
   const W = P.size?.[0] || 1080, H = P.size?.[1] || 1920, out = [];
-  const seen = new Set(), skip = new Set(['progress', 'transition', 'intro', 'cutaway', 'click', 'fx', 'handle', 'panel', 'footage', 'segbar', 'mascot'].concat(EXPLAINER ? ['scene'] : []));  // persistent layers aren't overlays
+  const safeHits = {}, seen = new Set(), skip = new Set(['progress', 'transition', 'intro', 'cutaway', 'click', 'fx', 'handle', 'panel', 'footage', 'segbar', 'mascot'].concat(EXPLAINER ? ['scene'] : []));  // persistent layers aren't overlays
   for (const { t, boxes } of samples) {
     const live = boxes.filter(b => !skip.has(b.type) && b.type !== 'captions' && !b.parent);
     const inCut = (P.elements || []).some(c => c.type === 'cutaway' && t >= c.t && t <= c.t + c.d);  // a cutaway graphic is one composition
     if (live.length > 3 && !inCut) { const k = 'clutter' + Math.round(t); if (!seen.has(k)) { seen.add(k); out.push(`CLUTTER  ${t.toFixed(1)}s  ${live.length} overlays at once: ${live.map(b => b.id).join(', ')}`); } }
     for (const b of boxes) {
       if (skip.has(b.type)) continue;
+      if (SAFE && !SAFE_SKIP.has(b.type) && !b.parent) {
+        // Instagram Reels safe area: text must stay inside it for the whole time it's visible
+        const r = SAFE, inRail = r.rail && b.x + b.w > r.rail.x && b.y + b.h > r.rail.from && b.y < r.rail.to;
+        const bad = [b.y < r.top - 4 && 'top', b.y + b.h > r.bottom + 4 && 'bottom', b.x < r.left - 4 && 'left', b.x + b.w > r.right + 4 && 'right', inRail && 'action-rail'].filter(Boolean);
+        const k = 'safe' + b.id + bad.join();
+        if (bad.length) safeHits[k] = (safeHits[k] || 0) + 1;  // ≥3 samples (0.6 s): a resting position, not an entrance passing by
+        if (bad.length && safeHits[k] >= 3 && !seen.has(k)) { seen.add(k); out.push(`SAFE     ${t.toFixed(1)}s  ${b.id} leaves the Reels safe area (${bad.join(', ')}) box=[${[b.x, b.y, b.w, b.h].map(Math.round)}] safe=x ${r.left}–${r.right}, y ${r.top}–${r.bottom}`); }
+      }
       if (b.x < -8 || b.y < -8 || b.x + b.w > W + 8 || b.y + b.h > H + 8) { const k = 'oob' + b.id; if (!seen.has(k)) { seen.add(k); out.push(`OFFFRAME ${t.toFixed(1)}s  ${b.id} box=[${[b.x, b.y, b.w, b.h].map(Math.round)}]`); } }
       for (const z of P.avoid || []) {
         if (t < z.from || t > z.to) continue;
@@ -187,7 +204,8 @@ function lint(samples) {
         const ix = Math.max(0, Math.min(b.x + b.w, zx + zw) - Math.max(b.x, zx)), iy = Math.max(0, Math.min(b.y + b.h, zy + zh) - Math.max(b.y, zy));
         const frac = ix * iy / Math.max(1, Math.min(b.w * b.h, zw * zh));
         const k = 'avoid' + b.id + z.name;
-        if (frac > .04 && !seen.has(k)) { seen.add(k); out.push(`COVERS   ${t.toFixed(1)}s  ${b.id} covers "${z.name}" (${Math.round(frac * 100)}%)`); }
+        if (frac > .04) safeHits[k] = (safeHits[k] || 0) + 1;  // 2+ samples: ignore an entrance sweeping past
+        if (frac > .04 && safeHits[k] >= 2 && !seen.has(k)) { seen.add(k); out.push(`COVERS   ${t.toFixed(1)}s  ${b.id} covers "${z.name}" (${Math.round(frac * 100)}%)`); }
       }
     }
   }
@@ -220,6 +238,7 @@ function lintSfx(sfx) {
   console.log(`built: ${sfx.length} sfx events (${sfxAll.length - sfx.length} dropped by sfxMix)`);
   // preload every font face actually used so the first frames don't fall back
   await page.evaluate(async () => { await Promise.all([...document.fonts].map(f => f.load().catch(() => 0))); });
+  await page.evaluate(() => fitSafe());  // re-measure with the real fonts: safe-area fitting depends on glyph widths
   console.log('fonts preloaded');
   fs.writeFileSync(path.join(build, 'sfx.json'), JSON.stringify(sfx, null, 1));
   const shot = () => page.screenshot({ type: 'png', omitBackground: true });
@@ -302,7 +321,7 @@ function lintSfx(sfx) {
     baseFrame(t, frame, look);
     const pick = type => (P.elements || []).find(e => e.type === type);
     const comp = async (plan, at, out, scale, base = frame) => {
-      await page.evaluate(p => build(p), plan);
+      await page.evaluate(async p => { build(p); await Promise.all([...document.fonts].map(f => f.load().catch(() => 0))); fitSafe(); }, plan);
       await page.evaluate(t => seek(t), at);
       const png = out.replace(/\.jpg$/, '.png'); fs.writeFileSync(png, await shot());
       spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', base, '-i', png, '-filter_complex', `[0][1]overlay${scale ? `,scale=${scale}:-1` : ''}`, '-q:v', '2', '-frames:v', '1', out]);
@@ -314,6 +333,19 @@ function lintSfx(sfx) {
       if (EXPLAINER && c.scene !== false) for (const e of P.elements || []) if (e.type === 'scene' && t >= e.t && t <= e.t + e.d) el.unshift({ ...e, t: 0, d: 99, sfx: false });
       await comp({ ...P, elements: el, camera: [], captions: null, progress: false, handle: P.handle && { ...P.handle, t: 0 } }, 3, path.join(build, 'cover.jpg'));
       console.log('cover →', path.join(build, 'cover.jpg'));
+    } else if (rest[1] === 'plan') {
+      // "styleboard T plan": the real plan frame at T (e.g. a cutaway redesign) re-rendered in every style, so the
+      // user picks a look on their own content. Plan fonts/colours (plan.theme) are kept on top of each preset.
+      const only = rest.slice(2).filter(Boolean), jpgs = [];
+      const names = (only.length ? only : Object.keys(STYLES)).filter(k => STYLES[k] && (!EXPLAINER || STYLES[k].explainer));
+      for (const [i, k] of names.entries()) {
+        const D = STYLES[k], out = path.join(dir, `s_${String(i).padStart(2, '0')}.jpg`);
+        const els = [...(P.elements || []).map(e => ({ ...e })), { type: 'keyword', t: 0, d: 999, x: 540, y: 1800, text: D.label, style: 'plain', rotate: 0, sfx: false, wiggle: false, size: 54, id: 'stylename' }];
+        await comp({ ...P, style: k, styleDef: D, theme: { ...D.theme, ...(plan.theme || {}) }, elements: els, intro: false, handle: null }, t, out, 360);
+        jpgs.push(out); console.log(`  ${k.padEnd(9)} ${D.en}`);
+      }
+      spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', path.join(dir, 's_%02d.jpg'), '-vf', `tile=${Math.min(4, jpgs.length)}x${Math.ceil(jpgs.length / 4)}:padding=8:color=white`, '-q:v', '2', '-frames:v', '1', path.join(build, 'styleboard.jpg')]);
+      console.log('styleboard →', path.join(build, 'styleboard.jpg'));
     } else {
       // the same demo moment in each preset: title, step chip, keyword sticker, subtitle line, style name.
       // In explainer mode only explainer styles are shown, each on its own background with a demo drawing.
