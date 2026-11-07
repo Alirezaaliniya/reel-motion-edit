@@ -102,6 +102,13 @@ def main():
     if not (sfx_dir / "whoosh.wav").exists() or (HERE / "sfx.py").stat().st_mtime > (sfx_dir / "whoosh.wav").stat().st_mtime:
         log("synthesizing SFX library")
         subprocess.run([sys.executable, str(HERE / "sfx.py"), str(sfx_dir)], check=True)
+    # bundled story sounds and effect footage: rebuilt when missing (they are generated from code, CC0)
+    assets = HERE.parent / "assets"
+    if not (assets / "sfx" / "lock_close.wav").exists():
+        subprocess.run([sys.executable, str(HERE / "sfx_extra.py"), str(assets / "sfx")], check=True)
+    if not (assets / "footage" / "lightleak_warm.mp4").exists():
+        print("generating effect footage (a few minutes)…")
+        subprocess.run([sys.executable, str(HERE / "footage.py"), str(assets / "footage")], check=True)
 
     model = None
     if not a.skip_model:

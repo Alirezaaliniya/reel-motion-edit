@@ -60,6 +60,20 @@ Further steps toward "serious" (offer them): real screenshots of the user's **lo
 - Music is synthesized, original, CC0: `tools/make_music.py` (pop, 120 BPM) and `tools/make_music_premium.py` (pass `premium` for the 92 BPM bed). Set `MUSIC_DUR` (voice length + 0.4) and `MUSIC_DROP` (the turning-point word, e.g. «اما راه حلش») and run `python tools/make_music.py public/pop3d/music.wav` / `python tools/make_music_premium.py public/pop3d/music_premium.wav premium`. `remotion_init.py` does this for you.
 - SFX: `public/pop3d/sfx/*.wav` (26 files: whoosh, impact, coin, error, success, click, ding, pop, typing, notify, soft_whoosh, soft_pop, shimmer, soft_tick, air, draw_soft…). Same discipline as the plan engine: one sound per real event, ~1 per 2.5 s at most.
 
+## Effect footage in Remotion
+
+`remotion_init.py` copies the skill's effect loops to `public/footage/` and the extra sounds to `public/pop3d/sfx/`. Lay a loop over the scene with blending:
+
+```tsx
+<Sequence from={Math.round(T.drop * FPS) - 6} durationInFrames={40} layout="none">
+  <AbsoluteFill style={{ mixBlendMode: "screen", opacity: 0.8 }}>
+    <OffthreadVideo src={staticFile("footage/light_sweep.mp4")} muted />
+  </AbsoluteFill>
+</Sequence>
+```
+
+`screen` for light-on-black clips, `overlay` at .3 for `film_grain`. Which clip fits which look: `references/components.md` → "Effect footage". Premium looks: at most `lightleak_cool` on the intro + `light_sweep` on the payoff; no bokeh or sparkles (they read playful).
+
 ## Render
 
 ```bash

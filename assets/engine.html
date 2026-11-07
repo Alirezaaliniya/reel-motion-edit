@@ -479,6 +479,9 @@ body:not(.explainer) .cap.accent{color:#fff;text-shadow:0 3px 16px rgba(0,0,0,.9
 .st-warmguide .handle{background:none;color:var(--txt);opacity:.45;font-size:24px}
 .st-warmguide .progress{height:6px;background:var(--p)}
 .st-warmguide .scene svg{stroke-width:4}
+/* light overlay-style backdrops used as an explainer / split layout: dark ink for drawings */
+.explainer.st-bold,.explainer.st-minimal,.explainer.st-doodle{--line:#1B1B1B;--dim:rgba(0,0,0,.38)}
+.explainer.st-bold .scene svg .acc{stroke:#E5281E} .explainer.st-bold .scene svg text.acc,.explainer.st-bold .scene svg .fill.acc{fill:#E5281E}
 .st-warmguide .choice .cd b{background:#F7F0E6}
 </style>
 </head>
@@ -1448,6 +1451,11 @@ window.build = (plan) => {
   document.documentElement.style.setProperty('--bgc', bgDef.color || '#000');
   bg.style.background = bgDef.gradient ? `${bgDef.gradient},${bgDef.color || '#000'}` : (bgDef.color || '#000');
   if (bgDef.image) bg.style.background = `center/cover no-repeat url("${bgDef.image}")`;
+  // an overlay style used as an explainer / split layout (no explainer bg of its own): use its designed cutaway backdrop
+  const styBg = !STY.bg && !plan.bg;
+  bg.classList.toggle('cutaway', styBg); bg.classList.toggle('sty', styBg);
+  bg.innerHTML = styBg ? '<i class="m1"></i><i class="m2"></i><i class="m3"></i>' : '';
+  if (styBg) bg.style.background = '';
   bg.style.display = EXPLAINER && plan.showBg ? 'block' : 'none';
   document.body.className = (plan.style ? 'st-' + plan.style : '') + (plan.mode === 'explainer' ? ' explainer' : '');
   let seed = 11; rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;

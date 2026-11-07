@@ -106,3 +106,23 @@ notes, CTA) in their palette and fonts, and the explainer components work as ove
 face (hud), `ui` cards in the empty band (warmguide), small `scene` drawings over a `panel` (lineglow/pictogram).
 For a half-and-half layout, put a `panel` over the top half and draw inside it. `reveal` captions get a shadow
 over footage, but `karaoke` is more legible on busy video.
+
+## Split layout (graphics on top, the speaker below)
+
+A talking-head video can be laid out as a split screen: the upper part is an animated graphics area, the lower half shows the speaker the whole time (gallery section E). It's an explainer plan with one long `footage` window:
+
+```json
+{"mode": "explainer", "style": "warmguide",
+ "elements": [
+  {"type": "footage", "t": 0, "end": 78.5, "rect": [0, 1000, 1080, 920], "radius": 0, "frame": "none", "fy": 0.45},
+  {"type": "title", "t": "w:...", "y": 270, "lines": ["..."]},
+  {"type": "scene", "t": "w:...", "items": [{"shape": "bars", "x": 540, "y": 830, "values": [90, 45], "hmax": 250}]}
+ ]}
+```
+
+- The graphics live in **y 250–880**: title around y 270, the drawing / `ui` card / chart in y 420–880. Keep each part small enough for that band.
+- Captions sit **just above the seam** (captions.py `--default-y 912`), on the graphics background, never on the speaker's face. A dark caption on a light style stays readable that way.
+- `fy` moves the crop inside the window (0 = top of the source, 1 = bottom), so the face sits in the upper part of the video half; check it on a preview.
+- Any of the 11 styles works: an overlay style (gradient, bold, neon, minimal, doodle, retro, news) without an explainer background uses its designed cutaway backdrop, and on the light ones (bold, minimal, doodle) drawings switch to dark ink automatically.
+- The face isn't covered, so `avoid` isn't needed; the Reels bottom 420 px fall on the speaker's chest, where nothing readable goes.
+- It can switch: a full-face overlay section (A) can turn into the split for an explanation and back, by ending one plan section and starting the other (two renders composed), or by keeping the whole video split.

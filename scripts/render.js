@@ -84,6 +84,18 @@ for (const e of P.elements || []) {
   if ((e.type === 'steps' || e.type === 'segbar') && e.end == null && e.d == null) e.end = P.duration - .3;
   if (e.type === 'mascot') { if (e.d == null) e.d = P.duration - e.t; if (e.src) e.src = fileUrl(e.src); if (e.poses) for (const k in e.poses) e.poses[k] = fileUrl(e.poses[k]); }
 }
+// effect footage (light leaks, grain, bokeh…): name → assets/footage/<name>.mp4 (or assets/footage/user/, or a path); compose blends it
+const FOOT_DIRS = [path.join(SKILL, 'assets', 'footage'), path.join(SKILL, 'assets', 'footage', 'user')];
+P.footageFx = (P.footageFx || []).map(f => {
+  const g = { blend: 'screen', opacity: 0.8, fade: 0.3, ...f };
+  const cands = [...FOOT_DIRS.flatMap(d => [path.join(d, g.file), path.join(d, g.file + '.mp4'), path.join(d, g.file + '.mov')]), rel(g.file)];
+  g.path = cands.find(c => fs.existsSync(c));
+  if (!g.path) throw new Error(`footageFx: "${g.file}" not found (run scripts/footage.py, or give a path)`);
+  if (g.t == null) g.t = 0;
+  if (g.end != null && g.d == null) g.d = +(g.end - g.t).toFixed(3);
+  if (g.d == null) g.d = Math.max(0.1, P.duration - g.t);
+  return g;
+});
 if (P.captions?.file) P.captionChunks = JSON.parse(fs.readFileSync(rel(P.captions.file), 'utf8'));
 // brand kit (~/.config/reel-motion-edit/brand.json): the user's saved style, colors, fonts and @handle;
 // the plan wins over it, and "brand": false ignores it for one video
@@ -256,16 +268,16 @@ function lintSfx(sfx) {
   const PIC = hasPicture(video);
   const footAt = t => (P.elements || []).filter(e => e.type === 'footage' && t >= e.t && t <= e.t + e.d);
   // base frame at time t: the video frame (overlay mode) or bg.png + footage windows (explainer)
-  const baseFrame = (t, out, look = '') => {
+  const baseFrame = (t, out, look = '', bg = BGPNG) => {
     const blurred = (P.elements || []).some(c => c.type === 'cutaway' && c.bg === 'blur' && t >= c.t && t <= c.t + c.d);
     const gr = (P.gradeFilter ? ',' + P.gradeFilter : '') + (blurred && !EXPLAINER ? ',boxblur=26:3,eq=brightness=-0.12' : '');
     if (!EXPLAINER) return spawnSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(t), '-i', video, '-vf', `scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H}${gr}${look}`, '-frames:v', '1', out]);
-    const win = PIC ? footAt(t) : [], args = ['-v', 'error', '-y', '-i', BGPNG], fc = [];
+    const win = PIC ? footAt(t) : [], args = ['-v', 'error', '-y', '-i', bg], fc = [];
     let last = '[0]';
     win.forEach((e, i) => {
       const [x, y, w, h] = e.rect, st = (e.src ?? e.t) + (t - e.t);
       args.push('-ss', String(st), '-i', video);
-      fc.push(`[${i + 1}:v]scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h}${gr}[f${i}]`, `${last}[f${i}]overlay=${x}:${y}[b${i}]`);
+      fc.push(`[${i + 1}:v]scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h}:(iw-ow)/2:(ih-oh)*${e.fy ?? 0.5}${gr}[f${i}]`, `${last}[f${i}]overlay=${x}:${y}[b${i}]`);
       last = `[b${i}]`;
     });
     fc.push(`${last}null${look}[o]`);
@@ -337,12 +349,13 @@ function lintSfx(sfx) {
       // "styleboard T plan": the real plan frame at T (e.g. a cutaway redesign) re-rendered in every style, so the
       // user picks a look on their own content. Plan fonts/colours (plan.theme) are kept on top of each preset.
       const only = rest.slice(2).filter(Boolean), jpgs = [];
-      const names = (only.length ? only : Object.keys(STYLES)).filter(k => STYLES[k] && (!EXPLAINER || STYLES[k].explainer));
+      // an explicit list may put overlay styles into an explainer / split layout too
+      const names = only.length ? only.filter(k => STYLES[k]) : Object.keys(STYLES).filter(k => !EXPLAINER || STYLES[k].explainer);
       for (const [i, k] of names.entries()) {
         const D = STYLES[k], out = path.join(dir, `s_${String(i).padStart(2, '0')}.jpg`);
         const els = [...(P.elements || []).map(e => ({ ...e })), { type: 'keyword', t: 0, d: 999, x: 540, y: 1800, text: D.label, style: 'plain', rotate: 0, sfx: false, wiggle: false, size: 54, id: 'stylename' }];
         let base = frame;  // explainer: each style brings its own background (cream paper, charcoal, black…)
-        if (EXPLAINER) { await page.evaluate(p => build(p), { ...P, style: k, styleDef: D, theme: { ...D.theme, ...(plan.theme || {}) }, elements: [], camera: [], captions: null, mascot: null }); base = path.join(dir, `bg_${k}.png`); await bgShot(base); }
+        if (EXPLAINER) { await page.evaluate(p => build(p), { ...P, style: k, styleDef: D, theme: { ...D.theme, ...(plan.theme || {}) }, elements: [], camera: [], captions: null, mascot: null }); const bgk = path.join(dir, `bg_${k}.png`); await bgShot(bgk); base = path.join(dir, `base_${k}.png`); baseFrame(t, base, '', bgk); }
         await comp({ ...P, style: k, styleDef: D, theme: { ...D.theme, ...(plan.theme || {}) }, elements: els, intro: false, handle: null }, t, out, Number(process.env.STYLEBOARD_W || 360), base);
         fs.copyFileSync(out, path.join(dir, `${k}.jpg`));
         jpgs.push(out); console.log(`  ${k.padEnd(9)} ${D.en}`);

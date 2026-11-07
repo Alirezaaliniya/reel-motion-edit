@@ -8,9 +8,9 @@ Put your pick first in each question with "(پیشنهادی)" and give the reas
 
 ## Round 1: edit type + style (before setup and analysis; setup can run in the background meanwhile)
 
-First ask (or read from the source: audio only = no face) **whether the user appears on camera**, because the gallery has a sheet for each case. Then send the matching sheet (SendUserFile, display render): `gallery/_gallery-face.jpg` (A = graphics over the talking-head video, B = explainer with the face in a window) when they are on camera, `gallery/_gallery-graphics.jpg` (C = full-frame graphics, D = Remotion 3D/2D) when not, `_gallery.jpg` when unsure. For a cutaway edit show both A and C of the candidate styles. Then ask:
+First ask (or read from the source: audio only = no face) **whether the user appears on camera**, because the gallery has a sheet for each case. Then send the matching sheet (SendUserFile, display render): `gallery/_gallery-face.jpg` (A = graphics over the talking-head video, B = explainer with the face in a window, E = split: graphics on top, talking video below) when they are on camera, `gallery/_gallery-graphics.jpg` (C = full-frame graphics, D = Remotion 3D/2D) when not, `_gallery.jpg` when unsure. For a cutaway edit show both A and C of the candidate styles. Then ask:
 
-0. **تصویر خودت** (face usage; skip for audio-only sources): کل ویدیو صورتم دیده بشه و المان‌ها روش بیاد (A) · صورتم + کات‌اوی انیمیشنی وسطش (A + C) · صورتم توی یه قاب، بقیه‌ی صفحه انیمیشن (B) · صورتم نباشه، کامل انیمیشن (C / D).
+0. **تصویر خودت** (face usage; skip for audio-only sources): کل ویدیو صورتم دیده بشه و المان‌ها روش بیاد (A) · صورتم + کات‌اوی انیمیشنی وسطش (A + C) · صورتم توی یه قاب، بقیه‌ی صفحه انیمیشن (B) · صفحه دوتیکه: بالا انیمیشن، پایین خودم دارم حرف می‌زنم (E) · صورتم نباشه، کامل انیمیشن (C / D).
 1. **نوع ادیت** (edit type): ویدیوی خودم + کات‌اوی انیمیشنی · المان روی ویدیوی خودم · انیمیشن توضیحی کامل · مطمئن نیستم، پیشنهاد بده (SKILL.md Step 1 has the details).
 2. **سبک** (style): give the 3 best gallery styles for this video by code and name, using the letter that matches the face answer (e.g. «A04 مینیمال تمیز روی تصویرت», «D13 پریمیوم تیره سه‌بعدی»), plus "پیشنهاد بعد از تحلیل". Say in the description that any number from the gallery can be typed in "Other".
 3. **دوبعدی یا سه‌بعدی** (only when the chosen family allows both or the user is unsure): ۲D سریع (engine, plan.json) · ۳D واقعی (Remotion + Three.js, `references/remotion-3d.md`, slower to build).
@@ -27,7 +27,7 @@ After the answer send the 1–3 single gallery images of the chosen style(s) so 
 ## Round 3: sound and text
 
 1. **افکت صوتی** (SFX): کم و نرم · معمولی (فقط لحظه‌های مهم) · پرافکت. The user found too many SFX annoying; never recommend the third unless the style is bold/pop.
-2. **موزیک** (music): موزیک بی‌کلام ساخته‌شده (آرام) · موزیک ساخته‌شده (پرانرژی) · ترک خودم رو می‌دم · بدون موزیک. The synthesized ones are original and CC0 (`templates/remotion/tools/`); their drop lands on the turning-point word.
+2. **موزیک** (music): send the 2–3 fitting previews from `assets/music/` (calm, upbeat, corporate, tension, cinematic, tech) as files first, then ask: one of those moods · ترک خودم رو می‌دم · بدون موزیک. They're original and CC0 (`scripts/music.py`), generated at the video's exact length; `tension` drops on the turning-point word.
 3. **زیرنویس** (captions): کلمه‌به‌کلمه (karaoke) · جمله‌ی کامل با خط زیر کلمه‌ی فعال · فقط کلمه‌های کلیدی · بدون زیرنویس. See `references/caption-styles.md`.
 4. **شروع ویدیو** (hook / intro): one of the hook formats from `references/styles.md` that fits this content, plus the style default and a "problem shown first" option.
 

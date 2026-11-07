@@ -7,3 +7,9 @@ references/*.mp4
 _ref_sheets/
 # commercial / personal fonts: local only, never published
 assets/fonts/user/
+
+# the user's own downloaded sounds / footage: licences vary, keep local
+assets/sfx/user/*
+!assets/sfx/user/README.md
+assets/footage/user/*
+!assets/footage/user/README.md

@@ -24,6 +24,17 @@ import numpy as np
 
 SR = 44100
 SFX_DIR = Path.home() / ".cache" / "reel-motion-edit" / "sfx"
+SKILL = Path(__file__).resolve().parent.parent
+# synthesized base library (cache) → bundled story sounds (assets/sfx) → the user's own downloads (assets/sfx/user)
+SFX_DIRS = [SFX_DIR, SKILL / "assets" / "sfx", SKILL / "assets" / "sfx" / "user"]
+
+
+def find_sfx(name):
+    for d in SFX_DIRS:
+        for ext in (".wav", ".mp3", ".ogg"):
+            if (d / f"{name}{ext}").exists():
+                return d / f"{name}{ext}"
+    return Path(name)  # a custom file path as the name
 
 
 def read_wav(p):
@@ -32,16 +43,39 @@ def read_wav(p):
         return a.reshape(-1, w.getnchannels())
 
 
+def read_any(p):
+    """mp3/ogg (e.g. downloaded packs) → float stereo via ffmpeg"""
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(p), "-f", "s16le", "-ac", "2", "-ar", str(SR), "-"], capture_output=True, check=True).stdout
+    return (np.frombuffer(raw, np.int16).astype(np.float32) / 32768).reshape(-1, 2)
+
+
+def fx_chain(fxs, base, inputs, W, H, fps, dur):
+    """blend effect footage (plan.footageFx) onto the picture label `base`; returns (filters, new label)"""
+    fc, last = [], base
+    neutral = {"screen": "black", "lighten": "black", "addition": "black", "overlay": "0x808080", "softlight": "0x808080"}
+    for k, f in enumerate(fxs):
+        idx = len([x for x in inputs if x == "-i"])
+        inputs += ["-stream_loop", "-1", "-i", f["path"]]
+        t0, d, mode = float(f["t"]), float(f["d"]), f.get("blend", "screen")
+        col = neutral.get(mode, "black"); fade = min(float(f.get("fade", .3)), d / 2)
+        fd = f",fade=t=in:st=0:d={fade}:color={col},fade=t=out:st={d - fade}:d={fade}:color={col}" if fade > 0 and mode in neutral else ""
+        fc.append(f"[{idx}:v]trim=duration={d},setpts=PTS-STARTPTS,scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={fps},setsar=1{fd},"
+                  f"tpad=start_duration={t0}:color={col},tpad=stop_mode=add:stop_duration={dur + 1}:color={col},format=gbrp[fx{k}]")
+        bm = "normal" if mode == "normal" else mode
+        fc.append(f"{last}format=gbrp[fb{k}];[fb{k}][fx{k}]blend=all_mode={bm}:all_opacity={float(f.get('opacity', .8))}"
+                  f":enable='between(t,{t0},{t0 + d})':shortest=1,format=yuv420p[fxo{k}]")
+        last = f"[fxo{k}]"
+    return fc, last
+
+
 def sfx_track(events, dur, out):
     buf = np.zeros((int(SR * (dur + 2)), 2), np.float32)
     cache = {}
     for e in events:
         name = e["name"]
         if name not in cache:
-            p = SFX_DIR / f"{name}.wav"
-            if not p.exists():
-                p = Path(name)  # allow a custom file path as the name
-            cache[name] = read_wav(p)
+            p = find_sfx(name)
+            cache[name] = read_wav(p) if p.suffix == ".wav" else read_any(p)
         s = cache[name] * (10 ** ((e.get("db", 0) - 4) / 20))
         i = int(max(0, e["t"]) * SR); j = min(len(buf), i + len(s))
         buf[i:j] += s[: j - i]
@@ -137,11 +171,12 @@ def main():
             inputs += ["-loop", "1", "-framerate", str(fps), "-i", str(mask)]
             mi = 4 + i
             fc.append(f"[0:v]trim=start={src}:duration={d},setpts=PTS-STARTPTS+{t0}/TB,"
-                      f"scale={w}:{h}:force_original_aspect_ratio=increase:flags=lanczos,crop={w}:{h},setsar=1{grade},format=yuva420p[fv{i}]")
+                      f"scale={w}:{h}:force_original_aspect_ratio=increase:flags=lanczos,crop={w}:{h}:(iw-ow)/2:(ih-oh)*{float(e.get('fy', 0.5))},setsar=1{grade},format=yuva420p[fv{i}]")
             fc.append(f"[{mi}:v]format=gray,trim=duration={dur},setpts=PTS-STARTPTS[mk{i}]")
             fc.append(f"[fv{i}][mk{i}]alphamerge,fade=t=in:st={t0}:d=0.3:alpha=1,fade=t=out:st={t0 + d - 0.3}:d=0.3:alpha=1[fw{i}]")
             fc.append(f"{last}[fw{i}]overlay={x}:{y}:eof_action=pass:repeatlast=0[base{i + 1}]")
             last = f"[base{i + 1}]"
+        ffc, last = fx_chain(P.get("footageFx") or [], last, inputs, W, H, fps, dur); fc += ffc
         fc.append(f"{last}[1:v]overlay=0:0:format=auto,format=yuv420p[v]")
     else:
         cam = camera_filter(P.get("camera"), W, H, fps)
@@ -149,8 +184,9 @@ def main():
         blur = "".join(f",boxblur=26:3:enable='between(t,{e['t']},{e['t'] + e['d']})',eq=brightness=-0.12:enable='between(t,{e['t']},{e['t'] + e['d']})'"
                        for e in P.get("elements", []) if e.get("type") == "cutaway" and e.get("bg") == "blur")
         fit = f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,crop={W}:{H},setsar=1{grade}{blur}"
-        v = f"[0:v]{fit},{cam},format=yuv420p[cv];[cv][1:v]" if cam else f"[0:v]{fit}[cv];[cv][1:v]"
-        fc = [f"{v}overlay=0:0:format=auto,format=yuv420p[v]"]
+        fc = [f"[0:v]{fit},{cam},format=yuv420p[cv]" if cam else f"[0:v]{fit}[cv]"]
+        ffc, last = fx_chain(P.get("footageFx") or [], "[cv]", inputs, W, H, fps, dur); fc += ffc
+        fc.append(f"{last}[1:v]overlay=0:0:format=auto,format=yuv420p[v]")
     # voice: untouched by default; "enhance" = rumble cut, denoise, presence, gentle compression
     voice = "aresample=44100,aformat=channel_layouts=stereo"
     if (a.voice or P.get("voice")) == "enhance":

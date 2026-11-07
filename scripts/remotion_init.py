@@ -49,6 +49,13 @@ def main():
     if missing:
         print("WARNING missing user fonts (copy them into assets/fonts/user):", ", ".join(missing))
 
+    # bundled story sounds and effect footage from the skill (CC0) → public/pop3d/sfx and public/footage
+    for w in (SKILL / "assets" / "sfx").glob("*.wav"):
+        shutil.copy2(w, dst / "public" / "pop3d" / "sfx" / w.name)
+    (dst / "public" / "footage").mkdir(parents=True, exist_ok=True)
+    for m in (SKILL / "assets" / "footage").glob("*.mp4"):
+        shutil.copy2(m, dst / "public" / "footage" / m.name)
+
     audio = dst / "public" / "audio.mp3"
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", a.audio, "-vn", "-ac", "2", "-ar", "44100", "-b:a", "192k", str(audio)], check=True)
     pr = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "json", str(audio)], capture_output=True, text=True, check=True)
