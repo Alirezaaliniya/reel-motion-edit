@@ -96,3 +96,9 @@ examples/plan.cutaway.json    a talking-head edit with three animated cutaways, 
 
 ## License
 Code: [MIT](LICENSE). Fonts in `assets/fonts/`: SIL Open Font License 1.1 (see the `OFL-*.txt` files).
+
+## Style gallery and the 3D engine
+
+- `gallery/` — every style on the same moment, in each way the face can be used: A over the talking-head video, B face in a window, C full-frame graphics, D Remotion 3D/2D (`_gallery-face.jpg`, `_gallery-graphics.jpg`, `_gallery.jpg`; index in `gallery/README.md`). The skill shows it at the start of every edit.
+- `templates/remotion/` — a Remotion + Three.js project (glossy 3D pop, premium dark 3D, three 2D looks). Start one with `python scripts/remotion_init.py <workdir> --audio <voice>`; guide in `references/remotion-3d.md`.
+- `references/style-interview.md` — the question rounds asked before every edit (type, style, mood, colour, motion, font, SFX, music, captions, hook).

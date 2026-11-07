@@ -1,6 +1,6 @@
 ---
 name: reel-motion-edit
-description: Edits a talking-head / screen-recording video or a voice-over (Instagram Reel, Shorts, TikTok, Camtasia export, tutorial) into a motion-graphics cut in a style the user picks at the start from 11 presets — 7 overlay styles on the footage (modern gradient, bold pop, neon tech, clean minimal, hand-drawn doodle, retro VHS, broadcast news) and 4 full-frame animated explainer styles (cinematic line-art, data HUD, warm cream tutorial, pictogram infographic) — or one Claude recommends. It adds text and graphics timed to the spoken words, self-drawing illustrations, sound effects that land on real events, transitions, camera moves, a CTA ending, and optional styled subtitles, voice cleanup, pause trimming, a cover image, the user's own mascot and an @handle watermark. Persian/RTL is the first-class case, with bundled Persian fonts. Use this whenever the user hands over a video or voice-over and asks to "edit", "motion graphic", "explainer", "animate", "add effects/elements/sound effects", "make it engaging", or says things like «ادیت موشن گرافیک», «افکت صوتی بذار», «المان اضافه کن», «ترنزیشن», «زیرنویس خلاقانه», «سبک ادیت», «انیمیشن توضیحی», «موشن روی ویس», «کات بزن», «این قسمت رو حذف کن», «کادر امن ریلز», «کات‌اوی» — even if they don't name this skill. Every edit is held to three hard rules: creative (no template recipe), all text inside the Instagram Reels safe area, and cutting (retakes, ranges) offered and applied when the user wants it.
+description: Edits a talking-head / screen-recording video or a voice-over (Instagram Reel, Shorts, TikTok, Camtasia export, tutorial) into a motion-graphics cut in a style the user picks at the start from 11 presets — 7 overlay styles on the footage (modern gradient, bold pop, neon tech, clean minimal, hand-drawn doodle, retro VHS, broadcast news) and 4 full-frame animated explainer styles (cinematic line-art, data HUD, warm cream tutorial, pictogram infographic) — plus real 3D looks built with Remotion + Three.js (glossy 3D pop, premium dark 3D) and three custom 2D looks, all shown on one frame in a style gallery; it interviews the user about style, mood, colour, motion, font, sound and captions before designing, or recommends. It adds text and graphics timed to the spoken words, self-drawing illustrations, sound effects that land on real events, transitions, camera moves, a CTA ending, and optional styled subtitles, voice cleanup, pause trimming, a cover image, the user's own mascot and an @handle watermark. Persian/RTL is the first-class case, with bundled Persian fonts. Use this whenever the user hands over a video or voice-over and asks to "edit", "motion graphic", "explainer", "animate", "add effects/elements/sound effects", "make it engaging", or says things like «ادیت موشن گرافیک», «افکت صوتی بذار», «المان اضافه کن», «ترنزیشن», «زیرنویس خلاقانه», «سبک ادیت», «انیمیشن توضیحی», «موشن روی ویس», «کات بزن», «این قسمت رو حذف کن», «کادر امن ریلز», «کات‌اوی», «سه‌بعدی», «سبک پریمیوم» — even if they don't name this skill. Every edit is held to three hard rules: creative (no template recipe), all text inside the Instagram Reels safe area, and cutting (retakes, ranges) offered and applied when the user wants it.
 ---
 
 # Reel motion-graphics edit
@@ -8,14 +8,20 @@ description: Edits a talking-head / screen-recording video or a voice-over (Inst
 Turns a raw vertical video (or a voice-over) into a finished motion-graphics edit:
 
 ```
-ASK FIRST: edit type + style (or "suggest one") → setup + analyze (in the background)
-→ style board / recommendation (if asked) + prep options → beat sheet → plan.json
-→ check + preview loop → render overlay → compose → verify → OFFER: subtitles + extras
+INTERVIEW (gallery + 4 short question rounds → brief.json) → setup + analyze (in the background)
+→ style board on this video + prep options → beat sheet → plan.json (or Remotion 3D project)
+→ check + preview loop (approve stills) → render → compose → verify → OFFER: subtitles + extras
 ```
 
 The overlay is HTML/GSAP rendered frame-by-frame with a transparent background (`assets/engine.html`), so Persian shaping, fonts and gradients are pixel-perfect. You never hand-write animation code: you write a **plan.json** that lists components and their times. The engine animates them in the chosen **style preset**, which sets the look, motion, transitions and sound palette, and gives each component its default sound effects.
 
-There are two **modes**:
+There are two **engines**:
+- **plan engine** (default): `scripts/render.js` + `assets/engine.html`, driven by plan.json, 11 style presets. Fast to iterate.
+- **Remotion engine** (`templates/remotion/`): React + Three.js code per video for real 3D objects (glossy pop or premium dark 3D) and three custom 2D looks. Use it when the user picks gallery styles 12–16 or asks for 3D. Read `references/remotion-3d.md`, start with `scripts/remotion_init.py`.
+
+`gallery/` shows **every style on the same moment, in every way the speaker's face can be used**: A = graphics over the user's talking-head video, B = explainer with the face in a window, C = full-frame graphics without the face, D = Remotion 3D/2D. Style numbers 01–16 stay the same across letters (A04 and C04 are both «مینیمال تمیز»). Sheets: `_gallery-face.jpg` (A+B), `_gallery-graphics.jpg` (C+D), `_gallery.jpg` (all); index in `gallery/README.md`. Show the matching sheet whenever the style is being chosen.
+
+The plan engine has two **modes**:
 - **overlay** (default): graphics on top of the user's footage (talking head, screen recording).
 - **explainer** (`"mode": "explainer"`): the whole frame is graphics — self-drawing line art, diagrams, UI cards, a word-by-word subtitle — driven by the voice. The source can be an audio file; the real video can still appear in `footage` windows. Read `references/explainer.md` whenever this mode is chosen.
 
@@ -32,25 +38,28 @@ Viewers notice when a graphic or sound is half a second off, or when it has noth
 5. **No emoji.** The user doesn't want emoji anywhere in the edit. Use the built-in icons (`icon` / `kickerIcon` / `items[].icon` names, see `references/components.md`) or an image (`"icon": "img:<file>"`, PNG/SVG next to the plan). `check` flags every emoji as `EMOJI`; fix them all.
 6. **Always open with an intro and grade the picture.** Every edit starts with an intro move (style default: flash / split / iris / glitch / fade, plus a short punch-out of the footage) — render.js adds one if the plan has none; tune it with `"intro": {"kind": "iris"}` or `false`. The footage gets a **visible** colour correction (`"grade"`: `punchy` · `glow` · `film` are the strong ones and the style defaults; `natural` · `vivid` · `warm` · `cool` · `cinematic` · `bright` are subtle — the user found those invisible, so don't pick them unless asked; a raw ffmpeg filter or `false` also work). Unsure which? Render a before/after strip of one frame with 2–3 grades and let the user pick. The preview shows the grade.
 7. **Cut away from the face to animated graphics.** It's fine — and the user wants it — to hide the footage completely for a few seconds and show an animated element instead while the voice continues: a `cutaway` element (style background, or `"bg": "blur"`) followed by the elements that build the graphic. Use it where the speaker explains a mechanism, a comparison or a process (2–4 per minute, 4–10 s each, never the hook's first 3 s or the CTA). **Make it a designed visual, not a text list**: a diagram with arrows (you → middle service → post/courier), a bar chart for prices, a phone mockup whose screen fills in step by step (order card → "registered" pill → barcode tracking code → arrow to the customer with a message bubble), logos, icons — drawn with `scene` svg + `icon`/`keyword`/`ui`, each part revealed on the word that names it (`data-at`). A `ui` checklist of plain lines is not enough. The face zone isn't protected inside a cutaway (`check` skips COVERS/CLUTTER there).
-8. **Let the user choose the look, then vary within it.** Ask for a style at the very start (Step 1). Then don't fall back on the same recipe every time: vary the hook format, which components carry the ideas, and the transitions. `references/styles.md` has the per-style playbook and a list of hook formats.
+8. **Let the user choose the look, then vary within it.** Interview the user at the very start (Step 1) and build from their answers. Then don't fall back on the same recipe every time: vary the hook format, which components carry the ideas, and the transitions. `references/styles.md` has the per-style playbook and a list of hook formats.
 
-## Step 1 — ask first: edit type + style (before any work)
+## Step 1 — interview first: ask about the style in detail (before any work)
 
-As soon as the user hands over the file, ask with AskUserQuestion — before setup or analysis, so nothing is designed in the wrong direction. **Always ask the edit type** (Q1), even when the style is known: the user wants to decide it for every video. Skip a question only when the user already answered it in their message, or that the brand kit (`style`) answers, unless they ask for something different. Ask both in one call:
+The user wants every edit to be driven by **questions**: ask about their taste for *this* video before designing anything, and build from the answers. Follow `references/style-interview.md` — it is mandatory. In short:
 
-- **Q1 — edit type** (skip when the source is audio only: that is always explainer):
-  - *My video + animated cutaways (Recommended for talking heads)* — overlay edit where the explanation parts cut away from the face to designed animated graphics (diagram, chart, phone mockup, logos). Wherever the speaker explains a **product, plugin, setting or a purchase / checkout flow**, the cutaway is a **screen mockup of that feature** (`ui` kind `page`: the WordPress settings page with the toggle being switched on, the checkout form with its login modal, the «my orders» panel empty → filled), built step by step on the words. The user's favourite recipe: follow `references/cutaway-edit.md`.
-  - *Graphics on my video* (overlay) — text, stickers, steps, SFX over the footage.
-  - *Full animated explainer* — the frame becomes drawings/diagrams driven by the voice; the face can appear in windows.
-  - *Not sure — suggest* — decide after reading the transcript.
-- **Q2 — style**:
-  - *Suggest one for me (Recommended)* — after the analysis you recommend with a one-line reason and show the style board.
-  - *Show me the style board first* — render it (Step 3) and ask again with the best 4 for this video.
-  - *Overlay styles* — description lists: گرادیانی مدرن `gradient` · پاپ جسور `bold` · نئون `neon` · مینیمال `minimal` · دست‌نویس `doodle` · رترو VHS `retro` · خبری `news`.
-  - *Explainer styles* — لاین‌آرت سینمایی `lineglow` · دیتا / HUD `hud` · آموزشی کرم-نارنجی `warmguide` · اینفوگرافیک پیکتوگرامی `pictogram`.
-  Say in the question that a style name can be typed via "Other". If the user picks a *family*, ask one follow-up with that family's styles (4 max per question: recommend the best fit first, the rest via "Other").
+1. **Round 1, right away** (setup can start in the background): settle **whether the user appears on camera** and how (whole video with overlays / face + cutaways / face in a window / no face), send the matching gallery sheet (`_gallery-face.jpg` or `_gallery-graphics.jpg`), then ask the **edit type** (always, even when the style is known: the user decides it per video) and the **style** (your best 3 gallery codes for this content, e.g. A04, D13 + "suggest after analysis"; any gallery number via "Other"), and 2D vs real 3D when that is open. Send the chosen style's single image(s) large afterwards.
+2. **Round 2, after the transcript**: mood (serious / warm / energetic / cinematic), colours (brand / style default / dark + one accent / light), motion intensity (smooth / medium / bouncy), font (the user's Peyda / Hasti / Morabba / Pinar).
+3. **Round 3**: SFX amount, music, captions style, hook / intro.
+4. **Round 4** (multiSelect, only what applies): real screens from the local site, cut / pause trim / voice cleanup, @handle, CTA wording.
 
-`assets/styles.json` has each style's `label`, `en` and `feel`; use them for one-line descriptions. If the user doesn't care ("just edit it"), pick for them, say which and why, and go. **How to recommend** is in `references/styles.md` ("Recommending a style"). For explainer styles, the reference examples are in `references/` (`سبک 1.mp4` lineglow, `سبک 2.mp4` hud, `سبک 3.mp4` warmguide, `سبک 4.mp4` pictogram).
+Write the answers to `<workdir>/brief.json` and design only from it. Put your recommendation first in each question with the reason drawn from this video. Skip a question only when the user's message or the brand kit already answers it; if the user says «خودت انتخاب کن», fill the brief yourself and confirm it with one question — never skip the interview silently. Warn once when a choice clashes with the content (a playful toy-like look on a serious product reads as childish).
+
+Edit types for Q1 (skip when the source is audio only: that is always explainer or Remotion):
+- *My video + animated cutaways (Recommended for talking heads)* — overlay edit where the explanation parts cut away from the face to designed animated graphics (diagram, chart, phone mockup, logos). Wherever the speaker explains a **product, plugin, setting or a purchase / checkout flow**, the cutaway is a **screen mockup of that feature** (`ui` kind `page`: the WordPress settings page with the toggle being switched on, the checkout form with its login modal, the «my orders» panel empty → filled), built step by step on the words. The user's favourite recipe: follow `references/cutaway-edit.md`.
+- *Graphics on my video* (overlay) — text, stickers, steps, SFX over the footage.
+- *Full animated explainer* — the frame becomes drawings/diagrams driven by the voice (plan engine explainer styles, or Remotion 2D/3D); the face can appear in windows.
+- *Not sure — suggest* — decide after reading the transcript.
+
+Styles (gallery numbers; the letter in front of a number says how the face is used): overlay 01 گرادیانی مدرن `gradient` · 02 پاپ جسور `bold` · 03 نئون `neon` · 04 مینیمال `minimal` · 05 دست‌نویس `doodle` · 06 رترو VHS `retro` · 07 خبری `news`; explainer 08 لاین‌آرت سینمایی `lineglow` · 09 دیتا / HUD `hud` · 10 آموزشی کرم-نارنجی `warmguide` · 11 پیکتوگرامی `pictogram`; Remotion 12 پاپ سه‌بعدی براق `3d-pop` · 13 پریمیوم تیره سه‌بعدی `3d-premium` · 14 مینیمال سیاه‌وسفید · 15 اینفوگرافیک نقشه‌کشی · 16 لاین‌آرت نئونی.
+
+`assets/styles.json` has each plan-engine style's `label`, `en` and `feel`; `gallery/README.md` has all 16 with "best for". **How to recommend** is in `references/styles.md` ("Recommending a style"). For explainer styles, the reference examples are in `references/` (`سبک 1.mp4` lineglow, `سبک 2.mp4` hud, `سبک 3.mp4` warmguide, `سبک 4.mp4` pictogram).
 
 If warmguide (or any style) should show the user's own character, ask for a transparent PNG of it (`plan.mascot` / brand kit `mascot`). Never recreate a character from someone else's video.
 
@@ -105,7 +114,7 @@ node <skill>/scripts/render.js "<workdir>/plan.json" styleboard <T> plan        
 node <skill>/scripts/render.js "<workdir>/plan.json" styleboard <T> plan bold neon minimal doodle   # a shortlist
 ```
 
-That renders *this video's* cutaway frame in each style (`build/styleboard.jpg`). Send it, recommend one with a one-line reason, and ask with AskUserQuestion (recommended first + 3 contrasting ones, others via "Other"). Only then design the rest. For a plain overlay edit the classic board below is enough.
+That renders *this video's* cutaway frame in each style (`build/styleboard.jpg`). Send it, recommend one with a one-line reason, and ask with AskUserQuestion (recommended first + 3 contrasting ones, others via "Other"). Only then design the rest. `STYLEBOARD_W=540` renders bigger tiles; each style is also saved alone as `build/styleboard/<style>.jpg`. If the interview already settled the style, render only that style plus 2–3 close alternatives so the user sees it on their own content. For a plain overlay edit the classic board below is enough.
 
 If the user asked for a suggestion or the board (Step 1), build a **style board**: one representative frame rendered in every preset. Write a minimal plan first (video + `mode` + a title + one keyword + steps if the video has steps), then run:
 
@@ -191,7 +200,7 @@ node <skill>/scripts/render.js "<workdir>/plan.json" preview 1 5.5 15.8 21.1 27.
 - `EMPTY` (explainer): a stretch ≥ 1 s with nothing but captions on screen
 - `NOVIDEO` (explainer): `footage` windows but the source is audio only
 
-Fix every issue. Then look at `build/preview.jpg`: pick times mid-animation for each important element, and check that callouts and ripples sit exactly on their targets. Read coordinates off full-resolution frames (`ffmpeg -ss T -i video -frames:v 1 f.png`) rather than guessing from thumbnails. Iterate until it's right. Previews are cheap, full renders are not.
+Fix every issue. Before the full render, send the user 3–6 preview stills of the key beats and ask one question (approve / change something), as the interview reference says. Then look at `build/preview.jpg`: pick times mid-animation for each important element, and check that callouts and ripples sit exactly on their targets. Read coordinates off full-resolution frames (`ffmpeg -ss T -i video -frames:v 1 f.png`) rather than guessing from thumbnails. Iterate until it's right. Previews are cheap, full renders are not.
 
 ## Step 7 — render and compose
 
@@ -236,6 +245,8 @@ python <skill>/scripts/captions.py "<workdir>" --style karaoke --zones "0-14.6:1
 Proof-read the printed chunks. Fix Whisper spellings with `--fix`; a multi-word source merges tokens. Add `"captions": {"file": "captions.json"}` to the plan (style defaults to the preset's; set `"style"` to override), run `check` (captions must not cover the face or the stickers either), then render and compose again as a new version.
 
 ## Gotchas
+
+- Remotion engine: animate only from `useCurrentFrame()`, provide the look context both outside and inside `<ThreeCanvas>`, render with `--gl=angle`, run `npx remotion` from the project folder. More in `references/remotion-3d.md`.
 
 - Explainer scenes are drawn in frame pixels (1080×1920). Keep drawings in y 300–1300 so the title above and the subtitle below stay clear; preview mid-draw times to check the build-up order.
 - The mascot is always the user's own image. Characters, logos or illustrations from reference videos are never redrawn or traced.

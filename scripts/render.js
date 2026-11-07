@@ -341,7 +341,10 @@ function lintSfx(sfx) {
       for (const [i, k] of names.entries()) {
         const D = STYLES[k], out = path.join(dir, `s_${String(i).padStart(2, '0')}.jpg`);
         const els = [...(P.elements || []).map(e => ({ ...e })), { type: 'keyword', t: 0, d: 999, x: 540, y: 1800, text: D.label, style: 'plain', rotate: 0, sfx: false, wiggle: false, size: 54, id: 'stylename' }];
-        await comp({ ...P, style: k, styleDef: D, theme: { ...D.theme, ...(plan.theme || {}) }, elements: els, intro: false, handle: null }, t, out, 360);
+        let base = frame;  // explainer: each style brings its own background (cream paper, charcoal, black…)
+        if (EXPLAINER) { await page.evaluate(p => build(p), { ...P, style: k, styleDef: D, theme: { ...D.theme, ...(plan.theme || {}) }, elements: [], camera: [], captions: null, mascot: null }); base = path.join(dir, `bg_${k}.png`); await bgShot(base); }
+        await comp({ ...P, style: k, styleDef: D, theme: { ...D.theme, ...(plan.theme || {}) }, elements: els, intro: false, handle: null }, t, out, Number(process.env.STYLEBOARD_W || 360), base);
+        fs.copyFileSync(out, path.join(dir, `${k}.jpg`));
         jpgs.push(out); console.log(`  ${k.padEnd(9)} ${D.en}`);
       }
       spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', path.join(dir, 's_%02d.jpg'), '-vf', `tile=${Math.min(4, jpgs.length)}x${Math.ceil(jpgs.length / 4)}:padding=8:color=white`, '-q:v', '2', '-frames:v', '1', path.join(build, 'styleboard.jpg')]);
