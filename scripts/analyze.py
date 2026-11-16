@@ -30,7 +30,13 @@ def probe(video):
         return {"width": None, "height": None, "fps": None, "has_video": False, "duration": float(j["format"]["duration"]),
                 "has_audio": any(s["codec_type"] == "audio" for s in j["streams"])}
     num, den = map(int, v["r_frame_rate"].split("/"))
-    return {"width": int(v["width"]), "height": int(v["height"]), "fps": round(num / den, 3), "has_video": True,
+    # phone videos are often stored landscape with a 90° rotation flag; ffmpeg auto-rotates on decode
+    rot = int(float(v.get("tags", {}).get("rotate", 0) or 0))
+    for sd in v.get("side_data_list", []):
+        if "rotation" in sd: rot = int(float(sd["rotation"]))
+    w, h = int(v["width"]), int(v["height"])
+    if abs(rot) % 180 == 90: w, h = h, w
+    return {"width": w, "height": h, "rotation": rot, "fps": round(num / den, 3), "has_video": True,
             "duration": float(j["format"]["duration"]),
             "has_audio": any(s["codec_type"] == "audio" for s in j["streams"])}
 
@@ -49,7 +55,7 @@ def sheets(video, out, dur, step):
     per = int(round(10 / step)); cols = min(per, 10); rows = -(-per // cols)
     dt = (f"drawtext=fontfile='{f}':" if f else "drawtext=") + \
         "text='%{pts\\:hms}':fontsize=20:fontcolor=yellow:box=1:boxcolor=black@0.7:x=4:y=4"
-    for s in np.arange(0, dur, 10):
+    for s in np.arange(0, max(dur - step, 0.01), 10):  # a sliver shorter than one cell yields no frame
         name = out / f"sheet_{int(s):03d}.jpg"
         run(["ffmpeg", "-v", "error", "-y", "-ss", f"{s}", "-copyts", "-t", "10", "-i", video,
              "-vf", f"fps=1/{step},scale=200:-1,{dt},tile={cols}x{rows}:padding=4", "-frames:v", "1", str(name)])

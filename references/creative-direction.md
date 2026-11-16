@@ -1,5 +1,21 @@
 # Creative direction
 
+## Smart Mode Creative Freedom (آزادی و انعطاف حالت هوشمند)
+Smart mode adapts style, pacing and composition to the footage and audience within the user’s stated preferences. Use the [decision workflow](style-interview.md) to choose the edit and checks.
+
+## Titles vs Captions: Never duplicate text (قانون تفکیک تایتل و زیرنویس)
+- **Hook title only (تایتل فقط برای هووک):** A big title belongs only in the **first 1–3 seconds** (the hook), before or as captions start.
+- **No body titles when captions are active (ممنوعیت تکرار تایتل در حضور زیرنویس):** When captions are running, **NEVER place full-sentence titles at the top of the frame repeating what the speaker is saying**.
+  - The captions already display the spoken words word-by-word. Repeating the sentence in a big title at the top splits the viewer's attention and clutters the frame.
+  - The middle/top of the screen belongs to the **visual material** (the screenshot mockup, the canvas, the diagram, the UI interaction).
+  - Above the visual, at most use a tiny pill tag (e.g. step chip or product name like `Nias Course Builder`), never descriptive sentence titles.
+  - Reserve stickers exclusively for single punchy words (e.g. «ضد جعل» or «رایگان») for a brief 1.2s moment.
+
+## No handle watermarks (حذف کامل درج آیدی و واترمارک)
+- Never put `@handle` or account watermarks on the video frame.
+- Social platforms (Instagram Reels, TikTok, YouTube Shorts) already display the creator's username, profile photo, follow button, and caption.
+- Adding a handle badge on the video is visually distracting, amateur, and wastes valuable safe-area real estate.
+
 ## Relevance first
 Every overlay should answer "why is this on screen *right now*?". The answer must be one of:
 - it **echoes or condenses what is being said** (keyword, counter, compare, note), anchored to that word;
@@ -28,9 +44,10 @@ sections, less is more: one keyword sticker for the single most important word o
   stickers to the sides (x < 300 or x > 780). Declare the face in `avoid` so `check` enforces this.
 - On screen-recording sections: keep clear of the PIP and of the UI the cursor is using. The empty top bar of a
   browser screenshot is good real estate for the step chip.
-- 9:16 safe area for Reels: keep important text within y 220–1500 (top is covered by the username, bottom by the
-  caption/buttons UI) and x 60–1020. The hook title at the very top is fine for the first seconds (no UI is on top yet),
-  but the CTA should sit around y 1000–1150, not at the bottom.
+- 9:16 Reels safe area (hard rule, `SAFE` lint): all text within x 60–1020 and y 250–1500, and away from the right
+  action rail (x > 930 for y 1150–1500). That includes the hook title (no "it's only the first seconds" exception),
+  captions (y ≈ 1150–1340), the CTA (y 1000–1150) and the @handle. Check entrance animations too: a sticker that flies in
+  from off-frame is fine, one that *rests* at y 1600 is not.
 - At most 2–3 overlays visible at once. `CLUTTER` warnings mean the viewer can't read anything.
 
 ## Timing
@@ -58,6 +75,11 @@ sections, less is more: one keyword sticker for the single most important word o
 - `bars`: listing / step jumps.
 - `lightleak`: warm, emotional, intro/outro.
 - `flash`: hard cut on a beat or impact.
+- `push` / `whip` / `zoom`: speed, a directional change, a dive into a detail — match the motion already on screen.
+- `blinds` / `tiles` / `strip` / `burn` / `ink` / `paper`: stylistic ground changes; see the feel table in
+  `references/transitions.md` before using one.
+- Density: about one per 6 s on a tutorial (`TRDENSE` warns under 3.5 s). One transition = one sound; never two
+  drama cuts back to back.
 
 ## Explainer mode (whole frame is graphics)
 - The voice is the clock: change the picture on sentence starts, never mid-word.
@@ -77,3 +99,17 @@ sections, less is more: one keyword sticker for the single most important word o
 - `counter` for any number spoken (GB, %, price, seconds).
 - Payoff: riser → success confetti + card + camera shake/punch.
 - Outro: CTA buttons + ding. Keep it under 2.5 s.
+
+## Creativity checklist (≥3 per video, specific to its content)
+Ask "what is this video *about*, and how can the graphics act it out?" Ideas that land:
+- **Visual metaphor** of the topic: login problem → a padlock that shakes, then unlocks on the fix; slow site → a
+  loading bar that stalls; money → a counter that rolls.
+- **Kinetic word**: the key word does what it means — «خطا» glitches red, «پاک کن» gets wiped away, «سریع» zips in.
+- **Problem → solution contrast**: red "error" treatment for the problem part, the style's accent color + success sound
+  for the fix; or a `compare` card «قبل / بعد».
+- **Ride the footage**: a transition that follows a real scroll / page change direction; a punch-in that lands on the
+  exact moment the result appears.
+- **Sound story**: error buzz/thud on the problem, riser into the fix, chime on success — so the audio alone tells it.
+- **A hook that isn't a title**: a question to the viewer, the end result first ("flash-forward"), or the error message
+  itself big on screen.
+Don't repeat the same three moves video after video; if the last edit used a flash-forward hook, pick another.

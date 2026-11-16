@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>راهنمای ساخت ویدیو با reel-motion-edit</title>
+  <meta name="description" content="راهنمای تصویری انتخاب سبک از گالری، ساخت ویدیو با موتور پلن و استفاده از Remotion">
+  <style>
+    :root { font-family: Tahoma, "Segoe UI", sans-serif; color: #f2f1ec; background: #0e151b; line-height: 1.9; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    a { color: #8be0d0; }
+    a:hover { color: #fff; }
+    header { padding: 1.5rem max(1rem,calc((100vw - 1140px)/2)); background: #16252b; border-bottom: 1px solid #355157; }
+    nav { display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center; }
+    nav strong { margin-left: auto; color: #f4c989; }
+    main { width: min(1140px, calc(100% - 2rem)); margin: auto; }
+    section { padding: 3rem 0; border-bottom: 1px solid #2b4149; }
+    h1 { font-size: clamp(2rem,5vw,4.2rem); line-height: 1.25; margin: .6rem 0 1rem; }
+    h2 { font-size: clamp(1.5rem,3vw,2.1rem); margin: 0 0 1rem; color: #f4c989; }
+    h3 { margin-bottom: .3rem; }
+    p { max-width: 75ch; }
+    .eyebrow { color: #8be0d0; letter-spacing: .06em; }
+    .hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 2rem; align-items: center; }
+    .hero img, .shot img { width: 100%; border-radius: 18px; border: 1px solid #33515a; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(230px,1fr)); gap: 1rem; }
+    .card { background: #172830; border: 1px solid #35515b; padding: 1.25rem; border-radius: 16px; }
+    .card p { margin: .4rem 0 0; }
+    .muted { color: #b8c7c9; }
+    .pill { display: inline-block; border: 1px solid #75cbbd; border-radius: 99px; padding: .12rem .7rem; color: #94e8d9; margin: .15rem 0; }
+    .shots { display: grid; grid-template-columns: repeat(5,1fr); gap: .8rem; }
+    .shot { text-decoration: none; color: #fff; }
+    .shot span { display: block; font-size: .9rem; }
+    .code { direction: ltr; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; background: #0a1116; color: #d3f6e9; border: 1px solid #35515b; border-radius: 12px; padding: 1rem; line-height: 1.7; font-size: .9rem; }
+    code { direction: ltr; unicode-bidi: isolate; color: #bcefe3; }
+    .steps { counter-reset: step; }
+    .steps li { margin: .8rem 0; padding-right: .5rem; }
+    .actions { display: flex; gap: .7rem; flex-wrap: wrap; margin-top: 1.4rem; }
+    .button { display: inline-block; padding: .65rem 1rem; border-radius: 10px; text-decoration: none; background: #85dbc8; color: #0c2225; font-weight: bold; }
+    .button.secondary { background: transparent; color: #a5eadc; border: 1px solid #78c6b9; }
+    footer { padding: 2rem 1rem; text-align: center; color: #aabfc1; }
+    @media (max-width: 780px) { .hero { grid-template-columns: 1fr; } .shots { grid-template-columns: repeat(2,1fr); } nav strong { width: 100%; } section { padding: 2rem 0; } }
+  </style>
+</head>
+<body>
+  <header>
+    <nav aria-label="بخش‌های راهنما">
+      <strong>reel-motion-edit</strong>
+      <a href="#styles">انتخاب سبک</a><a href="#commands">دستورهای زبانی</a><a href="#plan">موتور پلن</a><a href="#remotion">Remotion</a><a href="../README.md">README</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <div>
+        <div class="eyebrow">راهنمای تصویری ساخت ویدیو</div>
+        <h1>از عکس سبک تا ویدیوی نهایی</h1>
+        <p>سبک را در گالری ببین، چیدمان چهره را مشخص کن، متن و زمان‌های ویدیوی خودت را بده و با موتور پلن یا Remotion پیش‌نمایش و خروجی بساز.</p>
+        <div class="actions"><a class="button" href="#styles">سبک‌ها را ببین</a><a class="button secondary" href="../GUIDE.md">راهنمای گام‌به‌گام</a></div>
+      </div>
+      <img src="../gallery/_gallery-face.jpg" alt="نمونه‌های سبک روی ویدیوی گوینده" loading="eager">
+    </section>
+    <section id="styles">
+      <h2>۱. سبک و قاب را انتخاب کن</h2>
+      <p>حرفِ نام عکس، شکل استفاده از چهره است؛ شماره، ظاهر را نشان می‌دهد. A یعنی گرافیک روی چهره، B چهره در پنجره، C موشن کامل، E قاب تقسیم‌شده و D نمونهٔ Remotion.</p>
+      <div class="grid">
+        <div class="card"><span class="pill">A</span><h3>روی چهره</h3><p>ویدیوی اصلی می‌ماند؛ المان‌ها با گفتار ظاهر می‌شوند.</p></div>
+        <div class="card"><span class="pill">B / E</span><h3>چهره در چیدمان</h3><p>برای توضیح فرایند، چهره در پنجره یا نیمهٔ پایین قرار می‌گیرد.</p></div>
+        <div class="card"><span class="pill">C</span><h3>موشن کامل</h3><p>در کات‌اوی، تصویر گوینده حذف می‌شود و گفتار روی گرافیک ادامه دارد.</p></div>
+        <div class="card"><span class="pill">D</span><h3>Remotion</h3><p>صحنه‌های کدنویسی‌شدهٔ دو یا سه‌بعدی در قالب React.</p></div>
+      </div>
+      <p class="muted">عکس‌های گالری فقط مرجع بصری‌اند. کد A/B/C/E در <code>assets/styles.json</code> و <code>assets/engine.html</code> است؛ کد D در <code>templates/remotion/src/</code>. ۲۶ پریست پلن وجود دارد و همهٔ آنها هنوز عکس گالری ندارند.</p>
+      <div class="shots">
+        <a class="shot" href="../gallery/A04-minimal.jpg"><img src="../gallery/A04-minimal.jpg" alt="A04 مینیمال روی چهره" loading="lazy"><span>A04 · مینیمال روی چهره</span></a>
+        <a class="shot" href="../gallery/E10-warmguide.jpg"><img src="../gallery/E10-warmguide.jpg" alt="E10 آموزشی با قاب تقسیم‌شده" loading="lazy"><span>E10 · قاب تقسیم‌شده</span></a>
+        <a class="shot" href="../gallery/C09-hud.jpg"><img src="../gallery/C09-hud.jpg" alt="C09 موشن HUD" loading="lazy"><span>C09 · موشن تمام‌صفحه</span></a>
+        <a class="shot" href="../gallery/D13-3d-premium.jpg"><img src="../gallery/D13-3d-premium.jpg" alt="D13 سه‌بعدی پریمیوم" loading="lazy"><span>D13 · سه‌بعدی پریمیوم</span></a>
+        <a class="shot" href="../gallery/D15-remotion-blueprint.jpg"><img src="../gallery/D15-remotion-blueprint.jpg" alt="D15 نقشه‌کشی Remotion" loading="lazy"><span>D15 · نقشه‌کشی</span></a>
+      </div>
+      <div class="actions"><a class="button secondary" href="../gallery/README.md">جدول کامل گالری</a><a class="button secondary" href="../references/commands-fa.md">۲۶ نام سبک</a></div>
+    </section>
+    <section id="commands">
+      <h2>۲. خواسته‌ات را دقیق بنویس</h2>
+      <p>مسیر ویدیو، سبک یا عکس گالری، جای چهره، نوع المان، محدودهٔ زمانی و خروجی مطلوب را بنویس. چند خواسته را می‌توان در یک پیام ترکیب کرد.</p>
+      <pre class="code">«E:\camtasia\optimised video\opt.mp4» را به سبک نیاس ادیت بزن.
+A روی چهره باشد و بخش پشتیبانی از ثانیهٔ ۲۷ تا پایان جمله C موشن کامل شود.
+هنگام نام بردن سرویس‌ها لوگوهای واقعی را پشت سر نمایش بده.
+در بخش نظرها از اسکرین‌شات‌های review استفاده کن؛ زیرنویس کمی پایین‌تر باشد.
+موسیقی بیزنسی با گین -20 dB و ترنزیشن ووش، زوم‌اوت ساده و فلش کوتاه بگذار.
+MP4 کامل و پیش‌نمایش بخش اصلاح‌شده را بده.</pre>
+      <p><a href="../references/commands-fa.md">کتابخانهٔ فرمان‌ها</a> نمونه‌های انتخاب سبک، گالری، صدا، زیرنویس، شواهد، اصلاح و تحویل را دارد. این جمله‌ها دستور PowerShell نیستند؛ دستیار آنها را به پلن یا کد Remotion تبدیل می‌کند.</p>
+    </section>
+    <section id="plan">
+      <h2>۳. مسیر موتور پلن</h2>
+      <ol class="steps">
+        <li>با <code>analyze.py</code> گفتار، زمان و تصویر ویدیو را استخراج کن.</li>
+        <li>برای هر جمله در <code>beats.md</code> مفهوم، تصویر، حرکت و زمان را بنویس.</li>
+        <li>از <a href="../examples/plan.nias.json">نمونه نیاس</a> یا <a href="../examples/plan.explainer.json">نمونه اکسپلینر</a> یک <code>plan.json</code> مناسب همان ویدیو بساز.</li>
+        <li>با <code>check</code> و <code>preview</code> خطا و چیدمان را اصلاح کن؛ سپس <code>full</code> و <code>compose.py</code> را اجرا کن.</li>
+      </ol>
+      <pre class="code">python scripts/setup.py --skip-model
+python scripts/analyze.py "SOURCE.mp4" "WORKDIR" --lang fa
+node scripts/render.js "WORKDIR/plan.json" check --strict
+node scripts/render.js "WORKDIR/plan.json" preview 1 5 10
+node scripts/render.js "WORKDIR/plan.json" full
+python scripts/compose.py "WORKDIR/plan.json" --out "OUTPUT.mp4"</pre>
+      <p>این فرمان‌ها را در PowerShell از ریشهٔ مخزن اجرا کن و <code>SOURCE</code>، <code>WORKDIR</code> و <code>OUTPUT</code> را با مسیرهای خودت عوض کن. <a href="../GUIDE.md#۳-با-موتور-پلن-ویدیو-بساز">توضیح کامل</a></p>
+    </section>
+    <section id="remotion">
+      <h2>۴. مسیر Remotion</h2>
+      <p>در Remotion عکس‌های D12 تا D16 به پنج Composition مربوط‌اند: <code>Pop3DVideo</code>، <code>Premium3DVideo</code>، <code>MinimalVideo</code>، <code>InfographicVideo</code> و <code>MainVideo</code>. قالب، داستان نمونه است؛ زمان، متن و صحنه‌ها را با ورودی تازه بازنویسی کن.</p>
+      <pre class="code">python scripts/remotion_init.py "WORKDIR" --audio "SOURCE.mp4" --install
+Set-Location "WORKDIR/remotion"
+npm run dev
+npm run lint
+npx remotion compositions
+npx remotion still Premium3DVideo "frame.jpg" --frame=120 --gl=angle
+npx remotion render Premium3DVideo "final.mp4" --gl=angle</pre>
+      <p>در Studio پیش‌نمایش را بررسی کن. شناسه و مدت در <code>src/Root.tsx</code>، زمان‌بندی سه‌بعدی در <code>src/pop3d/timing.ts</code> و صحنه‌ها در پوشه‌های <code>src/</code> هستند. برای ۲بعدی تنظیم GL معمولاً لازم نیست. <a href="../GUIDE.md#۴-با-remotion-ویدیو-بساز">آموزش کامل Remotion</a> · <a href="https://www.remotion.dev/docs/studio">مستند رسمی Studio</a></p>
+    </section>
+    <section>
+      <h2>۵. پیش از تحویل</h2>
+      <p>MP4 نهایی را برای سینک المان‌ها، خوانایی زیرنویس، درست‌بودن نام‌ها و نشانی‌ها، شاهدهای واقعی و بلندی گفتار بازبینی کن. فایل اصلی را بازنویسی نکن. <a href="../references/release.md">چک‌لیست انتشار</a></p>
+    </section>
+  </main>
+  <footer>راهنمای محلی reel-motion-edit · <a href="../README.md">بازگشت به README</a></footer>
+</body>
+</html>

@@ -6,13 +6,14 @@ Common optional props: `id`, `x`/`y` (anchor point, px in the 1080×1920 frame; 
 `[[offset, "name", db], …]` to replace the defaults), `sfxGain` (dB added to all its defaults).
 
 Text props accept `*highlight*` (brand gradient / primary colour), `` `LTR run` ``, `~struck~` (line drawn on at
-`strikeAt`, title/keyword) and `^alt^` (secondary colour).
+`strikeAt`, title/keyword), `^alt^` (secondary colour) and `_italic serif_` (mixed-type accent, family from
+`theme.serif`, the modern-2025 pattern).
 
 | type | what it is | key props | default SFX |
 |---|---|---|---|
-| `title` | hook title, word-by-word | `lines[]`, `kicker`, `kickerIcon`, `sub`, `y` (top, default 100), `anim`: slam·rise·glitch·blur, `wordGap`, `jitter`, `scrim` (dark top gradient, default on), `scrimH` | impact, whoosh, pop per word, glitch, swoosh out |
-| `steps` | persistent numbered step chip with progress dots, flips between steps | `items[{t,label,sub,y?}]`, `total`, `y` (top, 150), `hide[[a,b]]`, `end` | whoosh + pop per step |
-| `keyword` | sticker/neon word that echoes speech | `text`, `icon` (icon name or `img:<file>`; no emoji), `style`: sticker·neon·outline·gradient·plain, `from`: pop·left·right·drop·up, `rotate`, `size` | pop / whoosh |
+| `title` | hook title, word-by-word | `lines[]`, `kicker`, `kickerIcon`, `sub`, `y` (top, default 260 = inside the Reels safe area), `anim`: slam·rise·glitch·blur·mask·type·flip·wave·stamp·track, `wordGap`, `jitter`, `scrim` (dark top gradient, default on), `scrimH` | impact, whoosh, pop per word, glitch, swoosh out |
+| `steps` | persistent numbered step chip with progress dots, flips between steps | `items[{t,label,sub,y?}]`, `total`, `y` (top, default 270, inside the safe area), `hide[[a,b]]`, `end` | whoosh + pop per step |
+| `keyword` | sticker/neon word that echoes speech | `text`, `icon` (icon name or `img:<file>`; no emoji), `style`: sticker·neon·outline·gradient·plain·marker·tape·stamp·chrome·block, `from`: pop·left·right·drop·up, `rotate`, `size` | pop / whoosh |
 | `note` | tip card («نکته») | `icon` (icon name or `img:`, default bulb), `title`, `text` | notify |
 | `callout` | pill label, optional drawn arrow | `text`, `icon`, `arrow: {from:[x,y], to:[x,y], curve}` | pop (+ swipe) |
 | `highlight` | box/circle around a UI target with dimmed surroundings | `rect:[x,y,w,h]`, `shape`: rect·circle·scribble (hand-drawn loop, drawn on), `dim` (0–1, default .35), `label`, `pulse` | pop |
@@ -26,17 +27,19 @@ Text props accept `*highlight*` (brand gradient / primary colour), `` `LTR run` 
 | `success` | confetti burst + result card | `x`,`y` (burst origin), `title`, `sub`, `cardY`, `confetti` | success, impact, sparkle |
 | `cta` | end buttons | `items[{text, icon, color?}]`, `y` (default 1060) | pops + ding |
 | `lowerthird` | name / role | `name`, `role`, `x`, `y` | whoosh |
-| `transition` | full-frame overlay transition | `kind`: wipe·circles·glitch·bars·lightleak·flash·fade·paper·static·dissolve·scan·slide, or omit / `auto` to cycle the style's pool; `dur`, `x`,`y` (circles origin) | whoosh / heavy whoosh / glitch / swipe / static / air |
+| `transition` | full-frame overlay transition | `kind`: wipe·circles·glitch·bars·lightleak·flash·fade·paper·static·dissolve·scan·slide·whip·push·blinds·tiles·burn·ink·strip·zoom, or omit / `auto` to cycle the style's pool; `dur`, `x`,`y` (circles origin), `dir` (push: ltr·rtl·up·down) | whoosh / heavy whoosh / glitch / swipe / static / air |
+| `bgword` | giant watermark word behind the scene (modern-2025) | `text`, `size` (px), `color`, `outline` (bool), `rotate`, `y`, `drift` (bool) | — |
 | `scene` | self-drawing line-art illustration (frame coordinates) | `items[{shape, at, …}]` built-in pictograms, `svg` raw markup, `draw`, `glow`, `zoom`, `enter`, `exit` | draw per reveal |
 | `readout` | monospace HUD lines, typed out | `lines[]` (`ok:` `err:` `acc:` `hi:` prefixes), `align`, `stagger`, `size`, `typewriter:false` | tick per line |
 | `segbar` | segmented step bar (warmguide) | `items[{t,label?}]`, `total`, `word`, `y`, `hide`, `end` | whoosh + pop |
 | `ui` | mock UI card | `kind`: terminal·toggle·apps·chips·checklist·input·pill, `w`, `title`, `lines`, `items`, `text`, `keyword` | whoosh, typing, clicks |
 | `choice` | pick-one option cards | `options[{label}]`, `pick`, `pickAt`, `cw`, `ch` | whoosh + click |
 | `mascot` | the user's own character image | `src` or `poses{}` + `track[{t,pose}]`, `w`, `x`, `y`, `bob` | whoosh |
-| `footage` | window showing the source video (explainer mode) | `rect`, `radius`, `frame`: card·phone·none, `src` | whoosh |
+| `footage` | window showing the source video (explainer mode) | `rect`, `radius`, `frame`: card·phone·none, `src`, `fy` (crop focus 0 top…1 bottom, default .5) | whoosh |
 | `panel` | style-coloured rectangle (split layouts) | `rect`, `radius`, `color`, `enter`: slide·fade | whoosh |
 
 Scene shapes, explainer workflow and per-style recipes: `references/explainer.md`.
+Title/keyword motion in depth: `references/text-animations.md`. Cut vocabulary: `references/transitions.md`.
 
 **Icons** (use these instead of emoji — the user doesn't want emoji): download check x warn star click save follow
 like heart share send comment lock globe bolt search truck box money coin up down chart deal fire bulb pointdown
@@ -48,7 +51,7 @@ Global plan keys:
 - `mode`: `overlay` (default, graphics over the source video) or `explainer` (whole frame is graphics; the source
   may be audio only). `bg`: `{color, gradient, image}` overrides the style's explainer background.
 - `mascot`: `{src | poses, track, w, x, y}` the user's own character for the whole video (or brand kit `mascot`).
-- `style`: preset name (gradient · bold · neon · minimal · doodle · retro · news · lineglow · hud · warmguide · pictogram). It sets look, motion, transitions,
+- `style`: preset name (gradient · bold · neon · minimal · doodle · retro · news · editorial · brutalist · glass · y2k · lineglow · hud · warmguide · pictogram · print · type · chalk · blueprint). It sets look, motion, transitions,
   sound palette, caption default and fx layers. Element props you leave unset come from the preset's `defaults`.
 - `theme`: overrides on top of the preset (brand colors / fonts).
 - `handle`: `{text, corner: tl|tr|bl|br, logo?, opacity?}`, a persistent @username watermark (or from the brand kit).
@@ -65,6 +68,10 @@ Global plan keys:
   (see below), `captions`, `avoid`, `fonts`.
 
 ## Camera moves (`plan.camera`, applied to the video in compose.py)
+
+For overlay edits, judge framing on the composed MP4. The `render.js preview` stills show the overlay over an unanimated source frame. Compare the composed frames just before, during and after one planned move, checking that the subject stays in frame and the captions stay fixed.
+
+`easeIn` and `easeOut` set the ramp lengths in seconds. The ramp begins at `t` and the return begins at `t + d`. Default ramps are 0.24 / 0.42 s for punch and 0.55 / 0.55 s for zoom. Allow room between intervals, including their return ramps, if they should play separately.
 
 `{t, d, type, scale, cx, cy, amp}`:
 - `punch`: instant cut-in to `scale` (1.08–1.2) centered on `cx,cy`, eases back out. Use it on an emphasized word.
@@ -96,6 +103,72 @@ and repeats −10…−14. Any absolute path to a wav also works as a name in ma
 
 `theme`: `primary` `secondary` `accent` `ok` `dark` `text` `highlight` (active caption word), `line` (scene
 stroke colour), `dim` (dim strokes / unspoken caption words), `card` (ui card background), `display` (headline
-font family), `body` (UI/body font family), `mono` (readouts). Bundled families: `Vazirmatn` `Lalezar` `Changa`
+font family), `body` (UI/body font family), `mono` (readouts), `serif` (italic accent family for `_runs_`,
+falls back to display). Bundled families: `Vazirmatn` `Lalezar` `Changa`
 `Lemonada` `NotoKufiArabic` `Estedad` (rounded geometric, explainer styles) `JetBrainsMono` (Latin monospace).
 A file named `Family.latin.woff2` next to `Family.woff2` adds a Latin subset to the same family. Add more with `fonts: {"Family": "path.ttf"}`.
+
+## `ui` kind `page` — screen mockups (cutaways)
+
+`{type: "ui", kind: "page", t, d|end, x, y (centre, default 760), w (900), h (min body height), frame: browser|admin|phone,
+url, header, side[] (admin sidebar), sideOn (index), rows[], cursor[], hi[], modal, enter: pop|rise}`.
+
+- `rows[]`: `{row: h, text}` · `{row: field, label, value, ltr, typeAt (false = already filled)}` · `{row: toggle, label, sub, on: <offset>|true}` ·
+  `{row: button, text, press: <offset>, dim}` · `{row: item, icon, title, sub, badge, bad}` · `{row: empty, icon, text}` ·
+  `{row: alert, text, cls: err|ok|info, icon}` · `{row: chip, items[]}`. Every row takes `at` (seconds after `t`).
+- `cursor[]`: `{at, row, fx (0–1 across the row, default .3), move (s), click (default true)}` — moves to that row and clicks.
+- `hi[]`: `{at, row, d, color}` — a ring around a row.
+- `modal`: `{at, icon, title, text, button, sfx}` — dims the page and pops a dialog.
+- Default SFX: whoosh on entrance, typing per typed field, click per toggle/cursor click, pop per ring, notify on the modal.
+  In a busy cutaway mute some with `"sfx": false` and add the few that matter by hand.
+- The frame look follows the style (neon glow, bold black offset border, minimal soft shadow, doodle hand border, HUD dark UI…).
+
+## `shot` — a real screenshot in a frame
+
+`{type: "shot", src: "img:shots/local/x.png", imgW (png width), t, d|end, x, y, w (screen width), vh (visible height),
+frame: phone|browser|none, url (browser bar), enter: pop|rise|none, start (image px scrolled at the start),
+scroll[{at, y, dur}], hi[{at, rect:[x,y,w,h] image px, sy, d, color}], cursor[{at, x, y, sy, move, click}], zoom{at, to, d}}`.
+Use the user's local site for the images (see `references/cutaway-edit.md` → "Capturing real screens").
+
+## Effect footage (`footageFx`)
+
+Loops in `assets/footage/` (generated by `scripts/footage.py`, original, CC0), blended onto the picture by compose under the graphics:
+
+```json
+"footageFx": [
+  {"file": "lightleak_warm", "t": 0, "d": 1.6, "opacity": 0.9},
+  {"file": "film_grain", "blend": "overlay", "opacity": 0.35, "fade": 0},
+  {"file": "light_sweep", "t": "w:ثبت-0.2", "d": 1.2, "opacity": 0.7}
+]
+```
+
+`file` (name in assets/footage or assets/footage/user, or a path) · `t`/`end`/`d` (word anchors work; no `d` = to the end) · `blend` screen (default; black = no change) · overlay / softlight (grey = no change) · lighten · normal · `opacity` (0–1, default .8) · `fade` (s, default .3). The preview/styleboard don't show them: check on the composed output.
+
+| file | blend | use | styles |
+|---|---|---|---|
+| `lightleak_warm` | screen | intro, warm emotional moment, payoff | gradient, retro, warmguide, doodle |
+| `lightleak_cool` | screen | tech intro, section change | neon, hud, minimal, glass |
+| `film_grain` | overlay .3–.4 | whole video, filmic texture | lineglow, retro, cinematic grades |
+| `dust_scratches` | screen .6 | old-film texture, flashbacks | retro, doodle, lineglow |
+| `bokeh` | screen .5–.7 | soft dreamy background moments, CTA | gradient, minimal, warmguide |
+| `vhs_noise` | screen .5 | glitch hits, retro transitions | retro, neon |
+| `sparkles` | screen | the payoff ("done!", success), price drops | gradient, bold, warmguide |
+| `light_sweep` | screen .6–.8 | a 1 s shine across a reveal / logo / title | all |
+| `gradient_mesh` | normal | animated background for split layouts / cutaways (`bg` image alternative) | gradient, neon, 3d |
+
+Use 1–3 per video: one texture (grain or dust) for the whole clip and 1–2 accent moments. More looks busy.
+
+## Extra sound effects (`assets/sfx/`)
+
+Bundled story sounds (`scripts/sfx_extra.py`, original, CC0), usable by name in `sfx` like the base library:
+`mouse_click` `toggle_on` `toggle_off` `key_enter` `sms_receive` `notify_soft` `error_soft` `success_soft` `phone_vibrate`
+`lock_close` `unlock` `cash_register` `stamp` `page_flip` `card_slide` `box_drop` `marker_squeak` `clock_tick` `bell` `counter_tick`
+`boom_cinematic` `sub_hit` `reverse_cymbal` `riser_tension` `whoosh_reverse` `shimmer_long` `glass_ding`.
+Match them to the story: `lock_close` on «قفل», `unlock` on «تأیید», `sms_receive` when a code arrives, `cash_register` on a sale/price,
+`toggle_on` on a settings switch, `stamp` on «ثبت شد», `reverse_cymbal` / `riser_tension` into a reveal, `boom_cinematic` on the turning point.
+The `_soft` ones are the premium palette (serious looks). Sounds the user downloads (e.g. Kenney CC0 packs) go in `assets/sfx/user/` and are used by file name; wav, mp3 and ogg work.
+
+## Music (`scripts/music.py`)
+
+`python scripts/music.py <workdir>/music.mp3 --mood calm|upbeat|corporate|tension|cinematic|tech --dur <video s> [--drop <turning word s>]`
+makes an original bed exactly as long as the video (30 s previews of each mood in `assets/music/`). `tension` stays minor and sparse until `--drop`, then opens up: put the drop on the turning-point word («اما راه حلش»). Then `"music": {"file": "music.mp3", "db": -20}`.

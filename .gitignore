@@ -4,6 +4,24 @@ __pycache__/
 build/
 node_modules/
 references/*.mp4
+references/**/*.mp4
+references/**/*.mov
+references/**/*.webm
+# Per-video sources, renders and intermediate media belong outside the skill package.
+work/
+my-project/
+_refscan/
 _ref_sheets/
+Claude outputs/
+acl-recovery/
+.freebuff/
+.kilo/
 # commercial / personal fonts: local only, never published
 assets/fonts/user/
+
+# the user's own downloaded sounds / footage: licences vary, keep local
+assets/sfx/user/*
+!assets/sfx/user/README.md
+assets/footage/user/*
+!assets/footage/user/README.md
+assets/shots/

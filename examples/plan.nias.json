@@ -1,0 +1,17 @@
+{
+  "video": "source.mp4",
+  "delivery": "instagram",
+  "brand": false,
+  "duration": 5,
+  "fps": 24,
+  "size": [1080, 1920],
+  "style": "nias",
+  "mode": "overlay",
+  "cover": {"lines": ["فرق را ببین"], "blur": false},
+  "camera": [{"t": 0.3, "d": 1.0, "type": "zoom", "scale": 1.12, "cx": 540, "cy": 870}],
+  "elements": [
+    {"type": "title", "t": 0.04, "d": 1.6, "y": 460, "lines": ["برای فروشگاهت", "*فرق را ببین*"], "focusAt": 0.35, "jitter": false, "sfx": false},
+    {"type": "transition", "t": 1.8, "sfx": false},
+    {"type": "keyword", "t": 2.25, "d": 1.65, "y": 920, "text": "نتیجه", "sfx": false}
+  ]
+}

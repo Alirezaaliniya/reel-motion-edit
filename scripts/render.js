@@ -1,9 +1,10 @@
 // Renders the overlay described by plan.json with assets/engine.html.
 //
-//   node render.js <plan.json> check              resolve times + layout/clutter/sfx lint
+//   node render.js <plan.json> check              resolve times + layout/clutter/safe-area/sfx lint
 //   node render.js <plan.json> preview t1 t2 ...  composite stills over the video → build/preview.jpg
 //   node render.js <plan.json> full               ProRes 4444 alpha track → build/overlay.mov
 //   node render.js <plan.json> styleboard T       the frame at T rendered in every style preset → build/styleboard.jpg
+//   node render.js <plan.json> styleboard T plan [styles…]  the plan's own frame at T (a cutaway redesign) in each style
 //   node render.js <plan.json> cover T            frame T + plan.cover title → build/cover.jpg (1080x1920)
 //
 // plan.mode "explainer" = the whole frame is graphics (voice-over driven; the source can be audio only).
@@ -30,6 +31,17 @@ const DEF_D = { cutaway: 4, scene: 4, readout: 2.5, ui: 3, choice: 3, panel: 4, 
 const [planPath, mode = 'check', ...rest] = process.argv.slice(2);
 const planDir = path.dirname(path.resolve(planPath));
 const plan = JSON.parse(fs.readFileSync(planPath, 'utf8'));
+if (!['check', 'preview', 'full', 'styleboard', 'cover'].includes(mode)) throw new Error(`unknown render mode: ${mode}`);
+const release = plan.delivery === 'instagram';
+const validCoverLine = line => {
+  const text = typeof line === 'string' && line.replace(/[*`~^]/g, '').trim();
+  return text && !/^(عنوان|title|placeholder)$/i.test(text);
+};
+if (release && (!Array.isArray(plan.cover?.lines) || !plan.cover.lines.length ||
+    !plan.cover.lines.every(validCoverLine))) {
+  throw new Error('Instagram delivery requires an explicit, non-placeholder cover.lines title');
+}
+let OPTS = {};  // the engine's menus, read once the page is up
 const rel = p => p && (path.isAbsolute(p) ? p : path.join(planDir, p));
 const build = path.join(planDir, 'build'); fs.mkdirSync(build, { recursive: true });
 
@@ -83,6 +95,18 @@ for (const e of P.elements || []) {
   if ((e.type === 'steps' || e.type === 'segbar') && e.end == null && e.d == null) e.end = P.duration - .3;
   if (e.type === 'mascot') { if (e.d == null) e.d = P.duration - e.t; if (e.src) e.src = fileUrl(e.src); if (e.poses) for (const k in e.poses) e.poses[k] = fileUrl(e.poses[k]); }
 }
+// effect footage (light leaks, grain, bokeh…): name → assets/footage/<name>.mp4 (or assets/footage/user/, or a path); compose blends it
+const FOOT_DIRS = [path.join(SKILL, 'assets', 'footage'), path.join(SKILL, 'assets', 'footage', 'user')];
+P.footageFx = (P.footageFx || []).map(f => {
+  const g = { blend: 'screen', opacity: 0.8, fade: 0.3, ...f };
+  const cands = [...FOOT_DIRS.flatMap(d => [path.join(d, g.file), path.join(d, g.file + '.mp4'), path.join(d, g.file + '.mov')]), rel(g.file)];
+  g.path = cands.find(c => fs.existsSync(c));
+  if (!g.path) throw new Error(`footageFx: "${g.file}" not found (run scripts/footage.py, or give a path)`);
+  if (g.t == null) g.t = 0;
+  if (g.end != null && g.d == null) g.d = +(g.end - g.t).toFixed(3);
+  if (g.d == null) g.d = Math.max(0.1, P.duration - g.t);
+  return g;
+});
 if (P.captions?.file) P.captionChunks = JSON.parse(fs.readFileSync(rel(P.captions.file), 'utf8'));
 // brand kit (~/.config/reel-motion-edit/brand.json): the user's saved style, colors, fonts and @handle;
 // the plan wins over it, and "brand": false ignores it for one video
@@ -97,15 +121,47 @@ if (P.mascot) { P.mascot = { ...P.mascot }; if (P.mascot.src) P.mascot.src = fil
 if (P.bg?.image) P.bg = { ...P.bg, image: fileUrl(P.bg.image) };
 // style preset: its theme is the base, then brand colors, then plan.theme
 const STYLES = JSON.parse(fs.readFileSync(path.join(SKILL, 'assets', 'styles.json'), 'utf8'));
+// user styles: learned/bespoke presets in ~/.config/reel-motion-edit/styles.json (and a
+// styles.json next to the plan) merge over the built-ins; plan.style may also be an inline object
+const USER_STYLE_FILES = [path.join(os.homedir(), '.config', 'reel-motion-edit', 'styles.json'),
+                          path.join(path.dirname(path.resolve(planPath)), 'styles.json')];
+const USER_STYLES = {};
+for (const f of USER_STYLE_FILES) if (fs.existsSync(f)) Object.assign(USER_STYLES, JSON.parse(fs.readFileSync(f, 'utf8')));
+Object.assign(STYLES, USER_STYLES);
 P.style = P.style || BRAND.style || 'gradient';
-if (!STYLES[P.style]) throw new Error(`unknown style "${P.style}" — one of: ${Object.keys(STYLES).join(', ')}`);
+if (typeof P.style === 'object') { STYLES.__planStyle = P.style; P.style = '__planStyle'; }
+if (!STYLES[P.style]) throw new Error(`unknown style "${P.style}" — one of: ${Object.keys(STYLES).filter(k => k !== '__planStyle').join(', ')} (or an inline style object)`);
 P.styleDef = STYLES[P.style];
+if (!(Number.isFinite(P.duration) && P.duration > 0)) throw new Error('duration must be positive');
+if (release && !fs.existsSync(rel(P.video) || '')) throw new Error('Instagram delivery requires a local source file');
+if (release) {
+  const missing = value => {
+    if (typeof value === 'string' && value.startsWith('img:') &&
+        !/^img:(file|data|https?):/.test(value) && !fs.existsSync(rel(value.slice(4)) || '')) {
+      throw new Error(`Missing image asset: ${value}`);
+    }
+    if (value && typeof value === 'object') Object.values(value).forEach(missing);
+  };
+  missing(plan.elements);
+  if (plan.music?.file && !fs.existsSync(rel(plan.music.file))) throw new Error('Missing music file');
+  for (const [family, file] of Object.entries(P.fonts)) {
+    if (typeof file !== 'string' || !fs.existsSync(rel(file))) throw new Error(`Missing font: ${family}`);
+  }
+  for (const e of P.elements || []) {
+    if (e.t != null && (!Number.isFinite(e.t) || e.t < 0 || e.t >= P.duration) ||
+        e.d != null && (!Number.isFinite(e.d) || e.d <= 0) ||
+        e.end != null && (!Number.isFinite(e.end) || e.end <= (e.t ?? 0))) {
+      throw new Error(`Invalid timing: ${e.id || e.type}`);
+    }
+  }
+}
+if (release && plan.handle === undefined) P.handle = false;
 P.theme = { ...P.styleDef.theme, ...(BRAND.theme || {}), ...(plan.theme || {}) };
 P.mode = P.mode || 'overlay';
 const EXPLAINER = P.mode === 'explainer';
 if (EXPLAINER && !P.styleDef.bg) console.warn(`note: style "${P.style}" has no explainer background; using black (set plan.bg)`);
 // intro: every edit opens with one (style default kind); "intro": false in the plan turns it off
-if (plan.intro !== false && !(P.elements || []).some(e => e.type === 'intro')) {
+if ((plan.intro ?? P.styleDef.intro) !== false && !(P.elements || []).some(e => e.type === 'intro')) {
   P.elements = [{ type: 'intro', t: 0, ...(typeof plan.intro === 'object' ? plan.intro : {}) }, ...(P.elements || [])];
   // overlay mode: the footage also lands with a short punch-out (camera starts zoomed and eases back)
   if (!EXPLAINER && (P.camera || []).every(c => c.t > .8)) P.camera = [{ t: 0, d: .35, type: 'punch', scale: 1.14, cx: 540, cy: 820 }, ...(P.camera || [])];
@@ -164,21 +220,37 @@ function fontCss() {
       user.push(face(fam, path.join(dir, f), null, WT[m] ?? '100 1000'));
     }
   }
-  Object.assign(fonts, P.fonts || {});
+  Object.assign(fonts, Object.fromEntries(Object.entries(P.fonts || {}).map(([family, file]) => [family, rel(file)])));
   return [...user, ...Object.entries(fonts).map(([fam, p]) => face(fam, p)),
     ...extra.map(([fam, p]) => face(fam, p, 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215'))].join('\n');
 }
 
 /* ---------- lint ---------- */
+// Reels safe area (plan px). plan.safe overrides any field; "safe": false turns the check off (e.g. a YouTube export).
+// The right action rail (like/comment/share) covers x > 930 in the lower part of the frame.
+const SAFE_SKIP = new Set(['progress', 'transition', 'intro', 'cutaway', 'panel', 'footage', 'scene', 'mascot', 'click', 'fx', 'highlight', 'arrow']);  // drawings and full-frame layers; their text is checked by preview
+const SAFE = plan.safe === false ? null : (() => {
+  const [W, H] = P.size || [1080, 1920], k = H / 1920, q = W / 1080, s = plan.safe || {};
+  return { top: s.top ?? 250 * k, bottom: s.bottom ?? 1500 * k, left: s.left ?? 60 * q, right: s.right ?? 1020 * q,
+    rail: s.rail === false ? null : { x: s.rail?.x ?? 930 * q, from: s.rail?.from ?? 1150 * k, to: s.rail?.to ?? 1500 * k } };
+})();
 function lint(samples) {
   const W = P.size?.[0] || 1080, H = P.size?.[1] || 1920, out = [];
-  const seen = new Set(), skip = new Set(['progress', 'transition', 'intro', 'cutaway', 'click', 'fx', 'handle', 'panel', 'footage', 'segbar', 'mascot'].concat(EXPLAINER ? ['scene'] : []));  // persistent layers aren't overlays
+  const safeHits = {}, seen = new Set(), skip = new Set(['progress', 'transition', 'intro', 'cutaway', 'click', 'fx', 'handle', 'panel', 'footage', 'segbar', 'mascot'].concat(EXPLAINER ? ['scene'] : []));  // persistent layers aren't overlays
   for (const { t, boxes } of samples) {
     const live = boxes.filter(b => !skip.has(b.type) && b.type !== 'captions' && !b.parent);
     const inCut = (P.elements || []).some(c => c.type === 'cutaway' && t >= c.t && t <= c.t + c.d);  // a cutaway graphic is one composition
     if (live.length > 3 && !inCut) { const k = 'clutter' + Math.round(t); if (!seen.has(k)) { seen.add(k); out.push(`CLUTTER  ${t.toFixed(1)}s  ${live.length} overlays at once: ${live.map(b => b.id).join(', ')}`); } }
     for (const b of boxes) {
       if (skip.has(b.type)) continue;
+      if (SAFE && !SAFE_SKIP.has(b.type) && !b.parent) {
+        // Instagram Reels safe area: text must stay inside it for the whole time it's visible
+        const r = SAFE, inRail = r.rail && b.x + b.w > r.rail.x && b.y + b.h > r.rail.from && b.y < r.rail.to;
+        const bad = [b.y < r.top - 4 && 'top', b.y + b.h > r.bottom + 4 && 'bottom', b.x < r.left - 4 && 'left', b.x + b.w > r.right + 4 && 'right', inRail && 'action-rail'].filter(Boolean);
+        const k = 'safe' + b.id + bad.join();
+        if (bad.length) safeHits[k] = (safeHits[k] || 0) + 1;  // ≥3 samples (0.6 s): a resting position, not an entrance passing by
+        if (bad.length && safeHits[k] >= 3 && !seen.has(k)) { seen.add(k); out.push(`SAFE     ${t.toFixed(1)}s  ${b.id} leaves the Reels safe area (${bad.join(', ')}) box=[${[b.x, b.y, b.w, b.h].map(Math.round)}] safe=x ${r.left}–${r.right}, y ${r.top}–${r.bottom}`); }
+      }
       if (b.x < -8 || b.y < -8 || b.x + b.w > W + 8 || b.y + b.h > H + 8) { const k = 'oob' + b.id; if (!seen.has(k)) { seen.add(k); out.push(`OFFFRAME ${t.toFixed(1)}s  ${b.id} box=[${[b.x, b.y, b.w, b.h].map(Math.round)}]`); } }
       for (const z of P.avoid || []) {
         if (t < z.from || t > z.to) continue;
@@ -187,7 +259,8 @@ function lint(samples) {
         const ix = Math.max(0, Math.min(b.x + b.w, zx + zw) - Math.max(b.x, zx)), iy = Math.max(0, Math.min(b.y + b.h, zy + zh) - Math.max(b.y, zy));
         const frac = ix * iy / Math.max(1, Math.min(b.w * b.h, zw * zh));
         const k = 'avoid' + b.id + z.name;
-        if (frac > .04 && !seen.has(k)) { seen.add(k); out.push(`COVERS   ${t.toFixed(1)}s  ${b.id} covers "${z.name}" (${Math.round(frac * 100)}%)`); }
+        if (frac > .04) safeHits[k] = (safeHits[k] || 0) + 1;  // 2+ samples: ignore an entrance sweeping past
+        if (frac > .04 && safeHits[k] >= 2 && !seen.has(k)) { seen.add(k); out.push(`COVERS   ${t.toFixed(1)}s  ${b.id} covers "${z.name}" (${Math.round(frac * 100)}%)`); }
       }
     }
   }
@@ -198,6 +271,47 @@ function lintSfx(sfx) {
   for (let i = 0; i < s.length; i++) {
     const win = s.filter(x => x.t >= s[i].t && x.t < s[i].t + .35);
     if (win.length > 3) { out.push(`SFXPILE  ${s[i].t.toFixed(2)}s  ${win.length} sounds within 0.35s: ${win.map(x => x.name).join(', ')}`); i += win.length - 1; }
+  }
+  return out;
+}
+// every menu the engine knows: a typo in anim/style/kind would silently fall back to the default look
+function lintOptions() {
+  if (!OPTS.titleAnim) return [];  // engine too old / failed to expose its menus
+  const out = [], near = (v, list) => {
+    let best = list[0], dist = 1e9;
+    for (const k of list) { const n = k.length < v.length ? k.length : v.length; let d = 0; for (let i = 0; i < n; i++) if (k[i] !== v[i]) d++; d += Math.abs(k.length - v.length); if (d < dist) { dist = d; best = k; } }
+    return best;
+  }, say = (id, field, v, list) => out.push(`${field.toUpperCase().slice(0, 7).padEnd(8)} ${String(id).padEnd(10)} ${field} "${v}" is not an option — did you mean "${near(v, list)}"? (${list.join(' ')})`);
+  for (const e of P.elements || []) {
+    if (e.type === 'title' && e.anim && !OPTS.titleAnim.includes(e.anim)) say(e.id || 'title', 'anim', e.anim, OPTS.titleAnim);
+    if (e.type === 'keyword') {
+      if (e.style && !OPTS.keywordStyle.includes(e.style)) say(e.id || 'keyword', 'style', e.style, OPTS.keywordStyle);
+      if (e.from && !['pop', 'left', 'right', 'drop', 'up'].includes(e.from)) say(e.id || 'keyword', 'from', e.from, ['pop', 'left', 'right', 'drop', 'up']);
+    }
+    if (e.type === 'transition' && e.kind && e.kind !== 'auto' && !OPTS.transition.includes(e.kind)) say(e.id || 'transition', 'kind', e.kind, OPTS.transition);
+    if (e.type === 'fx' && e.kind && !OPTS.fx.includes(e.kind)) say(e.id || 'fx', 'kind', e.kind, OPTS.fx);
+  }
+  const cap = P.captions?.style;
+  if (cap && !OPTS.caption.includes(cap)) say('captions', 'style', cap, OPTS.caption);
+  // a transition every cut is exhausting: one per ~6 s reads as a scene change, more reads as noise
+  const tr = (P.elements || []).filter(e => e.type === 'transition');
+  const rest = (P.elements || []).filter(e => e.type !== 'transition' && e.type !== 'intro' && e.type !== 'fx' && e.type !== 'progress' && e.type !== 'cutaway');
+  if (tr.length > 1 && rest.length && P.duration / tr.length < 3.5) out.push(`TRDENSE  ${tr.length} transitions in ${P.duration.toFixed(0)}s — keep it to about one per 6s (${tr.map(e => e.kind).join(', ')})`);
+  // the title already says it: repeating the line in the captions reads twice at once — ONE text layer at a time
+  const caps = P.captionChunks || [];
+  for (const e of (P.elements || []).filter(x => x.type === 'title' && x.lines)) {
+    const win = caps.filter(c => c.e > e.t && c.s < (e.t + (e.d ?? 3.5)));
+    const txt = win.map(c => c.words.map(w => norm(w.w)).join('')).join(' ');
+    const capWords = new Set(win.flatMap(c => c.words.map(w => norm(w.w))).flatMap(w => w.split(/[^\p{L}\p{N}]+/u)).filter(w => w.length >= 3));
+    for (const ln of e.lines) {
+      const n = norm(String(ln).replace(/[*`~\s]/g, ''));
+      if (n.length >= 8 && txt.includes(n)) out.push(`DUPTEXT  ${(e.id || 'title').padEnd(10)} title "${String(ln).replace(/[*`~]/g, '')}" is also in the captions at ${e.t.toFixed(1)}s — say it once (drop the title line or the captions)`);
+      else {  // semantic duplicate: statement sharing ≥2 significant words with the simultaneous captions
+        const lw = norm(String(ln)).split(/[^\p{L}\p{N}]+/u).filter(w => w.length >= 3);
+        const hit = lw.filter(w => capWords.has(w));
+        if (lw.length >= 3 && hit.length >= 2) out.push(`DUPTEXT  ${(e.id || 'title').padEnd(10)} statement "${String(ln).replace(/[*`_~]/g, '')}" overlaps the captions at ${e.t.toFixed(1)}s (${hit.join(', ')}) — ONE text layer at a time: drop the statement and put a striking visual there instead (3D element, Lottie/motion loop, bgword, icon — see references/modern-motion.md)`);
+      }
+    }
   }
   return out;
 }
@@ -212,6 +326,12 @@ function lintSfx(sfx) {
   page.on('pageerror', e => { console.error('PAGE ERROR', e.message); process.exitCode = 1; });
   await page.goto(url.pathToFileURL(path.join(SKILL, 'assets', 'engine.html')).href);
   await page.addScriptTag({ path: path.join(NM, 'gsap', 'dist', 'gsap.min.js') });
+  // bundled GSAP plugins: registered so bespoke scene/component work can use them (see references/gsap.md)
+  for (const gp of ['EasePack.min.js', 'CustomEase.min.js', 'MotionPathPlugin.min.js']) {
+    const gfp = path.join(NM, 'gsap', 'dist', gp);
+    if (fs.existsSync(gfp)) await page.addScriptTag({ path: gfp });
+  }
+  await page.evaluate(() => { if (window.MotionPathPlugin) gsap.registerPlugin(window.MotionPathPlugin); });
   await page.evaluate(css => { document.getElementById('fontcss').textContent = css; }, fontCss());
   await page.evaluate(() => document.fonts.ready);
   console.log('fonts ready');
@@ -220,6 +340,8 @@ function lintSfx(sfx) {
   console.log(`built: ${sfx.length} sfx events (${sfxAll.length - sfx.length} dropped by sfxMix)`);
   // preload every font face actually used so the first frames don't fall back
   await page.evaluate(async () => { await Promise.all([...document.fonts].map(f => f.load().catch(() => 0))); });
+  await page.evaluate(() => fitSafe());  // re-measure with the real fonts: safe-area fitting depends on glyph widths
+  OPTS = await page.evaluate(() => window.OPTS || {});
   console.log('fonts preloaded');
   fs.writeFileSync(path.join(build, 'sfx.json'), JSON.stringify(sfx, null, 1));
   const shot = () => page.screenshot({ type: 'png', omitBackground: true });
@@ -237,16 +359,16 @@ function lintSfx(sfx) {
   const PIC = hasPicture(video);
   const footAt = t => (P.elements || []).filter(e => e.type === 'footage' && t >= e.t && t <= e.t + e.d);
   // base frame at time t: the video frame (overlay mode) or bg.png + footage windows (explainer)
-  const baseFrame = (t, out, look = '') => {
+  const baseFrame = (t, out, look = '', bg = BGPNG) => {
     const blurred = (P.elements || []).some(c => c.type === 'cutaway' && c.bg === 'blur' && t >= c.t && t <= c.t + c.d);
     const gr = (P.gradeFilter ? ',' + P.gradeFilter : '') + (blurred && !EXPLAINER ? ',boxblur=26:3,eq=brightness=-0.12' : '');
     if (!EXPLAINER) return spawnSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(t), '-i', video, '-vf', `scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H}${gr}${look}`, '-frames:v', '1', out]);
-    const win = PIC ? footAt(t) : [], args = ['-v', 'error', '-y', '-i', BGPNG], fc = [];
+    const win = PIC ? footAt(t) : [], args = ['-v', 'error', '-y', '-i', bg], fc = [];
     let last = '[0]';
     win.forEach((e, i) => {
       const [x, y, w, h] = e.rect, st = (e.src ?? e.t) + (t - e.t);
       args.push('-ss', String(st), '-i', video);
-      fc.push(`[${i + 1}:v]scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h}${gr}[f${i}]`, `${last}[f${i}]overlay=${x}:${y}[b${i}]`);
+      fc.push(`[${i + 1}:v]scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h}:(iw-ow)/2:(ih-oh)*${e.fy ?? 0.5}${gr}[f${i}]`, `${last}[f${i}]overlay=${x}:${y}[b${i}]`);
       last = `[b${i}]`;
     });
     fc.push(`${last}null${look}[o]`);
@@ -259,7 +381,7 @@ function lintSfx(sfx) {
     const order = [];
     for (const e of P.elements || []) if (e.type === 'steps' || e.type === 'segbar') e.items.forEach((it, i) => { if (i && it.t <= e.items[i - 1].t) order.push(`ORDER    ${e.type} item ${i + 1} "${it.label || ''}" at ${it.t}s is not after item ${i} (${e.items[i - 1].t}s) — word anchor hit an earlier occurrence? use w:word#n`); });
     if (EXPLAINER) {  // every moment of an explainer needs a picture: report gaps with no scene/graphic on screen
-      const vis = new Set(['scene', 'ui', 'choice', 'counter', 'title', 'keyword', 'compare', 'icon', 'footage', 'note', 'success', 'cta', 'readout', 'callout']);
+      const vis = new Set(['scene', 'ui', 'choice', 'counter', 'title', 'keyword', 'compare', 'icon', 'footage', 'note', 'success', 'cta', 'readout', 'callout', 'shot', 'steps', 'bgword']);
       let gap = null;
       for (const { t, boxes } of samples) {
         const any = boxes.some(b => vis.has(b.type));
@@ -274,10 +396,12 @@ function lintSfx(sfx) {
       else if (o && typeof o === 'object') for (const [k, v] of Object.entries(o)) scan(v, where); };
     (P.elements || []).forEach(e => scan(e, `${e.id || e.type} (${e.type})`)); scan(P.cover, 'cover');
     if (sfx.length > P.duration / 2.5) order.push(`SFXDENSE ${sfx.length} sounds in ${P.duration.toFixed(0)}s — keep it to about one every 3 s on talking heads`);
-    const issues = [...order, ...emo, ...lint(samples), ...lintSfx(sfx)];
+    const issues = [...order, ...emo, ...lintOptions(), ...lint(samples), ...lintSfx(sfx)];
     console.log(`mode: ${P.mode}  style: ${P.style}  elements: ${(P.elements || []).length}  sfx: ${sfx.length}  duration: ${P.duration}s`);
     for (const e of P.elements || []) console.log(`  ${String(e.t ?? e.items?.[0]?.t).padStart(6)}s  ${e.type.padEnd(10)} ${e.id || ''} ${e.text || e.label || (e.lines || []).join(' / ') || e.title || ''}`);
     console.log(issues.length ? 'ISSUES:\n' + issues.join('\n') : 'no layout issues');
+    if ((release || rest.includes('--strict')) &&
+        issues.some(i => /^(SAFE|COVERS|NOVIDEO|ORDER)\b/.test(i))) process.exitCode = 1;
   } else if (mode === 'preview') {
     const times = rest.map(Number).sort((a, b) => a - b), dir = path.join(build, 'preview');
     fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });  // stale stills would leak into the tile
@@ -302,7 +426,7 @@ function lintSfx(sfx) {
     baseFrame(t, frame, look);
     const pick = type => (P.elements || []).find(e => e.type === type);
     const comp = async (plan, at, out, scale, base = frame) => {
-      await page.evaluate(p => build(p), plan);
+      await page.evaluate(async p => { build(p); await Promise.all([...document.fonts].map(f => f.load().catch(() => 0))); fitSafe(); }, plan);
       await page.evaluate(t => seek(t), at);
       const png = out.replace(/\.jpg$/, '.png'); fs.writeFileSync(png, await shot());
       spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', base, '-i', png, '-filter_complex', `[0][1]overlay${scale ? `,scale=${scale}:-1` : ''}`, '-q:v', '2', '-frames:v', '1', out]);
@@ -314,6 +438,23 @@ function lintSfx(sfx) {
       if (EXPLAINER && c.scene !== false) for (const e of P.elements || []) if (e.type === 'scene' && t >= e.t && t <= e.t + e.d) el.unshift({ ...e, t: 0, d: 99, sfx: false });
       await comp({ ...P, elements: el, camera: [], captions: null, progress: false, handle: P.handle && { ...P.handle, t: 0 } }, 3, path.join(build, 'cover.jpg'));
       console.log('cover →', path.join(build, 'cover.jpg'));
+    } else if (rest[1] === 'plan') {
+      // "styleboard T plan": the real plan frame at T (e.g. a cutaway redesign) re-rendered in every style, so the
+      // user picks a look on their own content. Plan fonts/colours (plan.theme) are kept on top of each preset.
+      const only = rest.slice(2).filter(Boolean), jpgs = [];
+      // an explicit list may put overlay styles into an explainer / split layout too
+      const names = only.length ? only.filter(k => STYLES[k]) : Object.keys(STYLES).filter(k => !EXPLAINER || STYLES[k].explainer);
+      for (const [i, k] of names.entries()) {
+        const D = STYLES[k], out = path.join(dir, `s_${String(i).padStart(2, '0')}.jpg`);
+        const els = [...(P.elements || []).map(e => ({ ...e })), { type: 'keyword', t: 0, d: 999, x: 540, y: 1800, text: D.label, style: 'plain', rotate: 0, sfx: false, wiggle: false, size: 54, id: 'stylename' }];
+        let base = frame;  // explainer: each style brings its own background (cream paper, charcoal, black…)
+        if (EXPLAINER) { await page.evaluate(p => build(p), { ...P, style: k, styleDef: D, theme: { ...D.theme, ...(plan.theme || {}) }, elements: [], camera: [], captions: null, mascot: null }); const bgk = path.join(dir, `bg_${k}.png`); await bgShot(bgk); base = path.join(dir, `base_${k}.png`); baseFrame(t, base, '', bgk); }
+        await comp({ ...P, style: k, styleDef: D, theme: { ...D.theme, ...(plan.theme || {}) }, elements: els, intro: false, handle: null }, t, out, Number(process.env.STYLEBOARD_W || 360), base);
+        fs.copyFileSync(out, path.join(dir, `${k}.jpg`));
+        jpgs.push(out); console.log(`  ${k.padEnd(9)} ${D.en}`);
+      }
+      spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', path.join(dir, 's_%02d.jpg'), '-vf', `tile=${Math.min(4, jpgs.length)}x${Math.ceil(jpgs.length / 4)}:padding=8:color=white`, '-q:v', '2', '-frames:v', '1', path.join(build, 'styleboard.jpg')]);
+      console.log('styleboard →', path.join(build, 'styleboard.jpg'));
     } else {
       // the same demo moment in each preset: title, step chip, keyword sticker, subtitle line, style name.
       // In explainer mode only explainer styles are shown, each on its own background with a demo drawing.

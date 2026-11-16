@@ -67,6 +67,32 @@ a tracking card (barcode = 27 thin black rects + the code in mono, `direction='l
 phone to a `user` icon («مشتری») and a yellow message bubble with the code. Full markup: the third `scene` in
 `examples/plan.cutaway.json`.
 
+**Screen mockup of the feature** (a plugin, a setting, a checkout / purchase flow, a user panel). This is what the
+user asks for whenever the speaker *describes software*: show the actual screen and make the described thing happen
+on it. One `ui` element with `kind: "page"` inside the cutaway (`frame`: `browser` · `admin` = browser + dark WP
+sidebar via `side` · `phone`), rows revealed on their words (`at` = seconds after `t`), a cursor that moves to the row
+and clicks, a ring on the row being talked about, and a modal for blocking states:
+
+```json
+{"type": "cutaway", "t": "w:تنظیمات#2-0.2", "end": "w:یعنی-0.1"},
+{"type": "ui", "kind": "page", "t": "w:تنظیمات#2-0.1", "end": "w:یعنی-0.15", "y": 760, "w": 940, "url": "shop.ir/wp-admin",
+ "side": ["پیشخوان", "سفارش‌ها", "نیاس لاگین"], "header": "تنظیمات ورود و ثبت‌نام",
+ "rows": [{"row": "h", "text": "قفل کردن صفحات", "at": 1.6},
+          {"row": "field", "label": "آدرس صفحه", "value": "/checkout", "ltr": true, "at": 3.2},
+          {"row": "toggle", "label": "ورود اجباری قبل از پرداخت", "on": 5.0, "at": 4.4},
+          {"row": "button", "text": "ذخیره تغییرات", "at": 5.6, "press": 6.2}],
+ "cursor": [{"at": 3.4, "row": 2}, {"at": 5.0, "row": 3, "fx": 0.1}, {"at": 6.2, "row": 4}],
+ "hi": [{"at": 1.7, "row": 1, "d": 1.4}]}
+```
+
+Row types: `h` (section title) · `field` (`label`, `value` typed in, `ltr` for URLs/codes, `typeAt`) · `toggle`
+(`on`: offset when it switches on, or `true`) · `button` (`press` offset, `dim`) · `item` (`icon`, `title`, `sub`,
+`badge`, `bad`) — order lines · `empty` (`icon`, `text`) — «هیچ سفارشی یافت نشد» · `alert` (`cls` err/ok/info) · `chip`
+(`items`). `modal: {at, icon, title, text, button}` covers the page (e.g. «برای ادامه وارد شوید» on the checkout).
+Ideas that land: the same «سفارش‌های من» page empty at the problem and filled at the payoff; the checkout page where the
+pay button is blocked by a login modal; a phone screen with an OTP field for mobile verification. Keep the page in
+y 300–1200 so the subtitle stays readable, and don't add stickers on top of it.
+
 **Logo cards** (company names): `python <skill>/scripts/logocard.py <workdir>/logos <logo files…>` turns each logo
 (PNG/WebP/JPG/SVG) into a white rounded card with a soft shadow → `logos/card_<name>.png`, then
 `{"type": "icon", "icon": "img:logos/card_<name>.png", "size": 360–420, "anim": "pulse", "t": "w:<name>"}` in the
@@ -80,3 +106,25 @@ top band, side by side, staying until the sentence ends. `size` is the card's wi
 - Raw SVG text in RTL pages anchors on the wrong side unless `text-anchor='middle'` is set.
 - Files over ~30 MB can't be committed back in one piece: split into 9 MB parts, commit them, `cat` them together
   on the user's computer and check the result decodes. The outputs folder adds a C2PA manifest to MP4s (harmless).
+
+## Capturing real screens (the user's local site)
+
+The user wants **real pages of their own local site** in the cutaways (plugin settings, orders, the login form), not
+mockups and not a public website. They open the local site (logged in) in the built-in browser pane for you.
+
+- **Logged-in views** (wp-admin, the plugin's settings, «حساب کاربری → سفارش‌ها»): capture in the pane with
+  `computer {action: "zoom", region: [0,0,800,689]}` — it saves a lossless 800×689 PNG under the session's
+  `tool-results/` folder (path printed in the result); copy it to `<workdir>/shots/local/`. Never use `scale` < 1 for a capture.
+- **Make it readable on a phone**: before capturing, hide the WP chrome with an injected style
+  (`#adminmenumain,#wpadminbar,.notice,.update-nag{display:none}` + `#wpcontent{margin:0}`) and set
+  `document.documentElement.style.zoom = '1.5'` (1.5–1.7), then frame the part being talked about. With zoom on,
+  `scrollIntoView` is unreliable — hide what's above instead. Desktop pages captured at 100 % are unreadable in a Reel.
+- **Guest views** (the login popup a visitor sees, a guest checkout): headless Chrome with no cookies
+  (`puppeteer-core` from `~/.cache/reel-motion-edit/node`), `deviceScaleFactor: 2`. Crop out third-party brand logos
+  that a login template may carry.
+- **Before/after of a setting**: change the field's value in the DOM only (e.g. add `/checkout/` to «صفحات قفل‌شده»),
+  capture, then restore the original value — never click save, never change settings for real, never log the user out.
+  A demo state that doesn't exist (an empty orders list) may be staged in the DOM the same way; reload the page after.
+- Use them with `shot` (`frame: "browser"`, `url` = the real local path, `imgW: 800`, `w: 940`, `vh` ≈ 675, `y` ≈ 750 so
+  the frame ends above the right action rail), consecutive shots of the same screen with `enter: "none"`, rings
+  (`hi`) and cursor clicks in image pixels.

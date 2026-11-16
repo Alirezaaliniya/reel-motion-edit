@@ -1,168 +1,1626 @@
 {
-  "gradient": {
-    "label": "گرادیانی مدرن",
-    "en": "Modern gradient",
-    "feel": "colorful brand gradients, glossy chips, confetti; safe default for tech tutorials",
-    "theme": {"primary": "#FF7139", "secondary": "#9059FF", "accent": "#FF2A8A", "ok": "#2BD67B", "dark": "#14121F", "highlight": "#FFD23F", "display": "Lalezar", "body": "Vazirmatn"},
-    "defaults": {"title": {"anim": "slam"}, "keyword": {"style": "sticker"}},
-    "transitions": ["wipe", "circles", "bars", "lightleak"],
-    "captions": "karaoke",
-    "fx": [],
-    "sfxMap": {},
-    "sfxGain": 0,
-    "intro": "split",
-    "grade": "punchy"
+ "gradient": {
+  "label": "گرادیانی مدرن",
+  "en": "Modern gradient",
+  "feel": "colorful brand gradients, glossy chips, confetti; safe default for tech tutorials",
+  "theme": {
+   "primary": "#FF7139",
+   "secondary": "#9059FF",
+   "accent": "#FF2A8A",
+   "ok": "#2BD67B",
+   "dark": "#14121F",
+   "highlight": "#FFD23F",
+   "display": "Lalezar",
+   "body": "Vazirmatn"
   },
-  "bold": {
-    "label": "پاپ جسور",
-    "en": "Bold pop (Hormozi / MrBeast)",
-    "feel": "huge yellow+black type with thick strokes, hard shadows, punchy zooms and loud pops; max energy, max retention",
-    "theme": {"primary": "#FFD400", "secondary": "#FF3B30", "accent": "#FFD400", "ok": "#22C55E", "dark": "#0A0A0A", "highlight": "#FFD400", "text": "#FFFFFF", "display": "Lalezar", "body": "Vazirmatn"},
-    "defaults": {"title": {"anim": "slam"}, "keyword": {"style": "sticker", "from": "pop", "rotate": -5}},
-    "transitions": ["flash", "bars"],
-    "captions": "pop",
-    "fx": [],
-    "sfxMap": {"whoosh": "whoosh_heavy", "swoosh_out": "whoosh_short"},
-    "sfxGain": 0,
-    "intro": "flash",
-    "grade": "punchy"
+  "defaults": {
+   "title": {
+    "anim": "slam"
+   },
+   "keyword": {
+    "style": "sticker"
+   }
   },
-  "neon": {
-    "label": "نئون تکنولوژی",
-    "en": "Neon tech / cyber",
-    "feel": "dark glass panels, cyan-magenta glow, glitch hits, scanlines and digital blips; hacker / tech vibe",
-    "theme": {"primary": "#00E5FF", "secondary": "#B026FF", "accent": "#FF2BD6", "ok": "#39FF88", "dark": "#05060F", "highlight": "#00E5FF", "display": "Changa", "body": "Vazirmatn"},
-    "defaults": {"title": {"anim": "glitch"}, "keyword": {"style": "neon", "rotate": 0, "from": "up"}},
-    "transitions": ["glitch", "bars"],
-    "captions": "kinetic",
-    "fx": ["scanlines", "vignette"],
-    "sfxMap": {"pop": "digital_blip", "pop_hi": "digital_blip", "bubble": "digital_blip", "tick": "digital_blip", "notify": "digital_seq", "ding": "digital_seq", "swipe": "glitch"},
-    "sfxGain": 0,
-    "intro": "glitch",
-    "grade": "film"
+  "transitions": [
+   "wipe",
+   "circles",
+   "bars",
+   "lightleak",
+   "push",
+   "zoom"
+  ],
+  "captions": "karaoke",
+  "fx": [],
+  "sfxMap": {},
+  "sfxGain": 0,
+  "intro": "split",
+  "grade": "punchy"
+ },
+ "bold": {
+  "label": "پاپ جسور",
+  "en": "Bold pop (Hormozi / MrBeast)",
+  "feel": "huge yellow+black type with thick strokes, hard shadows, punchy zooms and loud pops; max energy, max retention",
+  "theme": {
+   "primary": "#FFD400",
+   "secondary": "#FF3B30",
+   "accent": "#FFD400",
+   "ok": "#22C55E",
+   "dark": "#0A0A0A",
+   "highlight": "#FFD400",
+   "text": "#FFFFFF",
+   "display": "Lalezar",
+   "body": "Vazirmatn"
   },
-  "minimal": {
-    "label": "مینیمال تمیز",
-    "en": "Clean minimal (Apple-like)",
-    "feel": "white cards, soft shadows, one accent color, slow smooth moves and quiet sounds; premium and calm",
-    "theme": {"primary": "#0A84FF", "secondary": "#0A84FF", "accent": "#5E5CE6", "ok": "#30D158", "dark": "#111111", "highlight": "#0A84FF", "text": "#111111", "display": "Vazirmatn", "body": "Vazirmatn"},
-    "defaults": {"title": {"anim": "rise", "jitter": false}, "keyword": {"style": "plain", "rotate": 0, "from": "up", "wiggle": false}, "highlight": {"dim": 0.15, "pulse": false}, "success": {"confetti": 0}},
-    "transitions": ["fade", "wipe"],
-    "captions": "minimal",
-    "fx": [],
-    "sfxMap": {"pop": "soft_pop", "pop_hi": "soft_pop", "bubble": "soft_pop", "whoosh": "soft_whoosh", "whoosh_short": "soft_whoosh", "whoosh_heavy": "soft_whoosh", "swoosh_out": "soft_whoosh", "swipe": "soft_whoosh", "impact": null, "glitch": null, "sparkle": null, "error": "tick", "notify": "soft_pop"},
-    "sfxGain": -3,
-    "intro": "fade",
-    "grade": "glow"
+  "defaults": {
+   "title": {
+    "anim": "slam"
+   },
+   "keyword": {
+    "style": "sticker",
+    "from": "pop",
+    "rotate": -5
+   }
   },
-  "doodle": {
-    "label": "دست‌نویس",
-    "en": "Hand-drawn doodle",
-    "feel": "marker strokes, wobbly outlines, scribbled circles and arrows, paper-and-pencil sounds; friendly, teacher-like",
-    "theme": {"primary": "#FF5A36", "secondary": "#2D7FF9", "accent": "#FFC93C", "ok": "#22A06B", "dark": "#1B1B1B", "highlight": "#FFC93C", "display": "Lemonada", "body": "Vazirmatn"},
-    "defaults": {"title": {"anim": "rise", "jitter": false}, "keyword": {"style": "sticker", "rotate": -3, "from": "pop"}, "highlight": {"shape": "scribble", "dim": 0}},
-    "transitions": ["paper", "wipe"],
-    "captions": "boxed",
-    "fx": [],
-    "sfxMap": {"pop": "scribble", "pop_hi": "scribble", "bubble": "scribble", "whoosh": "paper", "whoosh_short": "paper", "whoosh_heavy": "paper", "swoosh_out": "paper", "swipe": "scribble", "glitch": null, "impact": null},
-    "sfxGain": 0,
-    "intro": "iris",
-    "grade": "glow"
+  "transitions": [
+   "flash",
+   "bars",
+   "tiles",
+   "burn"
+  ],
+  "captions": "pop",
+  "fx": [],
+  "sfxMap": {
+   "whoosh": "whoosh_heavy",
+   "swoosh_out": "whoosh_short"
   },
-  "retro": {
-    "label": "رترو VHS",
-    "en": "Retro VHS / 90s",
-    "feel": "VHS grain, REC timecode, RGB-split type, sunset colors, tape-stop and static sounds; nostalgic, playful",
-    "theme": {"primary": "#FF6B35", "secondary": "#00C2B8", "accent": "#FF2E88", "ok": "#7CFC00", "dark": "#120B1F", "highlight": "#FFD23F", "display": "Lalezar", "body": "Vazirmatn"},
-    "defaults": {"title": {"anim": "glitch"}, "keyword": {"style": "sticker", "rotate": -2}},
-    "transitions": ["static", "glitch"],
-    "captions": "boxed",
-    "fx": ["vhs"],
-    "sfxMap": {"whoosh": "static", "whoosh_short": "static", "whoosh_heavy": "tape_stop", "swoosh_out": "tape_stop", "pop": "blips", "pop_hi": "blips"},
-    "sfxGain": 0,
-    "intro": "glitch",
-    "grade": "film"
+  "sfxGain": 0,
+  "intro": "flash",
+  "grade": "punchy"
+ },
+ "neon": {
+  "label": "نئون تکنولوژی",
+  "en": "Neon tech / cyber",
+  "feel": "dark glass panels, cyan-magenta glow, glitch hits, scanlines and digital blips; hacker / tech vibe",
+  "theme": {
+   "primary": "#00E5FF",
+   "secondary": "#B026FF",
+   "accent": "#FF2BD6",
+   "ok": "#39FF88",
+   "dark": "#05060F",
+   "highlight": "#00E5FF",
+   "display": "Changa",
+   "body": "Vazirmatn"
   },
-  "news": {
-    "label": "خبری / رسمی",
-    "en": "Broadcast news",
-    "feel": "navy and red bars, squared labels, headline banner, bottom ticker, broadcast stings; serious, credible",
-    "theme": {"primary": "#D7192F", "secondary": "#0B1F44", "accent": "#D7192F", "ok": "#1E9E5A", "dark": "#0B1F44", "highlight": "#FFC400", "display": "NotoKufiArabic", "body": "Vazirmatn"},
-    "defaults": {"title": {"anim": "rise", "jitter": false}, "keyword": {"style": "sticker", "rotate": 0, "from": "right", "wiggle": false}, "success": {"confetti": 0}},
-    "transitions": ["bars", "wipe"],
-    "captions": "karaoke",
-    "fx": ["newsbar"],
-    "sfxMap": {"impact": "sting", "pop": "tick", "pop_hi": "tick", "bubble": "tick", "success": "sting", "sparkle": null, "glitch": null},
-    "sfxGain": 0,
-    "intro": "split",
-    "grade": "punchy"
+  "defaults": {
+   "title": {
+    "anim": "glitch"
+   },
+   "keyword": {
+    "style": "neon",
+    "rotate": 0,
+    "from": "up"
+   }
   },
-  "lineglow": {
-    "label": "لاین‌آرت سینمایی",
-    "en": "Cinematic line-art (white-on-black story)",
-    "feel": "pure black, thin white line drawings that draw themselves, soft light beams, glow and star dust, slow camera drift, whole sentence subtitle that lights up word by word; reflective, philosophical, storytelling",
-    "explainer": true,
-    "progress": false,
-    "bg": {"color": "#000000"},
-    "theme": {"primary": "#FFFFFF", "secondary": "#BFC4CC", "accent": "#FFFFFF", "ok": "#FFFFFF", "dark": "#000000", "highlight": "#FFFFFF", "text": "#FFFFFF", "display": "Estedad", "body": "Estedad", "mono": "JetBrainsMono", "line": "#F2F2F2", "dim": "rgba(255,255,255,.28)"},
-    "defaults": {"title": {"anim": "blur", "jitter": false, "scrim": false}, "keyword": {"style": "plain", "rotate": 0, "from": "up", "wiggle": false}, "scene": {"glow": 0.6, "draw": 1.2}, "counter": {"gradient": false}, "success": {"confetti": 0}, "highlight": {"dim": 0, "pulse": false}},
-    "transitions": ["fade", "dissolve"],
-    "captions": "reveal",
-    "fx": ["dust", "vignette"],
-    "sfxMap": {"pop": "soft_pop", "pop_hi": "soft_pop", "bubble": "soft_pop", "tick": "soft_tick", "whoosh": "air", "whoosh_short": "air", "whoosh_heavy": "low_boom", "swoosh_out": "air", "swipe": "air", "impact": "low_boom", "glitch": null, "error": "soft_tick", "notify": "shimmer", "ding": "shimmer", "success": "shimmer", "sparkle": "shimmer", "draw": "draw_soft"},
-    "sfxGain": -3,
-    "intro": "fade",
-    "grade": "film"
+  "transitions": [
+   "glitch",
+   "bars",
+   "whip",
+   "scan"
+  ],
+  "captions": "kinetic",
+  "fx": [
+   "scanlines",
+   "vignette"
+  ],
+  "sfxMap": {
+   "pop": "digital_blip",
+   "pop_hi": "digital_blip",
+   "bubble": "digital_blip",
+   "tick": "digital_blip",
+   "notify": "digital_seq",
+   "ding": "digital_seq",
+   "swipe": "glitch"
   },
-  "hud": {
-    "label": "دیتا / HUD",
-    "en": "Data HUD (diagram explainer)",
-    "feel": "charcoal radial background, thin self-drawing strokes, teal = right/AI vs red = wrong/human, tiny monospace readouts (ERROR 0.000, USERS · SAME PROMPT), live counters, key words bold or teal in the subtitle; analytical, smart, tech-essay",
-    "explainer": true,
-    "progress": false,
-    "bg": {"color": "#0E0F11", "gradient": "radial-gradient(ellipse 85% 60% at 50% 38%,#24262A 0%,#141517 55%,#0A0A0B 100%)"},
-    "theme": {"primary": "#3FD6B0", "secondary": "#FF4D5E", "accent": "#3FD6B0", "ok": "#3FD6B0", "dark": "#0E0F11", "highlight": "#FFFFFF", "text": "#E9EBEE", "display": "Estedad", "body": "Estedad", "mono": "JetBrainsMono", "line": "#D9DCE0", "dim": "rgba(233,235,238,.32)"},
-    "defaults": {"title": {"anim": "rise", "jitter": false, "scrim": false}, "keyword": {"style": "plain", "rotate": 0, "from": "up", "wiggle": false}, "scene": {"glow": 0.25, "draw": 0.9}, "counter": {"gradient": false, "persian": false}, "success": {"confetti": 0}, "highlight": {"dim": 0, "pulse": false}},
-    "transitions": ["fade", "scan"],
-    "captions": "reveal",
-    "fx": ["vignette"],
-    "sfxMap": {"pop": "digital_blip", "pop_hi": "digital_blip", "bubble": "digital_blip", "tick": "soft_tick", "notify": "digital_seq", "ding": "digital_seq", "success": "digital_seq", "whoosh": "soft_whoosh", "whoosh_short": "soft_whoosh", "whoosh_heavy": "low_boom", "swoosh_out": "soft_whoosh", "swipe": "soft_whoosh", "impact": "low_boom", "glitch": "digital_blip", "sparkle": null, "draw": "draw_soft"},
-    "sfxGain": -2,
-    "intro": "fade",
-    "grade": "film"
+  "sfxGain": 0,
+  "intro": "glitch",
+  "grade": "film"
+ },
+ "minimal": {
+  "label": "مینیمال تمیز",
+  "en": "Clean minimal (Apple-like)",
+  "feel": "white cards, soft shadows, one accent color, slow smooth moves and quiet sounds; premium and calm",
+  "theme": {
+   "primary": "#0A84FF",
+   "secondary": "#0A84FF",
+   "accent": "#5E5CE6",
+   "ok": "#30D158",
+   "dark": "#111111",
+   "highlight": "#0A84FF",
+   "text": "#111111",
+   "display": "Vazirmatn",
+   "body": "Vazirmatn"
   },
-  "warmguide": {
-    "label": "آموزشی کرم-نارنجی",
-    "en": "Warm guide (cream paper + orange)",
-    "feel": "warm cream paper with a soft orange glow, big heavy headline with one orange word, segmented step bar on top (مرحله ۱…۷), clean UI mock cards (terminal, toggles, app icons, file chips), optional mascot of the creator in the corner, short 2-3 word subtitle with an orange keyword; friendly step-by-step tutorial",
-    "explainer": true,
-    "progress": false,
-    "bg": {"color": "#F7F0E6", "gradient": "radial-gradient(ellipse 70% 45% at 55% 62%,rgba(244,170,120,.28) 0%,rgba(247,240,230,0) 70%),linear-gradient(#F8F2E9,#F4ECE0)"},
-    "theme": {"primary": "#D9653B", "secondary": "#2F2723", "accent": "#D9653B", "ok": "#3BA55C", "dark": "#2F2723", "highlight": "#D9653B", "text": "#2F2723", "display": "Estedad", "body": "Estedad", "mono": "JetBrainsMono", "line": "#2F2723", "dim": "rgba(47,39,35,.35)", "card": "#FFFFFF"},
-    "defaults": {"title": {"anim": "rise", "jitter": false, "scrim": false}, "keyword": {"style": "plain", "rotate": 0, "from": "up", "wiggle": false}, "scene": {"glow": 0, "draw": 0.8}, "counter": {"gradient": false}, "success": {"confetti": 24}, "highlight": {"dim": 0, "pulse": false, "shape": "scribble"}},
-    "transitions": ["slide", "fade"],
-    "captions": "accent",
-    "fx": [],
-    "sfxMap": {"pop": "soft_pop", "pop_hi": "soft_pop", "bubble": "soft_pop", "whoosh": "soft_whoosh", "whoosh_short": "soft_whoosh", "whoosh_heavy": "soft_whoosh", "swoosh_out": "soft_whoosh", "swipe": "paper", "impact": null, "glitch": null, "error": "soft_tick", "draw": "scribble"},
-    "sfxGain": -2,
-    "intro": "iris",
-    "grade": "glow"
+  "defaults": {
+   "title": {
+    "anim": "rise",
+    "jitter": false
+   },
+   "keyword": {
+    "style": "plain",
+    "rotate": 0,
+    "from": "up",
+    "wiggle": false
+   },
+   "highlight": {
+    "dim": 0.15,
+    "pulse": false
+   },
+   "success": {
+    "confetti": 0
+   }
   },
-  "pictogram": {
-    "label": "اینفوگرافیک پیکتوگرامی",
-    "en": "Pictogram infographic (Isotype stick figures)",
-    "feel": "black background, flat white outline pictograms: people on pedestals with numbers, crowds, choice cards with radio dots, label lines, phones and rooms; a calm social-science / psychology data story with whole-sentence subtitle lighting up",
-    "explainer": true,
-    "progress": false,
-    "bg": {"color": "#000000"},
-    "theme": {"primary": "#FFFFFF", "secondary": "#9A9A9A", "accent": "#FFFFFF", "ok": "#FFFFFF", "dark": "#000000", "highlight": "#FFFFFF", "text": "#FFFFFF", "display": "Estedad", "body": "Estedad", "mono": "JetBrainsMono", "line": "#EDEDED", "dim": "rgba(255,255,255,.28)"},
-    "defaults": {"title": {"anim": "rise", "jitter": false, "scrim": false}, "keyword": {"style": "plain", "rotate": 0, "from": "up", "wiggle": false}, "scene": {"glow": 0.1, "draw": 0.7}, "counter": {"gradient": false}, "success": {"confetti": 0}, "highlight": {"dim": 0, "pulse": false}},
-    "transitions": ["fade", "dissolve"],
-    "captions": "reveal",
-    "fx": [],
-    "sfxMap": {"pop": "soft_tick", "pop_hi": "soft_tick", "bubble": "soft_pop", "tick": "soft_tick", "whoosh": "air", "whoosh_short": "air", "whoosh_heavy": "low_boom", "swoosh_out": "air", "swipe": "air", "impact": "low_boom", "glitch": null, "notify": "soft_pop", "ding": "shimmer", "success": "shimmer", "sparkle": null, "draw": "draw_soft"},
-    "sfxGain": -3,
-    "intro": "fade",
-    "grade": "film"
-  }
+  "transitions": [
+   "fade",
+   "wipe",
+   "dissolve"
+  ],
+  "captions": "minimal",
+  "fx": [],
+  "sfxMap": {
+   "pop": "soft_pop",
+   "pop_hi": "soft_pop",
+   "bubble": "soft_pop",
+   "whoosh": "soft_whoosh",
+   "whoosh_short": "soft_whoosh",
+   "whoosh_heavy": "soft_whoosh",
+   "swoosh_out": "soft_whoosh",
+   "swipe": "soft_whoosh",
+   "impact": null,
+   "glitch": null,
+   "sparkle": null,
+   "error": "tick",
+   "notify": "soft_pop"
+  },
+  "sfxGain": -3,
+  "intro": "fade",
+  "grade": "glow"
+ },
+ "doodle": {
+  "label": "دست‌نویس",
+  "en": "Hand-drawn doodle",
+  "feel": "marker strokes, wobbly outlines, scribbled circles and arrows, paper-and-pencil sounds; friendly, teacher-like",
+  "theme": {
+   "primary": "#FF5A36",
+   "secondary": "#2D7FF9",
+   "accent": "#FFC93C",
+   "ok": "#22A06B",
+   "dark": "#1B1B1B",
+   "highlight": "#FFC93C",
+   "display": "Lemonada",
+   "body": "Vazirmatn"
+  },
+  "defaults": {
+   "title": {
+    "anim": "rise",
+    "jitter": false
+   },
+   "keyword": {
+    "style": "sticker",
+    "rotate": -3,
+    "from": "pop"
+   },
+   "highlight": {
+    "shape": "scribble",
+    "dim": 0
+   }
+  },
+  "transitions": [
+   "paper",
+   "wipe",
+   "ink"
+  ],
+  "captions": "boxed",
+  "fx": [],
+  "sfxMap": {
+   "pop": "scribble",
+   "pop_hi": "scribble",
+   "bubble": "scribble",
+   "whoosh": "paper",
+   "whoosh_short": "paper",
+   "whoosh_heavy": "paper",
+   "swoosh_out": "paper",
+   "swipe": "scribble",
+   "glitch": null,
+   "impact": null
+  },
+  "sfxGain": 0,
+  "intro": "iris",
+  "grade": "glow"
+ },
+ "retro": {
+  "label": "رترو VHS",
+  "en": "Retro VHS / 90s",
+  "feel": "VHS grain, REC timecode, RGB-split type, sunset colors, tape-stop and static sounds; nostalgic, playful",
+  "theme": {
+   "primary": "#FF6B35",
+   "secondary": "#00C2B8",
+   "accent": "#FF2E88",
+   "ok": "#7CFC00",
+   "dark": "#120B1F",
+   "highlight": "#FFD23F",
+   "display": "Lalezar",
+   "body": "Vazirmatn"
+  },
+  "defaults": {
+   "title": {
+    "anim": "glitch"
+   },
+   "keyword": {
+    "style": "sticker",
+    "rotate": -2
+   }
+  },
+  "transitions": [
+   "static",
+   "glitch",
+   "blinds",
+   "burn"
+  ],
+  "captions": "boxed",
+  "fx": [
+   "vhs"
+  ],
+  "sfxMap": {
+   "whoosh": "static",
+   "whoosh_short": "static",
+   "whoosh_heavy": "tape_stop",
+   "swoosh_out": "tape_stop",
+   "pop": "blips",
+   "pop_hi": "blips"
+  },
+  "sfxGain": 0,
+  "intro": "glitch",
+  "grade": "film"
+ },
+ "news": {
+  "label": "خبری / رسمی",
+  "en": "Broadcast news",
+  "feel": "navy and red bars, squared labels, headline banner, bottom ticker, broadcast stings; serious, credible",
+  "theme": {
+   "primary": "#D7192F",
+   "secondary": "#0B1F44",
+   "accent": "#D7192F",
+   "ok": "#1E9E5A",
+   "dark": "#0B1F44",
+   "highlight": "#FFC400",
+   "display": "NotoKufiArabic",
+   "body": "Vazirmatn"
+  },
+  "defaults": {
+   "title": {
+    "anim": "rise",
+    "jitter": false
+   },
+   "keyword": {
+    "style": "sticker",
+    "rotate": 0,
+    "from": "right",
+    "wiggle": false
+   },
+   "success": {
+    "confetti": 0
+   }
+  },
+  "transitions": [
+   "bars",
+   "wipe",
+   "strip",
+   "push"
+  ],
+  "captions": "karaoke",
+  "fx": [
+   "newsbar"
+  ],
+  "sfxMap": {
+   "impact": "sting",
+   "pop": "tick",
+   "pop_hi": "tick",
+   "bubble": "tick",
+   "success": "sting",
+   "sparkle": null,
+   "glitch": null
+  },
+  "sfxGain": 0,
+  "intro": "split",
+  "grade": "punchy"
+ },
+ "lineglow": {
+  "label": "لاین‌آرت سینمایی",
+  "en": "Cinematic line-art (white-on-black story)",
+  "feel": "pure black, thin white line drawings that draw themselves, soft light beams, glow and star dust, slow camera drift, whole sentence subtitle that lights up word by word; reflective, philosophical, storytelling",
+  "explainer": true,
+  "progress": false,
+  "bg": {
+   "color": "#000000"
+  },
+  "theme": {
+   "primary": "#FFFFFF",
+   "secondary": "#BFC4CC",
+   "accent": "#FFFFFF",
+   "ok": "#FFFFFF",
+   "dark": "#000000",
+   "highlight": "#FFFFFF",
+   "text": "#FFFFFF",
+   "display": "Estedad",
+   "body": "Estedad",
+   "mono": "JetBrainsMono",
+   "line": "#F2F2F2",
+   "dim": "rgba(255,255,255,.28)"
+  },
+  "defaults": {
+   "title": {
+    "anim": "blur",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "plain",
+    "rotate": 0,
+    "from": "up",
+    "wiggle": false
+   },
+   "scene": {
+    "glow": 0.6,
+    "draw": 1.2
+   },
+   "counter": {
+    "gradient": false
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false
+   }
+  },
+  "transitions": [
+   "fade",
+   "dissolve",
+   "ink"
+  ],
+  "captions": "reveal",
+  "fx": [
+   "dust",
+   "vignette"
+  ],
+  "sfxMap": {
+   "pop": "soft_pop",
+   "pop_hi": "soft_pop",
+   "bubble": "soft_pop",
+   "tick": "soft_tick",
+   "whoosh": "air",
+   "whoosh_short": "air",
+   "whoosh_heavy": "low_boom",
+   "swoosh_out": "air",
+   "swipe": "air",
+   "impact": "low_boom",
+   "glitch": null,
+   "error": "soft_tick",
+   "notify": "shimmer",
+   "ding": "shimmer",
+   "success": "shimmer",
+   "sparkle": "shimmer",
+   "draw": "draw_soft"
+  },
+  "sfxGain": -3,
+  "intro": "fade",
+  "grade": "film"
+ },
+ "hud": {
+  "label": "دیتا / HUD",
+  "en": "Data HUD (diagram explainer)",
+  "feel": "charcoal radial background, thin self-drawing strokes, teal = right/AI vs red = wrong/human, tiny monospace readouts (ERROR 0.000, USERS · SAME PROMPT), live counters, key words bold or teal in the subtitle; analytical, smart, tech-essay",
+  "explainer": true,
+  "progress": false,
+  "bg": {
+   "color": "#0E0F11",
+   "gradient": "radial-gradient(ellipse 85% 60% at 50% 38%,#24262A 0%,#141517 55%,#0A0A0B 100%)"
+  },
+  "theme": {
+   "primary": "#3FD6B0",
+   "secondary": "#FF4D5E",
+   "accent": "#3FD6B0",
+   "ok": "#3FD6B0",
+   "dark": "#0E0F11",
+   "highlight": "#FFFFFF",
+   "text": "#E9EBEE",
+   "display": "Estedad",
+   "body": "Estedad",
+   "mono": "JetBrainsMono",
+   "line": "#D9DCE0",
+   "dim": "rgba(233,235,238,.32)"
+  },
+  "defaults": {
+   "title": {
+    "anim": "rise",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "plain",
+    "rotate": 0,
+    "from": "up",
+    "wiggle": false
+   },
+   "scene": {
+    "glow": 0.25,
+    "draw": 0.9
+   },
+   "counter": {
+    "gradient": false,
+    "persian": false
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false
+   }
+  },
+  "transitions": [
+   "fade",
+   "scan",
+   "blinds"
+  ],
+  "captions": "reveal",
+  "fx": [
+   "vignette"
+  ],
+  "sfxMap": {
+   "pop": "digital_blip",
+   "pop_hi": "digital_blip",
+   "bubble": "digital_blip",
+   "tick": "soft_tick",
+   "notify": "digital_seq",
+   "ding": "digital_seq",
+   "success": "digital_seq",
+   "whoosh": "soft_whoosh",
+   "whoosh_short": "soft_whoosh",
+   "whoosh_heavy": "low_boom",
+   "swoosh_out": "soft_whoosh",
+   "swipe": "soft_whoosh",
+   "impact": "low_boom",
+   "glitch": "digital_blip",
+   "sparkle": null,
+   "draw": "draw_soft"
+  },
+  "sfxGain": -2,
+  "intro": "fade",
+  "grade": "film"
+ },
+ "warmguide": {
+  "label": "آموزشی کرم-نارنجی",
+  "en": "Warm guide (cream paper + orange)",
+  "feel": "warm cream paper with a soft orange glow, big heavy headline with one orange word, segmented step bar on top (مرحله ۱…۷), clean UI mock cards (terminal, toggles, app icons, file chips), optional mascot of the creator in the corner, short 2-3 word subtitle with an orange keyword; friendly step-by-step tutorial",
+  "explainer": true,
+  "progress": false,
+  "bg": {
+   "color": "#F7F0E6",
+   "gradient": "radial-gradient(ellipse 70% 45% at 55% 62%,rgba(244,170,120,.28) 0%,rgba(247,240,230,0) 70%),linear-gradient(#F8F2E9,#F4ECE0)"
+  },
+  "theme": {
+   "primary": "#D9653B",
+   "secondary": "#2F2723",
+   "accent": "#D9653B",
+   "ok": "#3BA55C",
+   "dark": "#2F2723",
+   "highlight": "#D9653B",
+   "text": "#2F2723",
+   "display": "Estedad",
+   "body": "Estedad",
+   "mono": "JetBrainsMono",
+   "line": "#2F2723",
+   "dim": "rgba(47,39,35,.35)",
+   "card": "#FFFFFF"
+  },
+  "defaults": {
+   "title": {
+    "anim": "rise",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "plain",
+    "rotate": 0,
+    "from": "up",
+    "wiggle": false
+   },
+   "scene": {
+    "glow": 0,
+    "draw": 0.8
+   },
+   "counter": {
+    "gradient": false
+   },
+   "success": {
+    "confetti": 24
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false,
+    "shape": "scribble"
+   }
+  },
+  "transitions": [
+   "slide",
+   "fade",
+   "push"
+  ],
+  "captions": "accent",
+  "fx": [],
+  "sfxMap": {
+   "pop": "soft_pop",
+   "pop_hi": "soft_pop",
+   "bubble": "soft_pop",
+   "whoosh": "soft_whoosh",
+   "whoosh_short": "soft_whoosh",
+   "whoosh_heavy": "soft_whoosh",
+   "swoosh_out": "soft_whoosh",
+   "swipe": "paper",
+   "impact": null,
+   "glitch": null,
+   "error": "soft_tick",
+   "draw": "scribble"
+  },
+  "sfxGain": -2,
+  "intro": "iris",
+  "grade": "glow"
+ },
+ "pictogram": {
+  "label": "اینفوگرافیک پیکتوگرامی",
+  "en": "Pictogram infographic (Isotype stick figures)",
+  "feel": "black background, flat white outline pictograms: people on pedestals with numbers, crowds, choice cards with radio dots, label lines, phones and rooms; a calm social-science / psychology data story with whole-sentence subtitle lighting up",
+  "explainer": true,
+  "progress": false,
+  "bg": {
+   "color": "#000000"
+  },
+  "theme": {
+   "primary": "#FFFFFF",
+   "secondary": "#9A9A9A",
+   "accent": "#FFFFFF",
+   "ok": "#FFFFFF",
+   "dark": "#000000",
+   "highlight": "#FFFFFF",
+   "text": "#FFFFFF",
+   "display": "Estedad",
+   "body": "Estedad",
+   "mono": "JetBrainsMono",
+   "line": "#EDEDED",
+   "dim": "rgba(255,255,255,.28)"
+  },
+  "defaults": {
+   "title": {
+    "anim": "rise",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "plain",
+    "rotate": 0,
+    "from": "up",
+    "wiggle": false
+   },
+   "scene": {
+    "glow": 0.1,
+    "draw": 0.7
+   },
+   "counter": {
+    "gradient": false
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false
+   }
+  },
+  "transitions": [
+   "fade",
+   "dissolve",
+   "tiles"
+  ],
+  "captions": "reveal",
+  "fx": [],
+  "sfxMap": {
+   "pop": "soft_tick",
+   "pop_hi": "soft_tick",
+   "bubble": "soft_pop",
+   "tick": "soft_tick",
+   "whoosh": "air",
+   "whoosh_short": "air",
+   "whoosh_heavy": "low_boom",
+   "swoosh_out": "air",
+   "swipe": "air",
+   "impact": "low_boom",
+   "glitch": null,
+   "notify": "soft_pop",
+   "ding": "shimmer",
+   "success": "shimmer",
+   "sparkle": null,
+   "draw": "draw_soft"
+  },
+  "sfxGain": -3,
+  "intro": "fade",
+  "grade": "film"
+ },
+ "editorial": {
+  "label": "مجله‌ای ادیتوریال",
+  "en": "Editorial magazine",
+  "feel": "warm off-white paper, ink display type, one red rule and a red accent; quiet authority like a printed feature, numbered steps and pull quotes",
+  "theme": {
+   "primary": "#C8321E",
+   "secondary": "#1F2A44",
+   "accent": "#C8321E",
+   "ok": "#2F7D4F",
+   "dark": "#171512",
+   "highlight": "#F2C14E",
+   "text": "#171512",
+   "display": "Morabba",
+   "body": "Peyda",
+   "line": "#171512",
+   "dim": "rgba(23,21,18,.35)",
+   "card": "#FFFDF7"
+  },
+  "defaults": {
+   "title": {
+    "anim": "mask",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "marker",
+    "rotate": -2,
+    "from": "up"
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false
+   }
+  },
+  "transitions": [
+   "wipe",
+   "slide",
+   "fade"
+  ],
+  "captions": "highlight",
+  "fx": [
+   "paper"
+  ],
+  "sfxMap": {
+   "pop": "soft_pop",
+   "pop_hi": "soft_pop",
+   "bubble": "soft_pop",
+   "whoosh": "soft_whoosh",
+   "whoosh_short": "soft_whoosh",
+   "whoosh_heavy": "soft_whoosh",
+   "swoosh_out": "paper",
+   "swipe": "paper",
+   "impact": null,
+   "glitch": null,
+   "error": "soft_tick"
+  },
+  "sfxGain": -2,
+  "intro": "iris",
+  "grade": "glow"
+ },
+ "brutalist": {
+  "label": "بروتالیست خام",
+  "en": "Raw brutalist",
+  "feel": "concrete paper, black borders and offset shadows, acid-green blocks, oversized tight type; loud, opinionated, poster-like",
+  "theme": {
+   "primary": "#00E05A",
+   "secondary": "#0A0A0A",
+   "accent": "#FF3B00",
+   "ok": "#00E05A",
+   "dark": "#0A0A0A",
+   "highlight": "#00E05A",
+   "text": "#0A0A0A",
+   "display": "YekanBakh",
+   "body": "IRANSansX",
+   "line": "#0A0A0A",
+   "dim": "rgba(10,10,10,.35)"
+  },
+  "defaults": {
+   "title": {
+    "anim": "stamp",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "block",
+    "rotate": 0,
+    "from": "left"
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false
+   }
+  },
+  "transitions": [
+   "tiles",
+   "bars",
+   "flash"
+  ],
+  "captions": "block",
+  "fx": [],
+  "sfxMap": {
+   "whoosh": "whoosh_heavy",
+   "whoosh_short": "whoosh_heavy",
+   "swoosh_out": "whoosh_short",
+   "pop": "pop_hi",
+   "pop_hi": "impact",
+   "impact": "impact"
+  },
+  "sfxGain": 0,
+  "intro": "split",
+  "grade": "punchy"
+ },
+ "glass": {
+  "label": "شیشه‌ای نرم",
+  "en": "Frosted glass",
+  "feel": "deep night gradient with coloured blooms, frosted glass panels, thin light borders and soft glows; premium app-launch calm",
+  "theme": {
+   "primary": "#A9C8FF",
+   "secondary": "#7C6BFF",
+   "accent": "#FF6FA5",
+   "ok": "#66E0B0",
+   "dark": "#0B0E17",
+   "highlight": "#DCE7FF",
+   "text": "#EAF0FF",
+   "display": "Peyda",
+   "body": "Peyda",
+   "line": "#EAF0FF",
+   "dim": "rgba(234,240,255,.35)"
+  },
+  "defaults": {
+   "title": {
+    "anim": "blur",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "chrome",
+    "rotate": 0,
+    "from": "up",
+    "wiggle": false
+   },
+   "scene": {
+    "glow": 0.3,
+    "draw": 0.9
+   },
+   "counter": {
+    "gradient": false
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false
+   }
+  },
+  "transitions": [
+   "dissolve",
+   "fade",
+   "lightleak"
+  ],
+  "captions": "mask",
+  "fx": [
+   "vignette"
+  ],
+  "sfxMap": {
+   "pop": "soft_pop",
+   "pop_hi": "soft_pop",
+   "bubble": "soft_pop",
+   "whoosh": "soft_whoosh",
+   "whoosh_short": "soft_whoosh",
+   "whoosh_heavy": "low_boom",
+   "swoosh_out": "soft_whoosh",
+   "swipe": "soft_whoosh",
+   "impact": "low_boom",
+   "glitch": null,
+   "error": "soft_tick",
+   "notify": "soft_pop"
+  },
+  "sfxGain": -2,
+  "intro": "iris",
+  "grade": "glow"
+ },
+ "y2k": {
+  "label": "وای‌تو‌کی کروم",
+  "en": "Y2K chrome",
+  "feel": "deep indigo-to-pink gradient, liquid chrome type, bubble pills, dashed orbits and sparkle; playful 2000s-futurist nostalgia",
+  "theme": {
+   "primary": "#7FD4FF",
+   "secondary": "#B79CFF",
+   "accent": "#FF7BD5",
+   "ok": "#9CFFB0",
+   "dark": "#10132A",
+   "highlight": "#FFFFFF",
+   "text": "#EAF3FF",
+   "display": "Hasti",
+   "body": "IRANSansX",
+   "line": "#EAF3FF",
+   "dim": "rgba(234,243,255,.35)"
+  },
+  "defaults": {
+   "title": {
+    "anim": "flip",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "chrome",
+    "rotate": -3,
+    "from": "drop"
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false
+   }
+  },
+  "transitions": [
+   "circles",
+   "flash",
+   "zoom"
+  ],
+  "captions": "bubble",
+  "fx": [
+   "dust"
+  ],
+  "sfxMap": {
+   "pop": "pop_hi",
+   "pop_hi": "pop_hi",
+   "bubble": "bubble",
+   "whoosh": "whoosh_short",
+   "whoosh_short": "whoosh_short",
+   "whoosh_heavy": "whoosh_heavy",
+   "swoosh_out": "whoosh_short",
+   "swipe": "whoosh_short",
+   "impact": "impact",
+   "glitch": "digital_blip",
+   "ding": "sparkle",
+   "sparkle": "sparkle",
+   "success": "success"
+  },
+  "sfxGain": -1,
+  "intro": "flash",
+  "grade": "punchy"
+ },
+ "print": {
+  "label": "چاپ ریسو",
+  "en": "Risograph print",
+  "feel": "cream stock, two overprinted inks (orange + blue), halftone dots, letterpress offset shadows; zine and editorial-infographic warmth",
+  "explainer": true,
+  "progress": false,
+  "bg": {
+   "color": "#F3EEE2",
+   "gradient": "radial-gradient(ellipse 75% 50% at 55% 60%,rgba(226,69,43,.10) 0%,rgba(243,238,226,0) 70%)"
+  },
+  "theme": {
+   "primary": "#E2452B",
+   "secondary": "#1F4FD8",
+   "accent": "#E2452B",
+   "ok": "#2C7A52",
+   "dark": "#1B1A17",
+   "highlight": "#F2C14E",
+   "text": "#1B1A17",
+   "display": "Morabba",
+   "body": "Peyda",
+   "mono": "JetBrainsMono",
+   "line": "#1B1A17",
+   "dim": "rgba(27,26,23,.32)",
+   "card": "#FBF7EC"
+  },
+  "defaults": {
+   "title": {
+    "anim": "track",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "marker",
+    "rotate": -2,
+    "from": "up"
+   },
+   "scene": {
+    "glow": 0,
+    "draw": 0.8
+   },
+   "counter": {
+    "gradient": false
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false,
+    "shape": "scribble"
+   }
+  },
+  "transitions": [
+   "paper",
+   "wipe",
+   "fade"
+  ],
+  "captions": "highlight",
+  "fx": [
+   "halftone",
+   "paper"
+  ],
+  "sfxMap": {
+   "pop": "soft_pop",
+   "pop_hi": "soft_pop",
+   "bubble": "soft_pop",
+   "whoosh": "paper",
+   "whoosh_short": "paper",
+   "whoosh_heavy": "paper",
+   "swoosh_out": "paper",
+   "swipe": "scribble",
+   "impact": "low_boom",
+   "glitch": null,
+   "error": "soft_tick",
+   "draw": "scribble"
+  },
+  "sfxGain": -2,
+  "intro": "iris",
+  "grade": "glow"
+ },
+ "type": {
+  "label": "تایپوگرافی جنبشی",
+  "en": "Kinetic typography",
+  "feel": "black frame, enormous tight headline type, mono micro-labels, letterbox bars and hard cuts; the words are the whole design, no decoration",
+  "explainer": true,
+  "progress": false,
+  "bg": {
+   "color": "#0A0A0A",
+   "gradient": "radial-gradient(ellipse 80% 55% at 50% 40%,#161616 0%,#0A0A0A 70%)"
+  },
+  "theme": {
+   "primary": "#FFFFFF",
+   "secondary": "#FF4D2E",
+   "accent": "#FF4D2E",
+   "ok": "#FFFFFF",
+   "dark": "#0A0A0A",
+   "highlight": "#FFFFFF",
+   "text": "#FFFFFF",
+   "display": "YekanBakh",
+   "body": "IRANSansX",
+   "mono": "JetBrainsMono",
+   "line": "#FFFFFF",
+   "dim": "rgba(255,255,255,.28)"
+  },
+  "defaults": {
+   "title": {
+    "anim": "type",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "outline",
+    "rotate": 0,
+    "from": "up",
+    "wiggle": false
+   },
+   "scene": {
+    "glow": 0,
+    "draw": 0.6
+   },
+   "counter": {
+    "gradient": false,
+    "persian": false
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false
+   }
+  },
+  "transitions": [
+   "whip",
+   "push",
+   "fade"
+  ],
+  "captions": "stagger",
+  "fx": [
+   "letterbox"
+  ],
+  "sfxMap": {
+   "pop": "impact",
+   "pop_hi": "impact",
+   "bubble": "soft_pop",
+   "tick": "soft_tick",
+   "whoosh": "whoosh_heavy",
+   "whoosh_short": "whoosh_short",
+   "whoosh_heavy": "whoosh_heavy",
+   "swoosh_out": "whoosh_heavy",
+   "swipe": "whoosh_heavy",
+   "impact": "impact",
+   "glitch": "glitch",
+   "error": "soft_tick",
+   "notify": "soft_tick",
+   "ding": "soft_tick",
+   "success": "soft_tick",
+   "sparkle": null
+  },
+  "sfxGain": -1,
+  "intro": "flash",
+  "grade": "film"
+ },
+ "chalk": {
+  "label": "تخته‌سیاه گچی",
+  "en": "Chalkboard",
+  "feel": "deep green-black board, chalk-white handwritten type, dashed underlines and dusty glow; a teacher thinking out loud, warm and improvised",
+  "explainer": true,
+  "progress": false,
+  "bg": {
+   "color": "#1C2A24",
+   "gradient": "radial-gradient(ellipse 70% 50% at 52% 55%,#2A3A31 0%,#1C2A24 62%,#14201A 100%)"
+  },
+  "theme": {
+   "primary": "#F3EFE2",
+   "secondary": "#A8D8C0",
+   "accent": "#F2C14E",
+   "ok": "#9FE0B0",
+   "dark": "#16211C",
+   "highlight": "#F2C14E",
+   "text": "#F5F1E6",
+   "display": "Pinar",
+   "body": "Peyda",
+   "mono": "JetBrainsMono",
+   "line": "#F3EFE2",
+   "dim": "rgba(243,239,226,.34)"
+  },
+  "defaults": {
+   "title": {
+    "anim": "wave",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "tape",
+    "rotate": -3,
+    "from": "pop"
+   },
+   "scene": {
+    "glow": 0.15,
+    "draw": 1
+   },
+   "counter": {
+    "gradient": false
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false,
+    "shape": "scribble"
+   }
+  },
+  "transitions": [
+   "paper",
+   "dissolve"
+  ],
+  "captions": "reveal",
+  "fx": [
+   "dust",
+   "vignette"
+  ],
+  "sfxMap": {
+   "pop": "scribble",
+   "pop_hi": "scribble",
+   "bubble": "scribble",
+   "whoosh": "paper",
+   "whoosh_short": "paper",
+   "whoosh_heavy": "paper",
+   "swoosh_out": "paper",
+   "swipe": "scribble",
+   "impact": null,
+   "glitch": null,
+   "draw": "scribble"
+  },
+  "sfxGain": -2,
+  "intro": "fade",
+  "grade": "film"
+ },
+ "blueprint": {
+  "label": "نقشه مهندسی",
+  "en": "Blueprint technical",
+  "feel": "deep drafting blue, light grid, cyan line annotations, dimension arrows and monospace readouts; engineered, precise, how-it-works",
+  "explainer": true,
+  "progress": false,
+  "bg": {
+   "color": "#0A2540",
+   "gradient": "radial-gradient(ellipse 85% 60% at 50% 38%,#0F3557 0%,#0A2540 60%,#061A2E 100%)"
+  },
+  "theme": {
+   "primary": "#6FD3FF",
+   "secondary": "#FFB65C",
+   "accent": "#6FD3FF",
+   "ok": "#8FFFC4",
+   "dark": "#071A2E",
+   "highlight": "#FFD98A",
+   "text": "#DCEEFF",
+   "display": "YekanBakh",
+   "body": "IRANSansX",
+   "mono": "JetBrainsMono",
+   "line": "#9BD7FF",
+   "dim": "rgba(155,215,255,.32)"
+  },
+  "defaults": {
+   "title": {
+    "anim": "rise",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "stamp",
+    "rotate": 0,
+    "from": "up",
+    "wiggle": false
+   },
+   "scene": {
+    "glow": 0.2,
+    "draw": 1.1
+   },
+   "counter": {
+    "gradient": false,
+    "persian": false
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false
+   }
+  },
+  "transitions": [
+   "scan",
+   "dissolve",
+   "strip"
+  ],
+  "captions": "minimal",
+  "fx": [
+   "blueprint",
+   "vignette"
+  ],
+  "sfxMap": {
+   "pop": "tick",
+   "pop_hi": "tick",
+   "bubble": "soft_pop",
+   "tick": "soft_tick",
+   "notify": "digital_seq",
+   "ding": "digital_seq",
+   "success": "digital_seq",
+   "whoosh": "soft_whoosh",
+   "whoosh_short": "soft_whoosh",
+   "whoosh_heavy": "low_boom",
+   "swoosh_out": "soft_whoosh",
+   "swipe": "soft_whoosh",
+   "impact": "low_boom",
+   "glitch": "digital_blip",
+   "sparkle": null,
+   "draw": "draw_soft"
+  },
+  "sfxGain": -2,
+  "intro": "split",
+  "grade": "film"
+ },
+ "cleanchrome": {
+  "label": "کروم کلین (مدرن ۲۰۲۵)",
+  "en": "Clean chrome studio (modern 2025)",
+  "feel": "white studio backdrop, huge condensed type with _italic serif_ accents mixed inline, glossy 3D icons and real product shots floating with soft shadows, a giant outline word as watermark behind the scene, one accent on neutral gray; calm, premium, AI-startup reel",
+  "explainer": true,
+  "progress": true,
+  "bg": {
+   "color": "#F5F5F7",
+   "gradient": "linear-gradient(180deg,#FAFAFC 0%,#ECECEF 100%)"
+  },
+  "theme": {
+   "primary": "#17181A",
+   "secondary": "#6E7681",
+   "accent": "#17181A",
+   "ok": "#2AA050",
+   "dark": "#17181A",
+   "highlight": "#17181A",
+   "text": "#17181A",
+   "display": "YekanBakh",
+   "body": "IRANSansX",
+   "serif": "Morabba",
+   "mono": "JetBrainsMono",
+   "line": "#2B2D31",
+   "dim": "rgba(23,24,26,.35)",
+   "card": "#FFFFFF"
+  },
+  "defaults": {
+   "title": {
+    "anim": "mask",
+    "scrim": false
+   },
+   "keyword": {
+    "style": "plain",
+    "rotate": 0,
+    "from": "up",
+    "wiggle": false
+   },
+   "scene": {
+    "glow": 0,
+    "draw": 0.8
+   },
+   "counter": {
+    "gradient": false
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0.08,
+    "pulse": false
+   }
+  },
+  "transitions": [
+   "push",
+   "zoom",
+   "fade",
+   "dissolve"
+  ],
+  "captions": "kinetic",
+  "fx": [],
+  "sfxMap": {
+   "pop": "soft_pop",
+   "whoosh": "soft_whoosh",
+   "whoosh_heavy": "soft_whoosh",
+   "swipe": "soft_whoosh",
+   "impact": "low_boom",
+   "glitch": null
+  },
+  "sfxGain": -3,
+  "intro": "fade",
+  "grade": "glow",
+  "extends": "editorial",
+  "ink": true
+ },
+ "noirflip": {
+  "label": "نوآر فلیپ (مدرن ۲۰۲۵)",
+  "en": "Noir flip + brand red (modern 2025)",
+  "feel": "scenes that flip between true black and off-white, real device mockups with actual UI screenshots, giant serif/sans mixed statements with one brand red, halftone burst stickers, cutout photos masked inside shapes, word captions over the speaker; punchy social-growth marketing",
+  "explainer": true,
+  "progress": false,
+  "bg": {
+   "color": "#0B0B0D",
+   "gradient": "linear-gradient(180deg,#101013 0%,#0B0B0D 100%)"
+  },
+  "theme": {
+   "primary": "#E0301E",
+   "secondary": "#F5F2EC",
+   "accent": "#E0301E",
+   "ok": "#E0301E",
+   "dark": "#0B0B0D",
+   "highlight": "#E0301E",
+   "text": "#F5F2EC",
+   "display": "YekanBakh",
+   "body": "IRANSansX",
+   "serif": "Morabba",
+   "mono": "JetBrainsMono",
+   "line": "#F5F2EC",
+   "dim": "rgba(245,242,236,.4)",
+   "card": "#161618"
+  },
+  "defaults": {
+   "title": {
+    "anim": "rise",
+    "scrim": false
+   },
+   "keyword": {
+    "style": "stamp",
+    "rotate": -4,
+    "from": "pop"
+   },
+   "scene": {
+    "glow": 0,
+    "draw": 0.8
+   },
+   "counter": {
+    "gradient": false,
+    "persian": false
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false
+   }
+  },
+  "transitions": [
+   "push",
+   "whip",
+   "zoom",
+   "fade"
+  ],
+  "captions": "highlight",
+  "fx": [
+   "vignette"
+  ],
+  "sfxMap": {
+   "pop": "bubble",
+   "whoosh": "whoosh",
+   "whoosh_short": "whoosh_short",
+   "notify": "notify",
+   "glitch": null
+  },
+  "sfxGain": -3,
+  "intro": "flash",
+  "grade": "cinematic",
+  "extends": "type"
+ },
+ "nias": {
+  "label": "نیاس",
+  "en": "Nias",
+  "extends": "editorial",
+  "feel": "Deep petrol, warm ivory and a copper accent. Cold-open proof, deliberate cuts, editorial typography.",
+  "theme": {
+   "primary": "#F3AD79",
+   "secondary": "#74C9BA",
+   "accent": "#F3AD79",
+   "ok": "#74C9BA",
+   "dark": "#10262D",
+   "highlight": "#F3AD79",
+   "text": "#FFF3E4",
+   "display": "Vazirmatn",
+   "body": "Vazirmatn"
+  },
+  "defaults": {
+   "title": {
+    "anim": "focus"
+   },
+   "keyword": {
+    "style": "plain",
+    "from": "up",
+    "rotate": 0
+   },
+   "transition": {
+    "kind": "push",
+    "dur": 0.32,
+    "color": "#10262D",
+    "sfx": [[0.03, "soft_whoosh", -6]]
+   }
+  },
+  "transitions": [
+   "push"
+  ],
+  "captions": "nias",
+  "captionShade": {"height": 0.62, "opacity": 0.88},
+  "fx": [],
+  "sfxMap": {},
+  "intro": false,
+  "grade": "natural",
+  "css": ".st-nias .title .ln{color:#fff3e4!important;font-weight:800!important}.st-nias .title .kick,.st-nias .kw.plain{background:#10262d!important;color:#fff3e4!important;border:2px solid #74c9ba}.st-nias .kw .t{border-bottom:4px solid #f3ad79}.st-nias .cap.highlight .wd{color:#fff3e4;text-shadow:0 2px 4px #10262d,0 0 9px #10262d}.st-nias .cap.highlight .wd.on{color:#10262d;background:#f3ad79;text-shadow:none}"
+ },
+ "liquid-glass": {
+  "label": "لیکوئید گلس",
+  "en": "Liquid Glass",
+  "feel": "Translucent rounded lens cards, bright rims, moving highlights and fluid settling.",
+  "theme": {
+   "primary": "#C8E6FF",
+   "secondary": "#9B9EFF",
+   "accent": "#FF6FA5",
+   "ok": "#66E0B0",
+   "dark": "#0B0E17",
+   "highlight": "#DCE7FF",
+   "text": "#EAF0FF",
+   "display": "Vazirmatn",
+   "body": "Vazirmatn",
+   "line": "#EAF0FF",
+   "dim": "rgba(234,240,255,.35)"
+  },
+  "defaults": {
+   "title": {
+    "anim": "blur",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "chrome",
+    "rotate": 0,
+    "from": "up",
+    "wiggle": false
+   },
+   "scene": {
+    "glow": 0.3,
+    "draw": 0.9
+   },
+   "counter": {
+    "gradient": false
+   },
+   "success": {
+    "confetti": 0
+   },
+   "highlight": {
+    "dim": 0,
+    "pulse": false
+   },
+   "note": {
+    "liquid": true
+   }
+  },
+  "transitions": [
+   "dissolve",
+   "fade"
+  ],
+  "captions": "mask",
+  "fx": [],
+  "sfxMap": {
+   "pop": "soft_pop",
+   "pop_hi": "soft_pop",
+   "bubble": "soft_pop",
+   "whoosh": "soft_whoosh",
+   "whoosh_short": "soft_whoosh",
+   "whoosh_heavy": "low_boom",
+   "swoosh_out": "soft_whoosh",
+   "swipe": "soft_whoosh",
+   "impact": "low_boom",
+   "glitch": null,
+   "error": "soft_tick",
+   "notify": "soft_pop"
+  },
+  "sfxGain": -2,
+  "intro": false,
+  "grade": false,
+  "extends": "glass"
+ },
+ "explorecore": {
+  "label": "اکسپلورکور",
+  "en": "Explorecore",
+  "feel": "Layered visual journeys, route lines and sequential stage reveals.",
+  "theme": {
+   "primary": "#d7e88a",
+   "secondary": "#86b9a2",
+   "accent": "#f7cb77",
+   "dark": "#111e1b",
+   "text": "#f4f2dd",
+   "dim": "#88a39a",
+   "highlight": "#d7e88a",
+   "ok": "#86b9a2",
+   "line": "#f4f2dd",
+   "display": "Vazirmatn",
+   "body": "Vazirmatn"
+  },
+  "defaults": {
+   "title": {
+    "anim": "mask",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "plain",
+    "rotate": 0,
+    "wiggle": false
+   },
+   "scene": {
+    "draw": 0.62
+   }
+  },
+  "transitions": [
+   "dissolve",
+   "push"
+  ],
+  "captions": "reveal",
+  "fx": [],
+  "sfxMap": {},
+  "intro": false,
+  "grade": false
+ },
+ "notes-app-chic": {
+  "label": "یادداشت روزمره",
+  "en": "Notes App Chic",
+  "feel": "Notebook rules, paper labels, handwritten-style annotation and uneven layouts.",
+  "theme": {
+   "primary": "#a66729",
+   "secondary": "#557657",
+   "accent": "#f2d178",
+   "dark": "#fff9e9",
+   "text": "#292521",
+   "dim": "#776852",
+   "highlight": "#a66729",
+   "ok": "#557657",
+   "line": "#292521",
+   "display": "Vazirmatn",
+   "body": "Vazirmatn"
+  },
+  "defaults": {
+   "title": {
+    "anim": "rise",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "marker",
+    "rotate": 0,
+    "wiggle": false
+   },
+   "scene": {
+    "draw": 0.62
+   }
+  },
+  "transitions": [
+   "paper",
+   "fade"
+  ],
+  "captions": "minimal",
+  "fx": [],
+  "sfxMap": {},
+  "intro": false,
+  "grade": false
+ },
+ "reality-warp": {
+  "label": "پیچش واقعیت",
+  "en": "Reality Warp",
+  "feel": "Surreal scale, morphing objects, orbital lines and bold color contrast.",
+  "theme": {
+   "primary": "#ff9bd0",
+   "secondary": "#bafaff",
+   "accent": "#f8d56e",
+   "dark": "#141022",
+   "text": "#fff1ed",
+   "dim": "#b7a2ca",
+   "highlight": "#ff9bd0",
+   "ok": "#bafaff",
+   "line": "#fff1ed",
+   "display": "Vazirmatn",
+   "body": "Vazirmatn"
+  },
+  "defaults": {
+   "title": {
+    "anim": "blur",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "outline",
+    "rotate": 0,
+    "wiggle": false
+   },
+   "scene": {
+    "draw": 0.62
+   }
+  },
+  "transitions": [
+   "zoom",
+   "dissolve"
+  ],
+  "captions": "highlight",
+  "fx": [],
+  "sfxMap": {},
+  "intro": false,
+  "grade": false
+ }
 }
