@@ -622,7 +622,7 @@ def project_path(project_id: str) -> Path:
 def list_projects() -> dict[str, Any]:
     items = []
     for d in sorted(PROJECTS_DIR.iterdir(), key=lambda x: x.stat().st_mtime, reverse=True):
-        if d.is_dir():
+        if d.is_dir() and not d.name.startswith("_"):
             state_p = d / "studio_state.json"
             if state_p.exists():
                 st = json.loads(state_p.read_text(encoding="utf-8"))
@@ -773,24 +773,31 @@ async def upload_project_file(
     file_info = {"name": orig.name, "storedName": safe_name, "path": str(dest), "url": rel_url, "size": len(content)}
 
     state = json.loads(state_p.read_text(encoding="utf-8"))
+    media = state.setdefault("media", {})
+    media.setdefault("source", None)
+    media.setdefault("logo", None)
+    media.setdefault("screenshots", [])
+    media.setdefault("references", [])
+    media.setdefault("footages", [])
+
     if role == "source":
-        state["media"]["source"] = file_info
+        media["source"] = file_info
     elif role == "logo":
-        state["media"]["logo"] = file_info
+        media["logo"] = file_info
     elif role == "screenshot":
-        state["media"]["screenshots"].append(file_info)
+        media["screenshots"].append(file_info)
     elif role == "reference":
-        state["media"]["references"].append(file_info)
+        media["references"].append(file_info)
     elif role == "footage":
         # Also copy to assets/footage/user so Plan Engine recognizes it directly
         user_foot = ASSETS_DIR / "footage" / "user"
         user_foot.mkdir(parents=True, exist_ok=True)
         shutil.copy2(dest, user_foot / safe_name)
-        state["media"].setdefault("footages", []).append(file_info)
+        media["footages"].append(file_info)
 
     state["updatedAt"] = time.strftime("%Y-%m-%d %H:%M:%S")
     state_p.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
-    return {"ok": True, "file": file_info, "media": state["media"]}
+    return {"ok": True, "file": file_info, "media": media}
 
 
 def start_job(kind: str, fn) -> str:

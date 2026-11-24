@@ -731,21 +731,54 @@ function bindStyleControls() {
 // ---------------- Uploads & Whisper Analyze ----------------
 
 function bindUploads() {
-  const handleUpload = async (inputId, role) => {
-    $(inputId).addEventListener('change', async (e) => {
-      if (!state.project || !e.target.files.length) return;
-      for (const file of e.target.files) {
+  const uploadFiles = async (files, role) => {
+    if (!state.project || !files || !files.length) return;
+    showToast(`در حال آپلود ${files.length} فایل...`, 4000);
+    try {
+      let lastUploaded = null;
+      for (const file of files) {
         const fd = new FormData();
         fd.append('role', role);
         fd.append('file', file);
         const res = await api(`/api/projects/${state.project.id}/upload`, { method: 'POST', body: fd });
         state.project.media = res.media;
+        lastUploaded = res.file;
+      }
+      // If user uploaded screenshots and active beat has no image yet, auto-attach for immediate visual preview!
+      if (role === 'screenshot' && lastUploaded && state.project.beats?.[state.activeBeatIndex] && !state.project.beats[state.activeBeatIndex].assetUrl) {
+        state.project.beats[state.activeBeatIndex].assetUrl = lastUploaded.url;
+      }
+      if (role === 'footage') {
+        state.catalog = await api('/api/catalog');
+        populateFootageSelect();
       }
       renderMediaLists();
+      renderBeats();
       updateLivePreview();
-      showToast('فایل با موفقیت آپلود شد');
+      showToast('فایل با موفقیت آپلود و نمایش داده شد!');
+    } catch (err) {
+      console.error('Upload error:', err);
+      showToast('خطا در آپلود فایل: ' + err.message, 5000);
+    }
+  };
+
+  const handleUpload = (inputId, role) => {
+    const inp = $(inputId);
+    if (!inp) return;
+    inp.addEventListener('change', async (e) => {
+      await uploadFiles(e.target.files, role);
       e.target.value = '';
     });
+    const dz = inp.closest('.dropzone');
+    if (dz) {
+      dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.style.borderColor = 'var(--primary)'; });
+      dz.addEventListener('dragleave', () => { dz.style.borderColor = ''; });
+      dz.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        dz.style.borderColor = '';
+        if (e.dataTransfer?.files?.length) await uploadFiles(e.dataTransfer.files, role);
+      });
+    }
   };
   handleUpload('upSource', 'source');
   handleUpload('upLogo', 'logo');
@@ -813,11 +846,31 @@ function bindUploads() {
 
 function renderMediaLists() {
   const m = state.project?.media || {};
-  $('listSource').innerHTML = m.source ? `<span class="file-chip"><i class="iconsax sm" icon-name="music"></i> ${m.source.name}</span>` : '';
-  $('listLogo').innerHTML = m.logo ? `<span class="file-chip"><i class="iconsax sm" icon-name="hashtag"></i> ${m.logo.name}</span>` : '';
-  $('listShots').innerHTML = (m.screenshots || []).map((s) => `<span class="file-chip"><i class="iconsax sm" icon-name="picture"></i> ${s.name}</span>`).join('');
-  $('listRefs').innerHTML = (m.references || []).map((r) => `<span class="file-chip"><i class="iconsax sm" icon-name="star"></i> ${r.name}</span>`).join('');
-  if ($('listFootages')) $('listFootages').innerHTML = (m.footages || []).map((f) => `<span class="file-chip">${f.name}</span>`).join('');
+  if (m.source) {
+    const isVid = /\.(mp4|mov|webm|mkv)$/i.test(m.source.name || '');
+    $('listSource').innerHTML = `
+      <div style="width:100%; text-align:center;" onclick="event.preventDefault(); event.stopPropagation();">
+        <span class="file-chip"><i class="iconsax sm" icon-name="music"></i> ${escapeAttr(m.source.name)}</span>
+        ${isVid
+          ? `<video src="${m.source.url}" controls muted style="width:100%; max-height:130px; border-radius:8px; margin-top:6px; background:#000;"></video>`
+          : `<audio src="${m.source.url}" controls style="width:100%; height:32px; margin-top:6px;"></audio>`}
+      </div>`;
+  } else {
+    $('listSource').innerHTML = '';
+  }
+
+  $('listLogo').innerHTML = m.logo
+    ? `<span class="file-chip"><img src="${m.logo.url}" style="width:24px; height:24px; object-fit:contain; border-radius:4px;" /> ${escapeAttr(m.logo.name)}</span>`
+    : '';
+
+  $('listShots').innerHTML = (m.screenshots || []).map((s) => `
+    <span class="file-chip" title="${escapeAttr(s.name)}">
+      <img src="${s.url}" style="width:30px; height:30px; object-fit:cover; border-radius:5px; border:1px solid var(--border);" />
+      ${escapeAttr(s.name.slice(0, 18))}
+    </span>`).join('');
+
+  $('listRefs').innerHTML = (m.references || []).map((r) => `<span class="file-chip"><i class="iconsax sm" icon-name="star"></i> ${escapeAttr(r.name)}</span>`).join('');
+  if ($('listFootages')) $('listFootages').innerHTML = (m.footages || []).map((f) => `<span class="file-chip"><i class="iconsax sm" icon-name="video"></i> ${escapeAttr(f.name)}</span>`).join('');
 }
 
 // ---------------- Storyboard Beats ----------------
