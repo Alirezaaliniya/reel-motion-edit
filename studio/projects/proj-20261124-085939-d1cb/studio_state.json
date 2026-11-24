@@ -1,0 +1,51 @@
+{
+  "id": "proj-20261124-085939-d1cb",
+  "title": "تست خودکار استودیو",
+  "mode": "explainer",
+  "style": "liquid-glass",
+  "designSystemRef": "",
+  "layout": "A",
+  "brand": {
+    "primary": "#C8E6FF",
+    "accent": "#FF6FA5",
+    "bg": "#0B0E17",
+    "text": "#EAF0FF",
+    "displayFont": "Peyda",
+    "bodyFont": "Vazirmatn",
+    "handle": ""
+  },
+  "options": {
+    "flowlineRibbon": true,
+    "cornerBlurAccents": true,
+    "spatialScroll": true,
+    "captions": "mask",
+    "music": "corporate",
+    "musicGain": -20,
+    "sfx": "whoosh_short",
+    "transition": "dissolve"
+  },
+  "freeformDirection": "پس‌زمینه روشن با خط آبی منحنی پشت کارت و المان بلر گوشه",
+  "media": {
+    "source": null,
+    "logo": null,
+    "screenshots": [],
+    "references": []
+  },
+  "transcript": [],
+  "beats": [
+    {
+      "id": "b1",
+      "t": 0,
+      "end": 4,
+      "spoken": "جملهٔ قلاب آغازین ویدیو",
+      "headline": "انفجار سرعت در تدوین هوشمند",
+      "keyword": "بدون کدنویسی",
+      "visualType": "card-ribbon",
+      "assetUrl": "/assets/icons-3d/rocket.png",
+      "transition": "push",
+      "sfx": "whoosh_short",
+      "aiNote": "خط آبی منحنی از چپ وارد شود و از پشت کارت رد شود."
+    }
+  ],
+  "updatedAt": "2026-11-24 09:11:30"
+}

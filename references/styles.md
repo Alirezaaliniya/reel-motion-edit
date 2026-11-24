@@ -28,6 +28,7 @@ footage. The rest are overlay styles and can still run in explainer mode — the
 | `explorecore` (Vazirmatn) | process and comparison stories | route, landmarks, stage labels | reveal one stage at a time, dissolve/push | presenting the entire map before the story reaches it |
 | `notes-app-chic` (Vazirmatn) | founder diaries, checklists, behind the scenes | ruled cream paper, uneven cards, ink marks | gentle rise, paper/fade | artificial disorder across every frame |
 | `reality-warp` (Vazirmatn) | surreal hooks and product reveals | unexpected scale, orbit lines, morphable objects | morph one subject into the next clue, zoom/dissolve | warping the text or hiding the subject |
+| `pinterest-faceless` (Hasti + Pinar) | faceless product reels, editorial poster motion (`C21`) | curved flowline ribbon passing behind elevated UI cards, blurred corner botanicals/badges, boxed & underlined keywords | spatial horizontal/vertical canvas scroll with shutter blur + iris circle wipes | full-sentence subtitles, seams between scrolled frames, oversized text |
 | `y2k` chrome (Hasti display) | youth, music, gaming, launches, "future" claims | chrome keywords, bubble captions, flip-ins, ring/zoom transitions | glossy: flip/bubble pops, circles/flash cuts | corporate tone, tiny type, muted palettes |
 
 ## Explainer-first (8)

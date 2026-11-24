@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>استودیو موشن نیاس | Reel Motion Studio</title>
+  <link rel="stylesheet" href="/static/iconsax/iconsax.css" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand-box">
+    <div class="brand-logo">N</div>
+    <div>
+      <h1 class="brand-title">استودیو موشن نیاس</h1>
+      <div class="brand-sub">تدوین هوشمند با هوش مصنوعی + کنترل کامل دستی روی سبک، سکانس و جزئیات</div>
+    </div>
+  </div>
+  <div class="top-actions">
+    <select id="projectSwitcher" class="btn sm" style="max-width:155px;" title="سوئیچ بین پروژه‌ها"></select>
+    <button class="btn ghost sm" id="btnDeleteProject" title="حذف پروژه فعلی" style="color:#dc2626;"><i class="iconsax" icon-name="trash"></i></button>
+    <input id="projectTitle" class="project-title-input" type="text" value="معرفی محصول جدید" placeholder="نام پروژه..." />
+    <button class="btn ok" id="btnAutoDirect" title="هوش مصنوعی بهترین سبک، رنگ، آیکون‌ها، ترنزیشن، صدا و کاور را خودکار می‌چیند"><i class="iconsax" icon-name="magic-star"></i> حالت هوشمند کامل</button>
+    <button class="btn" id="btnNewProject">پروژه جدید</button>
+    <button class="btn primary" id="btnSaveAll">ذخیره و بریف AI</button>
+    <button class="btn ghost sm" id="btnShutdown" title="خاموش کردن سرور لوکال استودیو" style="color:#dc2626;"><i class="iconsax" icon-name="logout-1"></i> خروج</button>
+  </div>
+</header>
+
+<main class="workspace">
+  <!-- Right Column: Interactive Controls -->
+  <section class="editor-col">
+    <!-- AI Director Analysis Report Banner (shown after Smart Direction) -->
+    <div id="aiReportCard" class="card" style="display:none; border-color:rgba(34,197,94,0.45); background:#f0fdf4;">
+      <div class="card-header" style="margin-bottom:8px;">
+        <div>
+          <h3 class="card-title" style="color:#15803d;"><i class="iconsax" icon-name="magic-star"></i> گزارش تحلیلی کارگردان هوش مصنوعی</h3>
+          <div class="card-sub" id="aiReportEngine"></div>
+        </div>
+        <button class="btn sm ghost" id="btnCloseReport">بستن</button>
+      </div>
+      <div id="aiReportBody" style="font-size:13px; line-height:1.9; white-space:pre-wrap; color:#1e293b;"></div>
+    </div>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="tab-styles">۱. انتخاب سبک یا ساخت سبک شخصی</button>
+      <button class="tab-btn" data-tab="tab-media">۲. فایل‌ها و تحلیل گفتار</button>
+      <button class="tab-btn" data-tab="tab-beats">۳. استوری‌بورد، آیکون و صدا</button>
+      <button class="tab-btn" data-tab="tab-export">۴. بریف هوش مصنوعی و رندر</button>
+    </nav>
+
+    <!-- TAB 1: STYLES & CUSTOM BUILDER (Clean 3-Subtab Architecture) -->
+    <div id="tab-styles" class="panel-section active">
+      <div class="pills" id="tab1Subtabs" style="margin-bottom:14px;">
+        <button class="pill active" data-sub="sub-gallery"><i class="iconsax" icon-name="color-swatch"></i> گالری سبک‌ها (۲۷ + ۶۷ گیت‌هاب)</button>
+        <button class="pill" data-sub="sub-tune"><i class="iconsax" icon-name="setting-2"></i> رنگ، متن، اینترو و اوترو</button>
+        <button class="pill" data-sub="sub-clone"><i class="iconsax" icon-name="cpu"></i> کلون از رفرنس و ساخت سبک جدید</button>
+      </div>
+
+      <div id="sub-gallery" class="sub-panel active">
+        <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">گالری تصویری سبک‌ها</h2>
+            <p class="card-sub">سبک مورد نظرت را انتخاب کن یا روی «۶۷ سیستم طراحی گیت‌هاب» و «ساخت سبک شخصی» بزن</p>
+          </div>
+          <div class="pills" id="styleFilters" style="margin:0;">
+            <button class="pill active" data-filter="all">همه سبک‌ها (۲۷)</button>
+            <button class="pill" data-filter="faceless">بدون چهره (C/D)</button>
+            <button class="pill" data-filter="face">با چهره (A/B/E)</button>
+            <button class="pill" data-filter="github67">۶۷ سیستم طراحی گیت‌هاب</button>
+            <button class="pill" data-filter="custom">سبک‌های من</button>
+          </div>
+        </div>
+        <div id="styleGrid" class="style-grid"></div>
+      </div>
+      </div>
+
+      <!-- SUB-TAB 2: Customize Current Style + Intro & Outro -->
+      <div id="sub-tune" class="sub-panel" style="display:none;">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><i class="iconsax" icon-name="video"></i> سبک اینترو (قلاب آغازین) و اوترو (پایان‌بندی و CTA)</h2>
+            <p class="card-sub">با تغییر هر گزینه یا کلیک روی دکمه‌های پیش‌نمایش، همان لحظه روی موبایل سمت چپ تست زنده ببین</p>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn sm" id="btnPreviewIntro"><i class="iconsax sm" icon-name="play"></i> پیش‌نمایش اینترو</button>
+            <button class="btn sm" id="btnPreviewOutro"><i class="iconsax sm" icon-name="play"></i> پیش‌نمایش اوترو</button>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>سبک اینترو (شروع ویدیو)</label>
+            <select id="optIntroStyle">
+              <option value="none">بدون اینترو (شروع مستقیم با سکانس ۱)</option>
+              <option value="logo-burst">ورود لوگوی برند + خط منحنی (Logo Burst)</option>
+              <option value="kinetic-hook">قلاب تایپوگرافی بزرگ (Kinetic Hook)</option>
+              <option value="question-hook">کارت سوالی «می‌دونستی؟» (Question Hook)</option>
+              <option value="iris-reveal">بازشدن دایره‌ای از مرکز (Iris Reveal)</option>
+              <option value="countdown">شمارش معکوس سریع ۳-۲-۱ (Countdown)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>مدت اینترو (ثانیه)</label>
+            <input type="number" id="optIntroDur" value="2.0" min="1.0" max="5.0" step="0.2" />
+          </div>
+          <div class="field">
+            <label>سبک اوترو (پایان ویدیو)</label>
+            <select id="optOutroStyle">
+              <option value="none">بدون اوترو</option>
+              <option value="comment-cta">دعوت به کامنت + لوگوی بزرگ چپ‌برش (سبک پینترست)</option>
+              <option value="follow-save-cta">کارت «ذخیره کن و فالو یادت نره» + آیدی پیج</option>
+              <option value="logo-lockup">بستن سینمایی با لوگو و آیدی برند (Logo Lockup)</option>
+              <option value="link-bio-cta">دعوت به لینک در بیو / وب‌سایت (Link in Bio)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>مدت اوترو (ثانیه)</label>
+            <input type="number" id="optOutroDur" value="2.8" min="1.5" max="6.0" step="0.2" />
+          </div>
+          <div class="field">
+            <label>واژه اصلی CTA در اوترو (مثلاً: نیاس)</label>
+            <input type="text" id="inpOutroCtaWord" placeholder="نیاس" />
+          </div>
+          <div class="field">
+            <label>متن توضیحی اوترو</label>
+            <input type="text" id="inpOutroSubtitle" placeholder="رو کامنت کن تا لینک برات بیاد" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">شخصی‌سازی جزئیات سبک انتخابی</h2>
+            <p class="card-sub">هر بخش را می‌توانی دستی انتخاب کنی یا تاگل «حالت ترکیبی» همان بخش را روشن کنی تا خودش هوشمندانه بهترین ترکیب را بچیند</p>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="btn sm ok" id="btnToggleAllHybrid"><i class="iconsax sm" icon-name="magic-star"></i> حالت ترکیبی برای همه بخش‌ها</button>
+            <button class="btn sm" id="btnExtractLogoColors"><i class="iconsax" icon-name="color-swatch"></i> استخراج خودکار رنگ از لوگو</button>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <div class="field-head">
+              <label>چیدمان قاب ویدیو</label>
+              <label class="hybrid-pill" title="خودکار بین کارت شناور، شمارنده، مقایسه و تایپوگرافی ترکیب می‌کند"><input type="checkbox" id="hybLayout" /> حالت ترکیبی</label>
+            </div>
+            <select id="optLayout">
+              <option value="C">C — تمام‌صفحه بدون چهره (Faceless / Poster)</option>
+              <option value="A">A — گرافیک روی چهره سخنران</option>
+              <option value="E">E — دو نیمه (موشن بالا / چهره پایین)</option>
+              <option value="B">B — توضیح تمام‌صفحه با پنجره کوچک چهره</option>
+              <option value="D">D — سه‌بعدی و موشن پیشرفته Remotion</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>نسبت تصویر خروجی (Aspect Ratio)</label>
+            <select id="optAspectRatio">
+              <option value="9:16">۹:۱۶ عمودی (ریلز / شورتس / استوری)</option>
+              <option value="4:5">۴:۵ پرتره (پست بلند اینستاگرام)</option>
+              <option value="1:1">۱:۱ مربعی (پست کلاسیک)</option>
+              <option value="16:9">۱۶:۹ افقی (یوتیوب / آپارات)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>رنگ اصلی (برند / خط)</label>
+            <div class="color-row"><input type="color" id="colPrimary" value="#007AFF" /><span id="valPrimary">#007AFF</span></div>
+          </div>
+          <div class="field">
+            <label>رنگ تأکید (کادر / هایلایت)</label>
+            <div class="color-row"><input type="color" id="colAccent" value="#F8D146" /><span id="valAccent">#F8D146</span></div>
+          </div>
+          <div class="field">
+            <label>رنگ پس‌زمینه</label>
+            <div class="color-row"><input type="color" id="colBg" value="#F4F5F2" /><span id="valBg">#F4F5F2</span></div>
+          </div>
+          <div class="field">
+            <label>رنگ متن</label>
+            <div class="color-row"><input type="color" id="colText" value="#262B2E" /><span id="valText">#262B2E</span></div>
+          </div>
+          <div class="field">
+            <label>فونت تیتر (Display)</label>
+            <select id="optDisplayFont"></select>
+          </div>
+          <div class="field">
+            <label>فونت متن (Body)</label>
+            <select id="optBodyFont"></select>
+          </div>
+          <div class="field">
+            <div class="field-head">
+              <label>ترنزیشن پیش‌فرض بین سکانس‌ها</label>
+              <label class="hybrid-pill" title="خودکار بین اسکرول افقی، عمودی و بازشدن دایره‌ای تنوع می‌دهد"><input type="checkbox" id="hybTransitions" /> حالت ترکیبی</label>
+            </div>
+            <select id="optTransition">
+              <option value="push">اسکرول فضایی افقی/عمودی (Spatial Scroll)</option>
+              <option value="circles">باز شدن دایره‌ای (Iris Wipe)</option>
+              <option value="zoom">زوم از داخل کارت (Zoom-Through)</option>
+              <option value="dissolve">دیزالو نرم</option>
+              <option value="paper">ورق خوردن کاغذ (Paper)</option>
+              <option value="glitch">گلیچ دیجیتال</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="field-head">
+              <label>پریست انیمیشن ورود متن (FFX)</label>
+              <label class="hybrid-pill" title="قلاب‌ها با Karo Bounce و توضیحات آرام با Smooth Quart اجرا می‌شوند"><input type="checkbox" id="hybMotion" /> حالت ترکیبی</label>
+            </div>
+            <select id="optMotionPreset"></select>
+          </div>
+          <div class="field">
+            <label>افکت نمایش و تأکید کلمات متن</label>
+            <select id="optTextAnimStyle">
+              <option value="classic-rise">ورود نرم یکپارچه (ادیتوریال کلاسیک)</option>
+              <option value="word-unblur">آنبلر شدن یکی‌یکی کلمات (Word Unblur)</option>
+              <option value="emphasis-word">تأکید بزرگ‌تر و رنگی روی کلمه مهم (+35%)</option>
+              <option value="word-pop">ورود پله‌ای کلمه‌به‌کلمه (Word Pop)</option>
+              <option value="typewriter">تایپ شدن زنده کلمات (Typewriter)</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="field-head">
+              <label>حالت متن و زیرنویس</label>
+              <label class="hybrid-pill" title="جملات کوتاه با کلمات کلیدی پوستری و جملات بلند با زیرنویس امن"><input type="checkbox" id="hybTextMode" /> حالت ترکیبی</label>
+            </div>
+            <select id="optTextMode">
+              <option value="keywords">فقط کلمات کلیدی و تیتر پوستری</option>
+              <option value="captions">زیرنویس کامل گفتار</option>
+              <option value="description">متن توضیحی کوتاه زیر کارت</option>
+              <option value="both">هر دو (کلمات کلیدی + زیرنویس)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>جایگاه تیتر روی کادر</label>
+            <select id="optHeadlinePos">
+              <option value="top">بالای کادر (استاندارد)</option>
+              <option value="top-right">بالا راست (ادیتوریال)</option>
+              <option value="center">وسط (روی/کنار کارت)</option>
+              <option value="bottom">پایین کادر</option>
+              <option value="none">مخفی (بدون تیتر)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>جایگاه زیرنویس / توضیحات</label>
+            <select id="optCaptionPos">
+              <option value="bottom-safe">پایین در ناحیه امن ریلز</option>
+              <option value="below-card">دقیقاً زیر کارت میانی</option>
+              <option value="center">وسط کادر (پرانرژی)</option>
+              <option value="top">بالای کادر</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>اندازه فونت‌ها</label>
+            <select id="optFontScale">
+              <option value="sm">ظریف و کوچک</option>
+              <option value="md" selected>متوسط و استاندارد</option>
+              <option value="lg">بزرگ و پرانرژی</option>
+              <option value="xl">خیلی بزرگ (پوستری)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>نام یا آیدی پیج (مثلاً @nias.ir)</label>
+            <input type="text" id="inpHandle" placeholder="@yourpage" dir="ltr" />
+          </div>
+          <div class="field">
+            <label>جایگاه آیدی پیج روی ویدیو</label>
+            <select id="optHandlePos">
+              <option value="tr">بالا راست</option>
+              <option value="tc">وسط بالا</option>
+              <option value="tl">بالا چپ</option>
+              <option value="br">پایین راست</option>
+              <option value="bc">وسط پایین</option>
+              <option value="bl">پایین چپ</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="field-head">
+              <label>فوتیج / افکت نوری روی کل ویدیو</label>
+              <label class="hybrid-pill" title="فقط روی لحظات اوج و تغییر سکانس‌های مهم افکت نوری اعمال می‌کند"><input type="checkbox" id="hybFx" /> حالت ترکیبی</label>
+            </div>
+            <select id="optFootageFx"></select>
+          </div>
+          <div class="field">
+            <label>حالت ترکیب فوتیج (Blend Mode)</label>
+            <select id="optFootageBlend">
+              <option value="screen">Screen (نوری — پیشنهادی)</option>
+              <option value="lighten">Lighten (روشن‌کننده نرم)</option>
+              <option value="overlay">Overlay (کنتراست و بافت)</option>
+              <option value="plus-lighter">Add / Glow (درخشش قوی)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>شفافیت افکت فوتیج (<span id="valFootOp">45%</span>)</label>
+            <input type="range" id="optFootageOpacity" min="0.1" max="1" step="0.05" value="0.45" style="width:100%; accent-color:var(--primary);" />
+          </div>
+          <div class="field">
+            <label>سبک ظاهری زیرنویس (Plan Engine)</label>
+            <select id="optCaptions">
+              <option value="none">بدون زیرنویس خودکار</option>
+              <option value="highlight">هایلایت کلمه فعال</option>
+              <option value="karaoke">کارائوکه پرانرژی</option>
+              <option value="minimal">مینیمال و تمیز</option>
+              <option value="boxed">کادردار (Boxed)</option>
+            </select>
+          </div>
+        </div>
+        <div class="toggles">
+          <label class="toggle"><input type="checkbox" id="chkFlowline" checked /> خط منحنی رنگی پشت کارت (Flowline Ribbon)</label>
+          <label class="toggle"><input type="checkbox" id="chkCornerBlur" checked /> المان‌های محو گوشه کادر (Depth-of-Field Blur)</label>
+          <label class="toggle"><input type="checkbox" id="chkSpatialScroll" checked /> جابه‌جایی اسکرولی پیوسته با موشن‌بلر</label>
+        </div>
+      </div>
+      </div>
+
+      <!-- SUB-TAB 3: Reference Cloner & Custom Style Builder -->
+      <div id="sub-clone" class="sub-panel" style="display:none;">
+      <!-- Reference Style Cloner (Clone any video/image into a permanent visual gallery style) -->
+      <div class="card" style="border-color:rgba(99,102,241,0.4);">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><i class="iconsax" icon-name="cpu"></i> کپی‌برداری هوشمند از ویدیو یا عکس رفرنس (Reference Cloner)</h2>
+            <p class="card-sub">یک ویدیوی رفرنس (MP4/MOV) یا عکس بده تا کات‌ها، ریتم، جهت حرکت/ترنزیشن، پالت رنگ و فریم‌های کلیدی‌اش استخراج و با تصویر واقعی به گالری اضافه شود</p>
+          </div>
+        </div>
+        <div class="form-grid" style="align-items:end;">
+          <div class="field">
+            <label>نام سبک استخراجی (فارسی)</label>
+            <input type="text" id="refCloneLabel" placeholder="مثلاً: سبک ریلز پینترست شماره ۲" />
+          </div>
+          <div class="field">
+            <label>انتخاب ویدیو یا عکس رفرنس</label>
+            <input type="file" id="refCloneFile" accept="video/*,image/*" style="padding:5px;" />
+          </div>
+          <div class="field">
+            <button class="btn primary" id="btnAnalyzeRef" style="width:100%; justify-content:center;"><i class="iconsax" icon-name="cpu"></i> تحلیل فریم‌به‌فریم و استخراج سبک</button>
+          </div>
+        </div>
+
+        <div id="refCloneResult" style="display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--border);">
+          <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:flex-start;">
+            <img id="refCloneThumb" src="" alt="کارت سبک" style="width:128px; border-radius:12px; border:2px solid var(--primary);" />
+            <div style="flex:1; min-width:240px;">
+              <div id="refCloneReport" style="font-size:12.5px; line-height:1.85; white-space:pre-wrap; color:#1e293b; margin-bottom:10px;"></div>
+              <div class="field">
+                <label>یادداشت تکمیلی نکات ریز حرکتی / افکت متن (قابل ویرایش قبل از ذخیره)</label>
+                <textarea id="refCloneNotes" style="min-height:60px;" placeholder="نکات خاص مثل نوع ورود کلمات، خط منحنی، افکت بلر..."></textarea>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+                <button class="btn ok" id="btnSaveClonedStyle"><i class="iconsax" icon-name="tick-circle"></i> ثبت به‌عنوان سبک جدید با تصویر در گالری</button>
+                <button class="btn ghost sm" id="btnCopyDeepRefCmd"><i class="iconsax" icon-name="cpu"></i> کپی دستور تحلیل عمیق فریم‌به‌فریم برای هوش مصنوعی (MCP)</button>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:12px;">
+            <div class="card-sub" style="margin-bottom:6px;">شیت فریم‌های کلیدی استخراج‌شده از رفرنس:</div>
+            <img id="refCloneSheet" src="" alt="فریم‌های کلیدی" style="width:100%; border-radius:10px; border:1px solid var(--border);" />
+          </div>
+        </div>
+      </div>
+
+      <!-- After Effects .ffx Motion Preset Importer -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><i class="iconsax" icon-name="flash-1"></i> وارد کردن پریست افترافکت (فایل .ffx)</h2>
+            <p class="card-sub">فایل‌های حرکتی افترافکت (مثل Bounce، Overshoot، Wiggle و Text Pop) را آپلود کن تا اکسپرشن و منحنی فیزیکی آن استخراج و به لیست پریست‌های استودیو اضافه شود</p>
+          </div>
+        </div>
+        <div class="form-grid" style="align-items:end;">
+          <div class="field">
+            <label>نام نمایشی پریست (اختیاری)</label>
+            <input type="text" id="ffxPresetLabel" placeholder="مثلاً: Karo Bounce فنری" />
+          </div>
+          <div class="field">
+            <label>انتخاب فایل .ffx</label>
+            <input type="file" id="ffxPresetFile" accept=".ffx" style="padding:5px;" />
+          </div>
+          <div class="field">
+            <button class="btn primary" id="btnImportFfx" style="width:100%; justify-content:center;"><i class="iconsax" icon-name="add"></i> استخراج و افزودن به پریست‌ها</button>
+          </div>
+        </div>
+        <pre id="ffxImportResult" class="log-box" style="display:none; margin-top:10px;"></pre>
+      </div>
+
+      <!-- Custom Style Builder & Freeform AI Idea -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">ساخت سبک جدید یا پیشنهاد کاملاً آزاد (خارج از لیست)</h2>
+            <p class="card-sub">هر ایده، ترکیب یا سبک دلخواهی داری بنویس تا هم در این ویدیو اعمال شود و هم به عنوان یک سبک جدید در گالری ذخیره شود</p>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>نام سبک جدید (فارسی)</label>
+            <input type="text" id="customStyleLabel" placeholder="مثلاً: کلاژ کاغذی مینیمال من" />
+          </div>
+          <div class="field">
+            <label>شناسه انگلیسی (اختیاری)</label>
+            <input type="text" id="customStyleId" placeholder="مثلاً: my-paper-collage" />
+          </div>
+          <div class="field">
+            <label>الهام از ۶۷ سیستم طراحی گیت‌هاب (اختیاری)</label>
+            <select id="optDesignSystem67">
+              <option value="">— انتخاب نکن —</option>
+            </select>
+          </div>
+        </div>
+        <div class="field" style="margin-top:10px;">
+          <label>توضیحات آزاد کارگردانی برای هوش مصنوعی (هر چیزی خارج از قالب‌های آماده)</label>
+          <textarea id="freeformDirection" placeholder="مثلاً: می‌خواهم پس‌زمینه بافت کاغذ گرم باشد، هر وقت عدد مهمی می‌گویم یک شمارنده بزرگ وسط صفحه بیفتد، المان‌های گوشه تصویر کمی بلر باشند و کلمات کلیدی با کادر زرد وارد شوند..."></textarea>
+        </div>
+        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn primary" id="btnSaveCustomStyle">ذخیره به عنوان سبک جدید در گالری</button>
+          <button class="btn ghost" id="btnInspect67">مشاهده جزئیات سیستم طراحی انتخاب‌شده</button>
+        </div>
+        <pre id="designSystemPreview" class="log-box" style="display:none; margin-top:10px;"></pre>
+      </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: TOPIC/SCRIPT, MEDIA & TRANSCRIPT -->
+    <div id="tab-media" class="panel-section">
+      <div class="card" style="border-color:rgba(59,130,246,0.45);">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><i class="iconsax" icon-name="document-1"></i> مرحله اول: موضوع یا متن سناریوی ویدیوت چیست؟</h2>
+            <p class="card-sub">اگر فایل صوتی نداری (یا می‌خواهی متن سکانس‌ها دقیقاً از روی سناریوی خودت ساخته شود)، هر خط را اینجا بنویس و دکمه ساخت سکانس را بزن — یا اگر فایل صوتی داری پایین آپلود و تحلیل کن</p>
+          </div>
+          <button class="btn primary" id="btnBuildFromScript"><i class="iconsax" icon-name="scissors"></i> تبدیل این متن به سکانس‌های استوری‌بورد</button>
+        </div>
+        <div class="field">
+          <textarea id="inpScriptText" style="min-height:110px;" placeholder="مثال (هر خط = یک سکانس):&#10;هنوز برای ساخت سایت آموزشی کلی افزونه سنگین نصب می‌کنی؟&#10;با دوره‌ساز نیاس نسخه دو، همه چیز یکپارچه و بدون کدنویسی آماده است&#10;امنیت کامل ویدیوها با اسپات‌پلیر و صدور خودکار گواهینامه&#10;کلمه نیاس رو کامنت کن تا لینک برات ارسال بشه"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">آپلود فایل‌های پروژه</h2>
+            <p class="card-sub">صدا یا ویدیوی خام، لوگو، اسکرین‌شات‌های محصول و ویدیو/عکس رفرنس را اینجا بینداز</p>
+          </div>
+        </div>
+        <div class="upload-grid">
+          <label class="dropzone">
+            <input type="file" id="upSource" accept="audio/*,video/*" hidden />
+            <strong><i class="iconsax" icon-name="mic-2"></i> فایل صدا یا ویدیوی اصلی</strong>
+            <small>WAV, MP3, MP4, MOV</small>
+            <div id="listSource" class="file-chip-list"></div>
+          </label>
+          <label class="dropzone">
+            <input type="file" id="upLogo" accept="image/*" hidden />
+            <strong><i class="iconsax" icon-name="hashtag"></i> لوگوی برند</strong>
+            <small>PNG, SVG, JPG</small>
+            <div id="listLogo" class="file-chip-list"></div>
+          </label>
+          <label class="dropzone">
+            <input type="file" id="upShots" accept="image/*" multiple hidden />
+            <strong><i class="iconsax" icon-name="picture"></i> تصاویر و اسکرین‌شات‌های محصول</strong>
+            <small>می‌توانی چند عکس هم‌زمان انتخاب کنی</small>
+            <div id="listShots" class="file-chip-list"></div>
+          </label>
+          <label class="dropzone">
+            <input type="file" id="upRefs" accept="image/*,video/*" multiple hidden />
+            <strong><i class="iconsax" icon-name="star"></i> رفرنس سبکی (پینترست / فیگما)</strong>
+            <small>ویدیو یا عکس نمونه برای الهام هوش مصنوعی</small>
+            <div id="listRefs" class="file-chip-list"></div>
+          </label>
+          <label class="dropzone">
+            <input type="file" id="upFootage" accept="video/*" multiple hidden />
+            <strong><i class="iconsax" icon-name="magic-star"></i> آپلود فوتیج افکت شخصی (Overlay)</strong>
+            <small>نشت نور، گرین فیلم، ذرات (MP4 / MOV)</small>
+            <div id="listFootages" class="file-chip-list"></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">حذف خودکار مکث‌ها + تحلیل هوشمند گفتار</h2>
+            <p class="card-sub">ابتدا می‌توانی مکث‌های اضافه و سکوت‌های مرده را حذف کنی و سپس با Faster-Whisper سکانس‌ها را خودکار بچینی</p>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button class="btn" id="btnTighten"><i class="iconsax" icon-name="scissors"></i> حذف خودکار مکث‌ها</button>
+            <select id="optWhisperModel" class="btn sm">
+              <option value="small">مدل سریع (small)</option>
+              <option value="medium">مدل دقیق (medium)</option>
+              <option value="large-v3-turbo">مدل بسیار دقیق (large-v3-turbo)</option>
+            </select>
+            <button class="btn primary" id="btnAnalyze">تحلیل گفتار و ساخت سکانس‌ها</button>
+          </div>
+        </div>
+        <pre id="analyzeLog" class="log-box" style="display:none;"></pre>
+      </div>
+    </div>
+
+    <!-- TAB 3: STORYBOARD & ASSET PICKER -->
+    <div id="tab-beats" class="panel-section">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">استوری‌بورد و بیت‌شیت تعاملی</h2>
+            <p class="card-sub">روی هر سکانس کلیک کن تا در موبایل سمت چپ پیش‌نمایش ببینی و هر جزئیاتی خواستی عوض کنی</p>
+          </div>
+          <button class="btn primary sm" id="btnAddBeat">+ افزودن سکانس جدید</button>
+        </div>
+        <div id="beatList" class="beat-list"></div>
+      </div>
+
+      <!-- Asset & Icon Browser -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">بانک آیکون ۳ بعدی، وکتور آنلاین (۲۰۰,۰۰۰+) و افکت‌های صوتی</h2>
+            <p class="card-sub">با کلیک روی هر آیکون، مستقیم روی سکانس فعال (انتخاب‌شده در بالا) قرار می‌گیرد</p>
+          </div>
+          <div class="pills" id="assetTabs" style="margin:0;">
+            <button class="pill active" data-atab="3d">آیکون‌های ۳ بعدی</button>
+            <button class="pill" data-atab="svg">وکتورها و لوگوها</button>
+            <button class="pill" data-atab="online">جستجوی آنلاین ۲۰۰هزار آیکون</button>
+            <button class="pill" data-atab="sfx">پخش و انتخاب افکت صوتی</button>
+          </div>
+        </div>
+
+        <div id="assetPanel3d" class="icon-grid"></div>
+        <div id="assetPanelSvg" class="icon-grid" style="display:none;"></div>
+        <div id="assetPanelOnline" style="display:none;">
+          <div style="display:flex; gap:8px; margin-bottom:10px;">
+            <input id="onlineIconQuery" type="text" placeholder="به انگلیسی سرچ کن (مثلاً: rocket, certificate, lock, wordpress, chart)..." style="flex:1; background:#f8fafc; border:1px solid var(--border-strong); border-radius:9px; padding:8px 12px;" />
+            <button class="btn primary" id="btnSearchIcons">جستجو در Iconify</button>
+          </div>
+          <div id="onlineIconGrid" class="icon-grid"></div>
+        </div>
+        <div id="assetPanelSfx" style="display:none;">
+          <div class="form-grid" style="margin-bottom:10px;">
+            <div class="field">
+              <label>موسیقی پس‌زمینه کل ویدیو</label>
+              <div style="display:flex; gap:6px;">
+                <select id="optMusic" style="flex:1;"></select>
+                <button class="btn sm" id="btnTestMusic" title="پخش/توقف تست موزیک"><i class="iconsax" icon-name="volume-high"></i> تست</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>ولوم موسیقی (dB)</label>
+              <input type="number" id="optMusicGain" value="-20" min="-35" max="-6" />
+            </div>
+            <div class="field">
+              <label>ولوم افکت‌های صوتی (dB)</label>
+              <input type="number" id="optSfxGain" value="-4" min="-20" max="6" />
+            </div>
+          </div>
+          <div class="toggles" style="margin-bottom:10px;">
+            <label class="toggle"><input type="checkbox" id="chkVoiceEnhance" checked /> پاکسازی و شفاف‌سازی صدای گوینده</label>
+            <label class="toggle"><input type="checkbox" id="chkMusicDucking" checked /> کم‌شدن خودکار موزیک هنگام صحبت (Ducking)</label>
+          </div>
+          <div id="sfxList" class="file-chip-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: EXPORT & RENDER -->
+    <div id="tab-export" class="panel-section">
+      <!-- Skill & Execution Engine Selector + MCP Setup -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title"><i class="iconsax" icon-name="cpu"></i> اسکیل‌ها و موتور اجرایی هوش مصنوعی (نحوه ساخت ویدیو)</h2>
+            <p class="card-sub">مشخص کن هوش مصنوعی از کدام اسکیل‌ها و ابزارهای نصب‌شده روی سیستم استفاده کند؛ مسیر دقیق همه اسکیل‌ها و دارایی‌ها خودکار در بریف پایین درج می‌شود</p>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <select id="optExecMode" class="btn sm">
+              <option value="auto">خودکار (بهترین موتور متناسب با سبک)</option>
+              <option value="skills">فقط از اسکیل‌های تیک‌خورده استفاده کن</option>
+              <option value="custom-code">بدون اسکیل — کدنویسی مستقیم با آزادی کامل</option>
+            </select>
+            <button class="btn sm" id="btnCopyMcpConfig"><i class="iconsax sm" icon-name="copy"></i> کپی کانفیگ نصب MCP</button>
+          </div>
+        </div>
+        <div id="skillsChecklist" class="toggles" style="margin-top:4px;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">بریف آمادهٔ کارگردانی برای هوش مصنوعی (AI Director Brief)</h2>
+            <p class="card-sub">این متن شامل تمام انتخاب‌های تو، مسیر فایل‌ها، سبک، رنگ‌ها و سکانس‌به‌سکانس است؛ کپی کن و به هوش مصنوعی بده تا ویدیو را با نهایت ظرافت بسازد</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn primary" id="btnRefreshBrief">به‌روزرسانی بریف</button>
+            <button class="btn ok" id="btnCopyBrief">کپی یک‌کلیک برای هوش مصنوعی</button>
+          </div>
+        </div>
+        <textarea id="briefOutput" class="brief-box" readonly></textarea>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">رندر مستقیم ویدیو (موتور پینترستی بدون چهره + Plan Engine)</h2>
+            <p class="card-sub">برای سبک پینترستی بدون چهره مستقیم موتور پایتونی اختصاصی اجرا می‌شود و ویدیوی MP4 واقعی می‌سازد</p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <select id="optRenderEngine" class="btn sm">
+              <option value="auto">موتور خودکار (پیشنهادی)</option>
+              <option value="pinterest">موتور پینترستی بدون چهره (Python)</option>
+              <option value="plan-engine">موتور Plan Engine (Node)</option>
+            </select>
+            <button class="btn" id="btnRenderCheck">۱. بررسی خطاها (Check)</button>
+            <button class="btn" id="btnRenderPreview">۲. رندر پیش‌نمایش فریم‌ها</button>
+            <button class="btn primary" id="btnRenderFull">۳. رندر ویدیوی نهایی (MP4)</button>
+          </div>
+        </div>
+        <div id="renderProgressWrap" style="display:none; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:4px;">
+            <span>پیشرفت رندر</span><span id="renderProgressPct">0%</span>
+          </div>
+          <div style="height:8px; border-radius:99px; background:#f8fafc; overflow:hidden; border:1px solid var(--border);">
+            <div id="renderProgressFill" style="height:100%; width:0%; background:linear-gradient(90deg,#2563eb,#22c55e); transition:width 0.25s;"></div>
+          </div>
+        </div>
+        <pre id="renderLog" class="log-box" style="display:none;"></pre>
+        <div id="renderResult" style="margin-top:12px;"></div>
+      </div>
+
+      <!-- Instagram Cover Maker -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">سازندهٔ کاور ریلز اینستاگرام (۱۰۸۰×۱۹۲۰)</h2>
+            <p class="card-sub">تیتر کوتاه و خوانا در صفحهٔ موبایل بنویس تا با رنگ برند و لوگوی همین پروژه کاور آماده تحویل بگیری</p>
+          </div>
+          <button class="btn primary" id="btnMakeCover"><i class="iconsax" icon-name="picture"></i> ساخت کاور ریلز</button>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>خط اول تیتر کاور</label><input type="text" id="coverLine1" placeholder="مثلاً: دوره‌ساز نیاس" /></div>
+          <div class="field"><label>خط دوم (کادردار)</label><input type="text" id="coverLine2" placeholder="مثلاً: نسخه دو بدون کدنویسی" /></div>
+          <div class="field"><label>برچسب بالای کاور (Badge)</label><input type="text" id="coverBadge" placeholder="مثلاً: معرفی ویژه" /></div>
+        </div>
+        <div id="coverResult" style="margin-top:12px;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Left Column: Live 9:16 Phone Preview -->
+  <aside class="preview-col">
+    <div class="card" style="padding:14px;">
+      <div class="card-header" style="margin-bottom:10px;">
+        <div>
+          <h3 class="card-title" style="font-size:14px;">پیش‌نمایش زنده کادر ۹:۱۶</h3>
+          <div class="card-sub" id="previewBeatLabel">سکانس ۱</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <label class="badge" style="cursor:pointer; margin:0;" title="نمایش ناحیه امن دکمه‌های لایک و کپشن اینستاگرام">
+            <input type="checkbox" id="chkSafeZone" style="vertical-align:middle;" /> Safe-Zone
+          </label>
+          <span class="badge" id="previewStyleBadge" style="margin:0;">pinterest-faceless</span>
+        </div>
+      </div>
+
+      <div id="phoneFrame" class="phone-frame">
+        <video id="phoneFootageVideo" class="phone-footage-fx" autoplay loop muted playsinline style="display:none;"></video>
+        <div id="phoneModeBadge" class="phone-mode-badge" style="display:none;"></div>
+        <div id="phoneSafeZone" class="phone-safe-zone" style="display:none;">
+          <div class="sz-top"><span>نوار بالا / استاتوس</span></div>
+          <div class="sz-safe-box"><span>ناحیه امن ریلز</span></div>
+          <div class="sz-right">
+            <span class="sz-dot"></span>
+            <span class="sz-dot"></span>
+            <span class="sz-dot"></span>
+            <span class="sz-dot"></span>
+          </div>
+          <div class="sz-bottom"><span>ناحیه کپشن و دکمه‌های پایین</span></div>
+        </div>
+        <div id="previewHandle" class="phone-handle" style="display:none;"></div>
+        <svg id="phoneRibbon" class="phone-ribbon" viewBox="0 0 300 533" preserveAspectRatio="none">
+          <path id="phoneRibbonPath" d="M -20 175 C 70 290, 220 260, 320 380" fill="none" stroke="#007AFF" stroke-width="26" stroke-linecap="round" />
+        </svg>
+        <div id="phoneCornerTR" class="phone-corner-tr"></div>
+        <div id="phoneCornerBL" class="phone-corner-bl"></div>
+
+        <div class="phone-top">
+          <h4 id="previewHeadline" class="phone-headline">معرفی نسخهٔ جدید</h4>
+        </div>
+
+        <div id="previewCenter" class="phone-center">
+          <img id="previewImg" src="" alt="" style="display:none;" />
+          <div id="previewPlaceholder" style="font-size:12px; color:#64748b;">تصویر کارت یا آیکون سکانس</div>
+          <svg id="previewCursorSim" class="phone-cursor-sim" viewBox="0 0 28 32" style="display:none; left:52%; top:46%;">
+            <path d="M2 2 L2 25 L8 19 L12 28 L16 26 L12 17 L21 17 Z" fill="#111827" stroke="#ffffff" stroke-width="2" />
+          </svg>
+        </div>
+
+        <div class="phone-bottom">
+          <span id="previewKeyword" class="phone-keyword">بدون کدنویسی</span>
+          <div id="previewCaption" class="phone-caption-bar"></div>
+        </div>
+        <div id="previewFaceMock" class="phone-face-mock" style="display:none;"></div>
+      </div>
+
+      <!-- Live Timeline Player Controls -->
+      <div class="timeline-bar">
+        <button class="btn primary sm" id="btnPlayPreview" title="پخش زنده استوری‌بورد و صدا"><i class="iconsax" icon-name="play"></i> پخش</button>
+        <input type="range" id="timelineScrubber" min="0" max="10" step="0.05" value="0" />
+        <span id="timelineClock" class="timeline-clock">0.0s</span>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div id="toast" class="toast"></div>
+
+<!-- Smart AI Director Modal (Zero-API Local Agent/MCP Bridge + Optional API) -->
+<div id="aiModal" class="modal-backdrop" style="display:none;">
+  <div class="modal-box">
+    <div class="card-header">
+      <div>
+        <h3 class="card-title"><i class="iconsax" icon-name="magic-star"></i> کارگردان هوشمند (بدون نیاز به API یا با API)</h3>
+        <p class="card-sub">هوش مصنوعی همه فایل‌های آپلودشده (صدا، لوگو، اسکرین‌شات‌ها و رفرنس) را بررسی و کل ادیت را طراحی می‌کند</p>
+      </div>
+      <button class="btn sm ghost" id="btnCloseAiModal">✕</button>
+    </div>
+
+    <div class="ai-mode-box">
+      <strong>۱. اتصال مستقیم به هوش مصنوعی لوکال / MCP (رایگان و بدون API Key — پیشنهادی)</strong>
+      <p class="card-sub" style="margin:6px 0 10px;">
+        یک فایل درخواست کامل برای ایجنت لوکال (Antigravity / MCP) ساخته می‌شود. دستور زیر را کپی کن و به هوش مصنوعی بده؛
+        وب‌اپ به‌صورت زنده (Live Sync) منتظر می‌ماند و به‌محض آماده شدن، کل صفحه خودکار پر می‌شود!
+      </p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn ok" id="btnStartAgentBridge"><i class="iconsax" icon-name="cpu"></i> فعال‌سازی پل زندهٔ هوش مصنوعی (بدون API)</button>
+        <button class="btn" id="btnRunLocalFast"><i class="iconsax" icon-name="flash-1"></i> پر کردن سریع آفلاین (فوری)</button>
+      </div>
+      <div id="bridgeStatusBox" style="display:none; margin-top:12px; padding:10px; border-radius:10px; background:#f0fdf4; border:1px solid rgba(34,197,94,0.45);">
+        <div style="color:#15803d; font-size:12px; font-weight:700; margin-bottom:6px;"><i class="iconsax" icon-name="tick-circle"></i> پل زنده فعال است — منتظر دریافت طرح کارگردانی از هوش مصنوعی...</div>
+        <textarea id="bridgeCommandText" class="brief-box" style="min-height:66px; font-size:12px;" readonly></textarea>
+        <div style="margin-top:8px; display:flex; gap:8px;">
+          <button class="btn primary sm" id="btnCopyBridgeCmd">کپی دستور برای چت هوش مصنوعی</button>
+          <span class="card-sub" style="align-self:center;">مسیر MCP: <code>python studio/mcp_server.py</code></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-mode-box" style="margin-top:12px;">
+      <strong>۲. اتصال مستقیم با کلید API یا Ollama لوکال (اختیاری)</strong>
+      <div class="form-grid" style="margin-top:8px;">
+        <div class="field">
+          <label>سرویس‌دهنده</label>
+          <select id="aiCfgProvider">
+            <option value="agent-bridge">پل ایجنت لوکال / MCP (بدون کلید)</option>
+            <option value="gemini">Google Gemini (چندرسانه‌ای با دیدن عکس)</option>
+            <option value="openai">OpenAI / OpenRouter / Ollama لوکال</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>نام مدل</label>
+          <input type="text" id="aiCfgModel" value="gemini-2.5-flash" dir="ltr" />
+        </div>
+        <div class="field">
+          <label>کلید API (برای Ollama خالی بگذار)</label>
+          <input type="text" id="aiCfgKey" placeholder="AIza... یا sk-..." dir="ltr" />
+        </div>
+        <div class="field">
+          <label>آدرس Base URL (فقط برای OpenAI/Ollama)</label>
+          <input type="text" id="aiCfgBaseUrl" value="https://api.openai.com/v1" dir="ltr" />
+        </div>
+      </div>
+      <div style="margin-top:10px; display:flex; gap:8px;">
+        <button class="btn sm" id="btnSaveAiCfg">ذخیره تنظیمات</button>
+        <button class="btn primary sm" id="btnRunLlmDirect">اجرای کارگردان با همین مدل</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<audio id="sfxPlayer" hidden></audio>
+<audio id="sourceAudioPlayer" hidden></audio>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

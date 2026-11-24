@@ -1,0 +1,53 @@
+{
+  "smooth-quart": {
+    "id": "smooth-quart",
+    "label": "ورود نرم ادیتوریال (پیش‌فرض)",
+    "kind": "smooth-quart",
+    "source": "built-in",
+    "params": {
+      "duration": 0.28,
+      "freq": 0.0,
+      "decay": 0.0,
+      "overshoot": 0.0
+    },
+    "description": "ورود سریع و توقف آرام بدون لرزش (مناسب سبک پینترستی ادیتوریال)."
+  },
+  "overshoot-pop": {
+    "id": "overshoot-pop",
+    "label": "پاپ با جهش ظریف (Overshoot Pop)",
+    "kind": "elastic-bounce",
+    "source": "built-in",
+    "params": {
+      "duration": 0.22,
+      "freq": 1.8,
+      "decay": 7.5,
+      "scaleBoost": 0.14
+    },
+    "description": "بزرگ‌نمایی سریع با یک جهش کوتاه و توقف تمیز."
+  },
+  "karo-bounce": {
+    "id": "karo-bounce",
+    "label": "Karo Bounce (جهش فنری افترافکت)",
+    "kind": "elastic-bounce",
+    "source": "Karo Bounce.ffx",
+    "params": {
+      "duration": 0.18,
+      "freq": 2.6,
+      "decay": 5.8,
+      "scaleBoost": 0.22,
+      "wordStagger": 0.04
+    },
+    "sliders": [
+      "Freq",
+      "Decay",
+      "Duration",
+      "Amp",
+      "Retard",
+      "Mode"
+    ],
+    "thirdPartyPlugins": [],
+    "hasExpression": true,
+    "expressionSnippet": "T//made of Karo edit\r\n\r\nfreq = effect(\"Freq\")(\"Slider\");\r\ndecay = effect(\"Decay\")(\"Slider\");\r\nduration = effect(\"Duration\")(\"Slider\");\r\n\r\nretardFrames = effect(\"Retard\")(\"Slider\"); //\nmode = effect(\"Mode\")(\"Slider\")/100;       // 0 = Ramp | 1 = Square\r\n\r\ndelay = framesToTime(retardFrames);\r\n\r\n// Delay Ramp\r\nrampDelay = (textIndex-1) * thisComp.frameDuration;\r\n\r\n// Delay Square\r\nsquareDelay = (textIndex-1) * delay;\r\n\r\n// Blend\nSquare\r\nretard = linear(mode,0,1,rampDelay,squareDelay);\r\n\r\nt = time - (inPoint + retard);\r\n\r\nstartVal = [100,100,100];\r\nendVal = [0,0,0];\r\n\r\nif (t < duration){\r\n    linear(t,0,duration,startVal,endVal);\r\n}else{\r\n    amp = (endVal-startVal)/duration;\r\n    w = freq*Math.PI*2;\r\n    endVal + amp * (Math.sin((t-duration)*w) / Math.exp(decay*(t-duration)) / w);\r\n}\r\n\r\n\r\n//made of Karo edittdum",
+    "description": "انیمیشن فنری/جهشی (Inertial Elastic Bounce) با فرمول سینوسی-نمایی استخراج‌شده از اکسپرشن افترافکت."
+  }
+}

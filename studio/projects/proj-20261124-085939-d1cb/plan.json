@@ -1,0 +1,43 @@
+{
+  "source": "",
+  "mode": "overlay",
+  "style": "liquid-glass",
+  "duration": 4.0,
+  "theme": {
+    "primary": "#C8E6FF",
+    "accent": "#FF6FA5",
+    "dark": "#0B0E17",
+    "text": "#EAF0FF",
+    "display": "Peyda",
+    "body": "Vazirmatn"
+  },
+  "elements": [
+    {
+      "type": "title",
+      "t": 0.0,
+      "d": 4.0,
+      "y": 260,
+      "lines": [
+        "انفجار سرعت در تدوین هوشمند"
+      ]
+    },
+    {
+      "type": "keyword",
+      "t": 0.35,
+      "d": 3.65,
+      "text": "بدون کدنویسی",
+      "y": 1480
+    }
+  ],
+  "transitions": [],
+  "sfx": [
+    {
+      "t": 0.0,
+      "name": "whoosh_short"
+    }
+  ],
+  "music": {
+    "file": "corporate",
+    "gain": -20
+  }
+}

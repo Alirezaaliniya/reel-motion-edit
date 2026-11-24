@@ -1,0 +1,85 @@
+{
+  "id": "_demo_screen_motion",
+  "title": "دمو کارگردانی اسکرین تمام‌صفحه",
+  "style": "bold",
+  "brand": {
+    "primary": "#FFD400",
+    "accent": "#FFD400",
+    "bg": "#0A0A0A",
+    "text": "#FFFFFF",
+    "displayFont": "Lalezar",
+    "bodyFont": "Vazirmatn",
+    "handle": "@nias.ir",
+    "handlePos": "tc"
+  },
+  "options": {
+    "flowlineRibbon": false,
+    "cornerBlurAccents": false,
+    "spatialScroll": false,
+    "textMode": "keywords",
+    "textAnimStyle": "word-unblur",
+    "headlinePos": "top",
+    "fontScale": "md",
+    "motionPreset": "karo-bounce",
+    "captions": "karaoke",
+    "introStyle": "none",
+    "outroStyle": "none",
+    "music": "corporate",
+    "musicGain": -18,
+    "sfxGain": -4,
+    "footageFx": "none",
+    "transition": "glitch",
+    "hybrid": {
+      "transitions": false,
+      "textMode": false
+    },
+    "selectedSkills": [
+      "reel-motion-edit",
+      "pinterest-studio",
+      "motion-doctrine",
+      "cut-the-curve",
+      "oversized-cursor",
+      "hyperframes",
+      "remotion-best-practices",
+      "ffmpeg-skill",
+      "ui-ux-pro-max"
+    ]
+  },
+  "beats": [
+    {
+      "id": "b1",
+      "t": 0,
+      "end": 3.5,
+      "spoken": "چیدمان سریع سرفصل‌های دوره با کشیدن",
+      "headline": "چیدمان سریع سرفصل دوره",
+      "keyword": "دوربین همگام با موس",
+      "visualType": "ui-showcase",
+      "assetUrl": "D:\\nias-course-svn-updater\\my-local-dir\\assets\\screenshot-2-fa_IR.png",
+      "screenMotion": "tilt-3d-click",
+      "focusX": 50,
+      "focusY": 45,
+      "tilt3d": true,
+      "cursorClick": true,
+      "transition": "push",
+      "sfx": "whoosh"
+    },
+    {
+      "id": "b2",
+      "t": 3.5,
+      "end": 7,
+      "spoken": "فعال‌سازی آنی ماژول‌های حرفه‌ای نیاس",
+      "headline": "کنترل کامل ماژول‌های نیاس",
+      "keyword": "فقط با یک کلیک",
+      "visualType": "ui-showcase",
+      "assetUrl": "D:\\nias-course-svn-updater\\my-local-dir\\assets\\screenshot-5-fa_IR.png",
+      "screenMotion": "zoom-in-click",
+      "focusX": 45,
+      "focusY": 48,
+      "tilt3d": true,
+      "cursorClick": true,
+      "transition": "push",
+      "sfx": "pop"
+    }
+  ],
+  "updatedAt": "2026-11-24 17:10:12"
+}

@@ -3,7 +3,7 @@
 This folder contains **rendered JPG examples**, not editable style code. For A/B/C/E, use the matching preset in `../assets/styles.json`, the engine in `../assets/engine.html`, and a plan in `../examples/`. For D12–D16, adapt the compositions registered in `../templates/remotion/src/Root.tsx`. See the [Persian step-by-step guide](../GUIDE.md) and [natural-language commands](../references/commands-fa.md). The Plan Engine currently has 26 presets; this gallery shows a selected subset and does not include every layout for every preset.
 
 The images are one moment rendered in every style. Two numbers matter:
-- **Style number 01–20**: the look. It stays the same across sections, so style 04 is always «مینیمال تمیز».
+- **Style number 01–21**: the look. It stays the same across sections, so style 04 is always «مینیمال تمیز».
 - **Letter**: how the speaker's face is used.
 
 | letter | how the face is used | moment | engine |
@@ -40,6 +40,7 @@ A **cutaway edit** (the user's favourite recipe) mixes A and C: A while the spea
 | 18 `explorecore` | اکسپلورکور | – | – | – | [C18](C18-explorecore.jpg) | – | curved route, numbered landmarks, staged reveals | process explanations and comparisons |
 | 19 `notes-app-chic` | یادداشت روزمره | – | – | – | [C19](C19-notes-app-chic.jpg) | – | ruled paper, uneven cards, hand-drawn marks | checklists, behind the scenes |
 | 20 `reality-warp` | پیچش واقعیت | – | – | – | [C20](C20-reality-warp.jpg) | – | morphing shape, exaggerated scale, orbital lines | surreal product hooks |
+| 21 `pinterest-faceless` | پینترستی بدون چهره | – | – | – | [C21](C21-pinterest-faceless.jpg) | – | curved flowline behind card, blurred corner accents, smooth horizontal/vertical poster scroll & iris wipes | faceless product reels, editorial poster motion |
 
 The three Liquid Glass samples show the same shipping topic over footage, as a graphic cutaway, and in a split frame. The speaker frame comes from `opt.mp4`. The preset uses a stylized optical treatment for rendered video. It does not sample and refract the underlying live footage.
 

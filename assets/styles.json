@@ -1622,5 +1622,47 @@
   "sfxMap": {},
   "intro": false,
   "grade": false
+ },
+ "pinterest-faceless": {
+  "label": "پینترستی بدون چهره",
+  "en": "Pinterest Faceless / Editorial Poster Motion",
+  "feel": "Infinite canvas editorial posters, thick curved flowline ribbon passing behind floating cards, depth-of-field blurred corner accents, and seamless spatial scroll.",
+  "theme": {
+   "primary": "#007AFF",
+   "secondary": "#0055FF",
+   "accent": "#F8D146",
+   "dark": "#F4F5F2",
+   "text": "#262B2E",
+   "dim": "#6B7278",
+   "highlight": "#F8D146",
+   "ok": "#16A34A",
+   "line": "#007AFF",
+   "display": "Hasti",
+   "body": "Pinar"
+  },
+  "defaults": {
+   "title": {
+    "anim": "rise",
+    "jitter": false,
+    "scrim": false
+   },
+   "keyword": {
+    "style": "sticker",
+    "rotate": 0,
+    "wiggle": false
+   },
+   "scene": {
+    "draw": 0.75
+   }
+  },
+  "transitions": [
+   "push",
+   "circles"
+  ],
+  "captions": "none",
+  "fx": [],
+  "sfxMap": {},
+  "intro": false,
+  "grade": false
  }
 }
