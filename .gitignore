@@ -25,3 +25,8 @@ assets/sfx/user/*
 assets/footage/user/*
 !assets/footage/user/README.md
 assets/shots/
+
+# Studio runtime user projects & local API keys (never commit secrets or per-video renders)
+studio/ai_config.json
+studio/projects/
+studio/__pycache__/
