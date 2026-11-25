@@ -59,7 +59,7 @@
 | قاب تقسیم‌شده | «چیدمان E10 گالری را استفاده کن: موشن بالا، چهره پایین.» |
 | موشن کامل | «در بخش توضیح فرایند، چهره را بردار و صحنهٔ C09 تمام‌صفحه بساز.» |
 | مقایسهٔ دو سبک | «برای ثانیهٔ ۸ دو فریم A04 و A17 بساز تا خوانایی روی چهره را مقایسه کنم.» |
-| رفرنس + کد | «از ظاهر D13 گالری و کد `Premium3DVideo` در `templates/remotion` استفاده کن؛ داستان نمونه را با متن من جایگزین کن.» |
+| سه‌بعدی و تعاملی | «اسکرین‌شات را با ماکاپ سه‌بعدی Three.js و ترکینگ موس منحنی هماهنگ با گفتار نمایش بده.» |
 | سبک سفارشی | «رنگ برند من را روی سبک مینیمال اعمال کن، ولی فاصله‌ها و ریتم مینیمال را حفظ کن.» |
 | هوشمند | «لحن گفتار و مخاطب را تحلیل کن، از گالری سبک مناسب پیشنهاد بده و یک نمونهٔ تصویری بساز.» |
 | حفظ تدوین | «کات‌های فعلی را حفظ کن؛ موشن و صدا را روی همان تایم‌لاین اضافه کن.» |
@@ -82,20 +82,15 @@
 | تحویل | «MP4 کامل، کاور، کپشن پست و یک پیش‌نمایش کوتاه از بخش اصلاح‌شده بده.» |
 | بازبینی | «فریم‌های شروع، میانه و پایان هر موشن و میکس نهایی را بررسی و نتیجه را گزارش کن.» |
 
-### فرمان‌های مخصوص Remotion
-
-این‌ها درخواست از دستیارند؛ نام Composition باید با `src/Root.tsx` تطبیق داشته باشد. [راهنمای عملی Remotion](../GUIDE.md#۴-با-remotion-ویدیو-بساز) و [نقشهٔ فایل‌های قالب](remotion-3d.md) را ببین.
+### فرمان‌های صحنه‌پردازی سه‌بعدی و تعاملی (GSAP + Three.js + Lottie + Rough.js)
 
 ```text
-این گفتار را با Remotion و Composition پاپ سه‌بعدی `Pop3DVideo` بساز؛ صحنه‌ها را از روی گفتار بازنویسی کن.
-نسخهٔ جدی‌تر D13 را از همان کد سه‌بعدی با `Premium3DVideo` بساز.
-ویدیو را با D14 مینیمال سیاه‌وسفید بساز؛ `MinimalVideo` را با زمان و متن تازه تطبیق بده.
-مفهوم فرایند را با D15 بلوپرینت و `InfographicVideo` توضیح بده.
-برای موضوع فناوری از D16 لاین‌آرت نئونی و `MainVideo` استفاده کن.
-ابتدا Studio را باز کن و سه فریم کلیدی نشان بده؛ پس از اصلاح، فایل MP4 را رندر کن.
+اسکرین‌شات محصول را در قاب سه‌بعدی چرخان با نورپردازی استودیویی (Three.js) نشان بده.
+روی روش قدیمی خط قرمز ماژیکی بکش و کنار راه‌حل جدید تیک متحرک بگذار (Rough.js + Lottie).
+برای بخش آمار و سرعت، نمودار منحنی نرم رشد با D3 رسم کن.
+امکانات چندبخشی را در چیدمان شبکه‌ای Bento Grid (Muuri) نمایش بده.
+کارت‌های بعدی از پشت کارت فعلی در محور عمق Z بیرون بیایند (Depth Peek).
 ```
-
-عکس D12 تا D16 به‌تنهایی فایل ویدیویی تولید نمی‌کند. کد قالب، گفتار، زمان‌بندی و فایل‌های رسانه‌ای باید برای ویدیوی تازه تغییر کنند. `style: "3d-pop"` یا `style: "3d-premium"` در `plan.json` معتبر نیست؛ این دو به Compositionهای Remotion می‌روند.
 
 ## فرمان‌های فنی
 
@@ -139,22 +134,21 @@ setup فقط بار اول؛ با حذف --skip-model مدل هم آماده م�
 | compose.py PLAN | --out، --crf، --no-loudnorm، --voice raw/enhance؛ ترکیب تصویر، گرافیک، گفتار و موسیقی. |
 | verify.py VIDEO | --cover FILE، --post FILE، --instagram، --duration SECONDS؛ بررسی بسته خروجی. |
 | stylelearn.py INPUTS... | --out، --frames، --cut-th؛ اندازه‌گیری الگوی رفرنس. |
-| remotion_init.py WORKDIR --audio FILE | --drop SECONDS و --install؛ شروع پروژه سه‌بعدی. |
 | music.py OUT | --mood، --dur، --drop، --seed؛ ساخت موسیقی زمینه. |
 | sfx.py OUT_DIR | ساخت بانک پایه افکت صوتی. |
 | sfx_extra.py [OUT_DIR] | ساخت افکت‌های اضافه؛ پیش‌فرض assets/sfx. |
 | footage.py [OUT_DIR] | --only NAME,NAME؛ ساخت فوتیج افکت محلی. |
 | logocard.py OUT_DIR LOGO... | --height، --pad؛ ساخت کارت نشان. |
 
-## Remotion و بررسی دستی
+## موتور استودیو (GSAP + Three.js) و بررسی دستی
 
-در پوشه پروژه Remotion: npm run dev برای Studio، npm run build برای bundle، npm run lint برای ESLint و TypeScript، npm run upgrade برای ارتقای وابستگی‌ها. برای رندر، طبق [راهنمای موتور سه‌بعدی](remotion-3d.md) شناسه Composition را انتخاب کن:
+برای اجرای استودیو یا رندر مستقیم پروژه با موتور چندلایبرری:
 
 ```powershell
-npx remotion compositions
-npx remotion render COMPOSITION out.mp4 --gl=angle
-ffprobe -v error -show_format -show_streams work/reel/final.mp4
-ffmpeg -i work/reel/final.mp4 -vf "fps=1/2,scale=216:-1,tile=5x4" -frames:v 1 work/reel/contact.jpg
+node studio/gsap_renderer.js "studio/projects/<id>" check
+node studio/gsap_renderer.js "studio/projects/<id>" preview
+node studio/gsap_renderer.js "studio/projects/<id>" full
+ffprobe -v error -show_format -show_streams "studio/projects/<id>/final.mp4"
 ```
 
 در آخر، [بازبینی انتشار](release.md) را روی فایل نهایی انجام بده.

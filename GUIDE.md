@@ -1,5 +1,15 @@
 # راهنمای کار با سبک‌ها و ساخت ویدیو
 
+## ساخت یک ریل در استودیو
+
+۱. در «هدف و مخاطب»، پیام اصلی و اقدام بیننده را ثبت کنید. موارد باز در بریف مشخص می‌شوند.
+۲. در «سناریو و فایل‌ها»، متن را به نما تبدیل کنید یا گفتار فایل را تحلیل کنید. اگر فقط موضوع دارید، گزینهٔ «سه نمای پیشنهادی» را فعال کنید و برای هر نما متن یا تصویر تعیین کنید.
+۳. در «استوری‌بورد و سبک»، مقصود و تصویر هر نما را بازبینی کنید. روی اسکرین‌شات بزنید تا نقطهٔ تمرکز انتخاب شود. انتخاب دستی نوع نما اولویت دارد. نمودار به حداقل دو مقدار عددی و یک واحد نیاز دارد. زمان‌های ورودی نسبت به ابتدای گفتار هستند.
+۴. در «بازبینی و تحویل»، بریف خلاقه، شات‌لیست و مشخصات فنی را مرور کنید. شات‌لیست زمان نهایی شامل اینترو و اوترو را نشان می‌دهد. موتور پیش‌فرض GSAP ویدیوی عمودی ۱۰۸۰×۱۹۲۰ می‌سازد. قاب کنار فرم طرح تقریبی است. برای بررسی تصویر واقعی از «رندر پیش‌نمایش فریم‌ها» استفاده کنید.
+
+با هر ذخیره، فایل‌های `ai-director-brief.md`، `shot-list.md`، `execution.json` و `plan.json` در پوشهٔ همان پروژه تولید می‌شوند.
+
+
 این راهنما مسیر انتخاب ظاهر از [گالری](gallery/README.md) تا خروجی MP4 را توضیح می‌دهد. عبارت «به سبک ... ادیت بزن» درخواست از دستیار است؛ در خط فرمان، شناسهٔ سبک و پلن یا Composition را به موتور می‌دهی.
 
 ## ۱. سبک و شکل نمایش را انتخاب کن
@@ -10,30 +20,30 @@
 
 | حرف روی عکس | کاربرد | مسیر اجرا |
 |---|---|---|
-| A | گرافیک روی ویدیوی چهره | Plan Engine: `mode: "overlay"` |
-| B | چهره داخل پنجرهٔ موشن | Plan Engine: `mode: "explainer"` + `footage` |
-| C | موشن تمام‌صفحه روی گفتار | Plan Engine: `mode: "explainer"` |
-| E | تصویر چهره و موشن در قاب تقسیم‌شده | Plan Engine: `mode: "explainer"` + `footage` |
-| D | انیمیشن ۲بعدی/سه‌بعدی React | Remotion |
+| A | گرافیک روی ویدیوی چهره | Studio GSAP Engine / Plan Engine (`overlay`) |
+| B | چهره داخل پنجرهٔ موشن | Studio GSAP Engine (`explainer` + `footage`) |
+| C | موشن تمام‌صفحه روی گفتار | Studio GSAP Engine (`explainer`) |
+| E | تصویر چهره و موشن در قاب تقسیم‌شده | Studio GSAP Engine (Split `E`) |
+| D | صحنه‌پردازی سه‌بعدی WebGL | Studio `Three.js + GSAP 3.12` |
 
-شمارهٔ عکس ظاهر را نشان می‌دهد؛ برای مثال [A04](gallery/A04-minimal.jpg) و [C04](gallery/C04-minimal.jpg) هر دو مینیمال‌اند اما چیدمان متفاوت دارند. عکس‌های گالری **مرجع بصری** هستند. کد A/B/C/E در [پریست‌ها](assets/styles.json)، [موتور](assets/engine.html) و [نمونه پلن‌ها](examples) است. کد D در [Root](templates/remotion/src/Root.tsx) و فایل‌های `templates/remotion/src/` است. از دستیار بخواه سبک و چیدمان عکس را روی ویدیوی خودت پیاده کند؛ عکس را جای فریم ویدیوی تازه استفاده نکن.
+شمارهٔ عکس ظاهر را نشان می‌دهد؛ برای مثال [A04](gallery/A04-minimal.jpg) و [C04](gallery/C04-minimal.jpg) هر دو مینیمال‌اند اما چیدمان متفاوت دارند. عکس‌های گالری **مرجع بصری** هستند. کد سبک‌ها در [پریست‌ها](assets/styles.json)، [موتور GSAP استودیو](studio/gsap_renderer.js)، [موتور پلن](assets/engine.html) و [نمونه پلن‌ها](examples) قرار دارد. از دستیار بخواه سبک و چیدمان عکس را روی ویدیوی خودت پیاده کند؛ عکس را جای فریم ویدیوی تازه استفاده نکن.
 
-Plan Engine شامل ۲۶ شناسه در `assets/styles.json` است؛ [فهرست عبارت‌ها](references/commands-fa.md#درخواست-با-زبان-طبیعی) همه را دارد. برای بعضی شناسه‌ها هنوز عکس گالری ساخته نشده است. نمونه‌های Remotion D12 تا D16 شناسهٔ Plan Engine نیستند:
+موتور استودیو شامل ۲۷ شناسه در `assets/styles.json` و ۶۷ سیستم طراحی مرجع است؛ [فهرست عبارت‌ها](references/commands-fa.md#درخواست-با-زبان-طبیعی) همه را دارد. نمونه‌های سه‌بعدی D12 تا D16 در گالری:
 
-| عکس | ظاهر | Composition |
+| عکس | ظاهر | الگوی معادل در استودیو |
 |---|---|---|
-| [D12](gallery/D12-3d-pop.jpg) | پاپ سه‌بعدی | `Pop3DVideo` |
-| [D13](gallery/D13-3d-premium.jpg) | سه‌بعدی پریمیوم | `Premium3DVideo` |
-| [D14](gallery/D14-remotion-minimal-bw.jpg) | مینیمال سیاه‌وسفید | `MinimalVideo` |
-| [D15](gallery/D15-remotion-blueprint.jpg) | نقشه‌کشی | `InfographicVideo` |
-| [D16](gallery/D16-remotion-neon-lineart.jpg) | لاین‌آرت نئونی | `MainVideo` |
+| [D12](gallery/D12-3d-pop.jpg) | پاپ سه‌بعدی | `three-3d-showcase` + `word-pop` |
+| [D13](gallery/D13-3d-premium.jpg) | سه‌بعدی پریمیوم | `three-3d-showcase` + `depth-peek` |
+| [D14](gallery/D14-remotion-minimal-bw.jpg) | مینیمال سیاه‌وسفید | `clean-spotlight` |
+| [D15](gallery/D15-remotion-blueprint.jpg) | نقشه‌کشی و نمودار | `d3-chart` + `rough-sketch` |
+| [D16](gallery/D16-remotion-neon-lineart.jpg) | لاین‌آرت نئونی | `cursor-guided-ui` |
 
 ## ۲. درخواست دقیق به دستیار بده
 
 ```text
 «E:\camtasia\optimised video\opt.mp4» را به سبک نیاس ادیت بزن؛ A روی چهره و C برای توضیح‌ها.
 عکس E10 گالری را به‌عنوان مرجع قاب بگیر و موشن بالا، چهره پایین باشد.
-از کد D13 در templates/remotion استفاده کن و داستان و زمان‌ها را با گفتار این فایل بازنویسی کن.
+اسکرین‌شات محصول را سه‌بعدی با Three.js و ترکینگ موس نمایش بده و زمان‌ها را با گفتار هماهنگ کن.
 اسکرین‌شات‌های review را در بخش نظرها و support را در بخش پشتیبانی نمایش بده.
 از ۲۷ تا پایان جملهٔ پشتیبانی، تصویر گوینده را با موشن کامل جایگزین کن.
 نسخهٔ کامل، پیش‌نمایش بخش اصلاح‌شده و کاور را تحویل بده.
@@ -61,26 +71,19 @@ python scripts/compose.py "E:\camtasia\optimised video\opt-edit\plan.json" --out
 
 زمان‌های پیش‌نمایش نمونه‌اند. `check` خطاهای پلن را می‌گوید؛ `preview` تصویرهای کلیدی می‌سازد؛ `full` لایهٔ گرافیک را تولید می‌کند؛ `compose` تصویر و صدا را ترکیب می‌کند. برای کاور، `node scripts/render.js PLAN cover T` را اجرا کن. خروجی را با [چک‌لیست انتشار](references/release.md) بازبینی کن.
 
-## ۴. با Remotion ویدیو بساز
+## ۴. با استودیو وب و موتور GSAP + Three.js ویدیو بساز
 
-Remotion پروژهٔ React است و `templates/remotion/` یک داستان نمونه دارد. `style: "3d-premium"` در `plan.json` کار نمی‌کند؛ یکی از Compositionهای بالا را انتخاب کن. اسکریپت شروع، قالب را در پوشهٔ کار کپی می‌کند، صدا را به `public/audio.mp3` می‌برد و با `--install` وابستگی‌ها را نصب می‌کند:
-
-```powershell
-python scripts/remotion_init.py "E:\camtasia\optimised video\new-reel" --audio "E:\camtasia\optimised video\opt.mp4" --install
-Set-Location "E:\camtasia\optimised video\new-reel\remotion"
-npm run dev
-```
-
-Studio در مرورگر پیش‌نمایش تعاملی دارد. در `src/Root.tsx`، شناسه، مدت، fps و اندازهٔ هر Composition ثبت شده است. برای ویدیوی تازه، زمان/واژه‌ها را در `src/pop3d/timing.ts`، صحنه‌های سه‌بعدی را در `src/pop3d/World.tsx` و `Overlay.tsx`، یا صحنه‌های ۲بعدی را در پوشهٔ `src/minimal`، `src/infographic` و `src/scenes` با گفتار خودت هماهنگ کن. فایل‌های رسانه‌ای را در `public/` قرار بده. اگر فونت شخصی در `assets/fonts/user/` وجود نداشته باشد، اسکریپت هشدار می‌دهد؛ فونت مجاز خودت را جایگزین کن. این قالب با زمان‌بندی ثابت نمونه کار می‌کند و بدون بازنویسی داستان برای ورودی تازه مناسب نیست.
+برای کنترل کامل بصری و رندر مستقیم `1080×1920 @ 30fps` با فونت‌های واقعی فارسی، ترکینگ موس منحنی، ماکاپ سه‌بعدی WebGL (`Three.js`)، انیمیشن‌های `Lottie`، خط‌کشی `Rough.js` و نمودارهای `D3`:
 
 ```powershell
-npm run lint
-npx remotion compositions
-npx remotion still Premium3DVideo "E:\camtasia\optimised video\new-reel\frame.jpg" --frame=120 --gl=angle
-npx remotion render Premium3DVideo "E:\camtasia\optimised video\new-reel\final.mp4" --gl=angle
+python studio/server.py
+# یا رندر مستقیم خط فرمان از پوشه پروژه استودیو:
+node studio/gsap_renderer.js "studio/projects/<project_id>" check
+node studio/gsap_renderer.js "studio/projects/<project_id>" preview
+node studio/gsap_renderer.js "studio/projects/<project_id>" full
 ```
 
-برای صحنهٔ سه‌بعدی ویندوز، `--gl=angle` را امتحان کن؛ اگر GPU در دسترس نیست، `--gl=swangle` گزینهٔ نرم‌افزاری است. برای ۲بعدی معمولاً تنظیم GL لازم نیست. قبل از رندر نهایی، فریم‌های شروع، اوج و پایان هر صحنه را در Studio بررسی کن. جزئیات در [راهنمای Remotion همین اسکیل](references/remotion-3d.md) و مستند رسمی [Studio](https://www.remotion.dev/docs/studio)، [رندر](https://www.remotion.dev/docs/render) و [GL](https://www.remotion.dev/docs/gl-options) آمده است.
+استودیو در آدرس `http://127.0.0.1:8765` پیش‌نمایش زنده دارد و خروجی نهایی را در `final.mp4` همراه با شیت پیش‌نمایش `build/preview.jpg` تولید می‌کند.
 
 ## ۵. خروجی را بازبینی کن
 

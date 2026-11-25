@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <style id="injected-fonts"></style>
+  <style>
+    :root {
+      --bg: #F4F5F2;
+      --text: #262B2E;
+      --primary: #007AFF;
+      --accent: #F8D146;
+      --accent-ink: #111827;
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --card-border: rgba(15, 23, 42, 0.08);
+      --muted: #64748B;
+      --display-font: 'Hasti', 'Peyda', sans-serif;
+      --body-font: 'Pinar', 'Peyda', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: transparent;
+      font-family: var(--body-font);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #root {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      perspective: 1400px;
+    }
+
+    #backdrop {
+      position: absolute;
+      inset: 0;
+      background: var(--bg);
+      z-index: 0;
+    }
+    #backdrop::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 34%, rgba(255,255,255,0.55) 0%, transparent 62%),
+        radial-gradient(circle at 82% 16%, rgba(0,122,255,0.06) 0%, transparent 45%);
+    }
+
+    #pixi-ambient {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.55;
+    }
+
+    .corner-orb {
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      filter: blur(58px);
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 1;
+      background: var(--primary);
+    }
+    .corner-orb.tr { top: -60px; right: -60px; }
+    .corner-orb.bl { bottom: -60px; left: -60px; background: var(--accent); opacity: 0.14; }
+
+    #brand-handle {
+      position: absolute;
+      z-index: 40;
+      direction: ltr;
+      unicode-bidi: isolate;
+      font-family: var(--body-font);
+      font-size: 26px;
+      font-weight: 700;
+      padding: 10px 22px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.07);
+      color: var(--text);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      opacity: 0;
+      visibility: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .flow-svg {
+      position: absolute;
+      inset: 0;
+      width: 1080px;
+      height: 1920px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Headline Typography (SplitType + Custom Word Effects) */
+    .headline-box {
+      position: absolute;
+      left: 90px;
+      right: 90px;
+      z-index: 25;
+      text-align: center;
+      font-family: var(--display-font);
+      line-height: 1.34;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .headline-box.align-right { text-align: right; right: 96px; left: 140px; }
+    .hl-mask, .line { display: inline-block; overflow: hidden; vertical-align: bottom; padding: 2px 4px; }
+    .hl-w, .word { display: inline-block; margin: 0 6px; will-change: transform, opacity, filter; }
+    .hl-w.emph {
+      display: inline-block;
+      padding: 2px 20px 6px;
+      border-radius: 20px;
+      background: var(--accent);
+      color: var(--accent-ink);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.10);
+    }
+
+    /* Clean Stage Center */
+    .stage-center {
+      position: absolute;
+      left: 84px;
+      right: 84px;
+      top: 460px;
+      height: 780px;
+      z-index: 12;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-style: preserve-3d;
+    }
+    .layout-E .stage-center {
+      top: 285px;
+      height: 590px;
+    }
+
+    .clean-card {
+      position: relative;
+      width: 850px;
+      min-height: 500px;
+      max-height: 690px;
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      border-radius: 42px;
+      box-shadow:
+        0 32px 80px rgba(15, 23, 42, 0.09),
+        0 6px 20px rgba(15, 23, 42, 0.04);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      z-index: 6;
+      overflow: hidden;
+    }
+    .layout-E .clean-card {
+      width: 860px;
+      min-height: 410px;
+      max-height: 510px;
+      padding: 28px 34px;
+    }
+
+    .clean-card img.card-media {
+      max-width: 100%;
+      max-height: 420px;
+      object-fit: contain;
+      border-radius: 24px;
+    }
+
+    /* Lottie Badge Host */
+    .lottie-box {
+      width: 112px;
+      height: 112px;
+      flex-shrink: 0;
+    }
+    .lottie-corner {
+      position: absolute;
+      top: 24px;
+      left: 26px;
+      width: 86px;
+      height: 86px;
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    /* Depth Occlusion: Rear Card & Peek Badge */
+    .depth-back-card {
+      position: absolute;
+      width: 780px;
+      height: 440px;
+      background: var(--card-bg);
+      border: 2.5px solid var(--primary);
+      border-radius: 38px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      z-index: 2;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 28px 36px;
+      opacity: 0.75;
+      filter: blur(2.5px);
+    }
+    .depth-peek-pill {
+      position: absolute;
+      z-index: 3;
+      padding: 16px 34px;
+      border-radius: 24px;
+      background: var(--primary);
+      color: #FFFFFF;
+      font-family: var(--display-font);
+      font-size: 38px;
+      font-weight: 800;
+      box-shadow: 0 18px 42px rgba(0, 122, 255, 0.26);
+      white-space: nowrap;
+    }
+
+    /* Rough.js Sketch Card */
+    .rough-card {
+      position: relative;
+      width: 860px;
+      background: var(--card-bg);
+      border-radius: 40px;
+      border: 1.5px solid var(--card-border);
+      box-shadow: 0 28px 70px rgba(15, 23, 42, 0.09);
+      padding: 44px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      z-index: 6;
+    }
+    .rough-row {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 30px;
+      border-radius: 26px;
+      background: rgba(15, 23, 42, 0.03);
+    }
+    .rough-overlay-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 12;
+      overflow: visible;
+    }
+
+    /* D3 Growth Chart Card */
+    .d3-card {
+      position: relative;
+      width: 860px;
+      height: 540px;
+      background: var(--card-bg);
+      border-radius: 42px;
+      border: 1.5px solid var(--card-border);
+      box-shadow: 0 30px 75px rgba(15, 23, 42, 0.09);
+      padding: 36px 42px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 6;
+    }
+
+    /* Muuri / Bento Grid Layout */
+    .bento-wrap {
+      position: relative;
+      width: 870px;
+      z-index: 6;
+    }
+    .muuri-grid {
+      position: relative;
+      width: 870px;
+    }
+    .muuri-item {
+      position: absolute;
+      margin: 12px;
+      z-index: 1;
+    }
+    .muuri-item.w-full { width: 846px; height: 220px; }
+    .muuri-item.w-half { width: 411px; height: 250px; }
+    .bento-tile {
+      width: 100%;
+      height: 100%;
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      border-radius: 32px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.07);
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .bento-tile.featured {
+      background: linear-gradient(135deg, var(--primary), #1D4ED8);
+      color: #FFFFFF;
+      border: none;
+    }
+
+    /* Shiki Code Spotlight Card */
+    .code-card {
+      width: 870px;
+      background: #0D1117;
+      border-radius: 34px;
+      border: 1.5px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 32px 80px rgba(15, 23, 42, 0.24);
+      padding: 30px 36px;
+      direction: ltr;
+      text-align: left;
+      z-index: 6;
+      overflow: hidden;
+      position: relative;
+    }
+    .code-card pre {
+      background: transparent !important;
+      font-family: 'JetBrainsMono', monospace !important;
+      font-size: 25px !important;
+      line-height: 1.65 !important;
+      overflow: hidden;
+    }
+    .code-focus-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 126px;
+      height: 44px;
+      background: rgba(59, 130, 246, 0.20);
+      border-left: 5px solid #3B82F6;
+      pointer-events: none;
+    }
+
+    /* Three.js 3D Canvas Host */
+    .three-host {
+      width: 900px;
+      height: 680px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 8;
+    }
+
+    .kw-pill {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 26;
+      padding: 14px 36px 18px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-family: var(--display-font);
+      font-weight: 800;
+      box-shadow: 0 16px 38px rgba(15, 23, 42, 0.11);
+      white-space: nowrap;
+    }
+
+    .fullbleed-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      overflow: hidden;
+      perspective: 1300px;
+      background: var(--bg);
+    }
+    .fullbleed-stage {
+      position: absolute;
+      inset: 0;
+      width: 1080px;
+      height: 1920px;
+      transform-style: preserve-3d;
+    }
+    .fullbleed-stage img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .target-highlight-svg {
+      position: absolute;
+      inset: 0;
+      width: 1080px;
+      height: 1920px;
+      z-index: 30;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .physics-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 18;
+    }
+    .phys-dot {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      opacity: 0;
+    }
+
+    .guided-ui-card {
+      width: 830px;
+      background: var(--card-bg);
+      border-radius: 38px;
+      border: 1.5px solid var(--card-border);
+      box-shadow: 0 30px 75px rgba(15, 23, 42, 0.10);
+      padding: 38px 42px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      z-index: 6;
+    }
+    .guided-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 28px;
+      border-radius: 24px;
+      background: rgba(15, 23, 42, 0.035);
+      border: 1.5px solid rgba(15, 23, 42, 0.06);
+    }
+    .guided-toggle {
+      width: 96px;
+      height: 52px;
+      border-radius: 999px;
+      background: #CBD5E1;
+      position: relative;
+      padding: 6px;
+    }
+    .guided-knob {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+    }
+
+    .macos-cursor {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 74px;
+      height: 86px;
+      z-index: 60;
+      pointer-events: none;
+      filter: drop-shadow(0 12px 22px rgba(15, 23, 42, 0.34));
+    }
+    .cursor-ripple {
+      position: absolute;
+      left: 6px;
+      top: 6px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 5px solid var(--primary);
+      transform: translate(-50%, -50%) scale(0.2);
+      opacity: 0;
+      z-index: 59;
+      pointer-events: none;
+    }
+
+    .caption-rail {
+      position: absolute;
+      left: 110px;
+      right: 150px;
+      z-index: 35;
+      text-align: center;
+      font-family: var(--body-font);
+      font-weight: 700;
+      line-height: 1.48;
+      padding: 14px 28px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.88);
+      color: #0F172A;
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.07);
+    }
+    .dark-theme .caption-rail {
+      background: rgba(15, 23, 42, 0.82);
+      color: #F8FAFC;
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+      width: 880px;
+      z-index: 6;
+    }
+    .cmp-box {
+      background: var(--card-bg);
+      border-radius: 34px;
+      padding: 38px 28px;
+      text-align: center;
+      border: 2px solid var(--card-border);
+      box-shadow: 0 22px 55px rgba(15, 23, 42, 0.07);
+    }
+    .cmp-box.new { border-color: var(--primary); }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div id="backdrop">
+      <div id="orbTR" class="corner-orb tr"></div>
+      <div id="orbBL" class="corner-orb bl"></div>
+    </div>
+    <canvas id="pixi-ambient" width="1080" height="1920"></canvas>
+    <div id="brand-handle" style="display:none;"></div>
+    <div id="scenes-host"></div>
+  </div>
+
+  <script>
+    window.__seekHooks = [];
+
+    function luminance(hex) {
+      const h = String(hex || '#F4F5F2').replace('#', '');
+      if (h.length !== 6) return 220;
+      const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+      return 0.299 * r + 0.587 * g + 0.114 * b;
+    }
+
+    function esc(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function cursorSvg() {
+      return `<svg viewBox="0 0 36 42" width="74" height="86">
+        <path d="M4 3 L4 33 L12 25 L17.5 37 L23 34.5 L17.5 22.5 L29 22.5 Z" fill="#0F172A" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
+      </svg>`;
+    }
+
+    function buildWordMarkup(text, animMode) {
+      const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+      const longest = words.reduce((a, c) => (c.length >= a.length ? c : a), '');
+      return words.map((w) => {
+        const emphCls = (animMode === 'emphasis-word' && w === longest) ? ' emph' : '';
+        return `<span class="hl-mask"><span class="hl-w${emphCls}">${esc(w)}</span></span>`;
+      }).join(' ');
+    }
+
+    function mountLottie(container, animData, t0, dur) {
+      if (!window.lottie || !container || !animData) return;
+      const anim = window.lottie.loadAnimation({
+        container,
+        renderer: 'svg',
+        loop: false,
+        autoplay: false,
+        animationData: JSON.parse(JSON.stringify(animData)),
+      });
+      const totalF = Math.max(1, (animData.op || 45) - (animData.ip || 0));
+      window.__seekHooks.push((t) => {
+        if (t < t0) {
+          anim.goToAndStop(0, true);
+        } else {
+          const p = Math.min(1, Math.max(0, (t - t0) / Math.min(1.25, dur * 0.7)));
+          anim.goToAndStop(p * (totalF - 1), true);
+        }
+      });
+    }
+
+    async function mountThreeShowcase(hostEl, sc, br, t0, t1) {
+      if (!window.THREE || !hostEl) return;
+      const THREE = window.THREE;
+      const cw = 900, ch = 680;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(34, cw / ch, 0.1, 100);
+      camera.position.set(0, 0, 8.2);
+
+      let renderer;
+      try {
+        renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, preserveDrawingBuffer: true });
+      } catch (_) {
+        return;
+      }
+      renderer.setSize(cw, ch);
+      renderer.setPixelRatio(1);
+      hostEl.innerHTML = '';
+      hostEl.appendChild(renderer.domElement);
+
+      scene.add(new THREE.AmbientLight(0xffffff, 1.35));
+      const dirLight = new THREE.DirectionalLight(0xffffff, 1.45);
+      dirLight.position.set(4, 6, 7);
+      scene.add(dirLight);
+
+      const pColor = new THREE.Color(br.primary || '#2563EB');
+      const aColor = new THREE.Color(br.accent || '#FACC15');
+
+      // Build screen texture (from screenshot data URI or crisp generated canvas UI)
+      let screenTex;
+      if (sc.assetDataUri) {
+        const img = new Image();
+        await new Promise((res) => { img.onload = res; img.onerror = res; img.src = sc.assetDataUri; });
+        const texCanvas = document.createElement('canvas');
+        texCanvas.width = 1024; texCanvas.height = 680;
+        const ctx = texCanvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, 1024, 680);
+        if (img.width > 0) {
+          const scale = Math.max(1024 / img.width, 680 / img.height);
+          const dw = img.width * scale, dh = img.height * scale;
+          ctx.drawImage(img, (1024 - dw) / 2, 0, dw, dh);
+        }
+        screenTex = new THREE.CanvasTexture(texCanvas);
+      } else {
+        const texCanvas = document.createElement('canvas');
+        texCanvas.width = 1024; texCanvas.height = 680;
+        const ctx = texCanvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, 1024, 680);
+        ctx.fillStyle = br.primary || '#2563EB';
+        ctx.fillRect(0, 0, 1024, 88);
+        ctx.fillStyle = '#F1F5F9';
+        ctx.fillRect(64, 140, 420, 220);
+        ctx.fillRect(520, 140, 440, 220);
+        ctx.fillStyle = br.accent || '#FACC15';
+        ctx.fillRect(64, 400, 896, 190);
+        screenTex = new THREE.CanvasTexture(texCanvas);
+      }
+      if (THREE.SRGBColorSpace) screenTex.colorSpace = THREE.SRGBColorSpace;
+
+      const group = new THREE.Group();
+      const bodyGeo = new THREE.BoxGeometry(5.6, 3.75, 0.22);
+      const sideMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.28, metalness: 0.65 });
+      const frontMat = new THREE.MeshBasicMaterial({ map: screenTex });
+      const slab = new THREE.Mesh(bodyGeo, [sideMat, sideMat, sideMat, sideMat, frontMat, sideMat]);
+      group.add(slab);
+
+      // Subtle 3D floating accent spheres behind & beside the 3D screen
+      const orb1 = new THREE.Mesh(
+        new THREE.SphereGeometry(0.42, 32, 32),
+        new THREE.MeshStandardMaterial({ color: pColor, roughness: 0.2, metalness: 0.3 })
+      );
+      orb1.position.set(-2.95, 1.75, -0.7);
+      group.add(orb1);
+
+      const orb2 = new THREE.Mesh(
+        new THREE.SphereGeometry(0.32, 32, 32),
+        new THREE.MeshStandardMaterial({ color: aColor, roughness: 0.25, metalness: 0.2 })
+      );
+      orb2.position.set(2.9, -1.65, 0.35);
+      group.add(orb2);
+
+      scene.add(group);
+
+      const dur = Math.max(0.8, t1 - t0);
+      window.__seekHooks.push((t) => {
+        if (t < t0 - 0.1 || t > t1 + 0.1) return;
+        const p = Math.min(1, Math.max(0, (t - t0) / dur));
+        const easeP = 1 - Math.pow(1 - Math.min(1, p * 1.5), 3);
+        group.rotation.y = -0.36 + 0.54 * p;
+        group.rotation.x = 0.14 - 0.18 * p;
+        group.rotation.z = -0.03 + 0.05 * p;
+        const scVal = 0.84 + 0.18 * easeP;
+        group.scale.set(scVal, scVal, scVal);
+        orb1.position.y = 1.65 + Math.sin(p * Math.PI * 2) * 0.22;
+        orb2.position.y = -1.65 + Math.cos(p * Math.PI * 2) * 0.22;
+        renderer.render(scene, camera);
+      });
+      renderer.render(scene, camera);
+    }
+
+    function setupAmbientBokeh(primaryHex, accentHex, enabled) {
+      const cvs = document.getElementById('pixi-ambient');
+      if (!cvs) return;
+      if (!enabled) { cvs.style.display = 'none'; return; }
+      const ctx = cvs.getContext('2d');
+      const dots = [
+        { x: 180, y: 380, r: 90, c: primaryHex, sp: 0.5 },
+        { x: 910, y: 640, r: 110, c: accentHex, sp: 0.38 },
+        { x: 230, y: 1480, r: 95, c: accentHex, sp: 0.44 },
+        { x: 860, y: 1360, r: 85, c: primaryHex, sp: 0.52 },
+      ];
+      window.__seekHooks.push((t) => {
+        ctx.clearRect(0, 0, 1080, 1920);
+        dots.forEach((d, i) => {
+          const dx = d.x + Math.sin(t * d.sp + i * 1.7) * 42;
+          const dy = d.y + Math.cos(t * d.sp + i * 1.3) * 36;
+          const g = ctx.createRadialGradient(dx, dy, 4, dx, dy, d.r);
+          g.addColorStop(0, d.c + '24');
+          g.addColorStop(1, d.c + '00');
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(dx, dy, d.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      });
+    }
+
+    window.buildStudioTimeline = async function(payload) {
+      window.__seekHooks = [];
+      const gsapPlugins = [
+        window.ScrollTrigger, window.ScrollSmoother, window.ScrollToPlugin,
+        window.SplitText, window.ScrambleTextPlugin, window.TextPlugin,
+        window.DrawSVGPlugin, window.MorphSVGPlugin, window.MotionPathPlugin, window.MotionPathHelper,
+        window.Flip, window.Draggable, window.InertiaPlugin, window.Observer,
+        window.Physics2DPlugin, window.PhysicsPropsPlugin, window.GSDevTools,
+        window.EaselPlugin, window.PixiPlugin,
+        window.CustomEase, window.RoughEase, window.SlowMo, window.ExpoScaleEase,
+        window.CustomWiggle, window.CustomBounce,
+      ].filter(Boolean);
+      if (gsapPlugins.length) gsap.registerPlugin(...gsapPlugins);
+
+      if (window.CustomEase) {
+        try { window.CustomEase.create('canvasPush', 'M0,0 C0.18,0.02 0.16,1 1,1'); } catch (_) {}
+      }
+      if (window.CustomBounce && window.CustomEase) {
+        try { window.CustomBounce.create('studioBounce', { strength: 0.42, squash: 1.4 }); } catch (_) {}
+      }
+      if (window.CustomWiggle && window.CustomEase) {
+        try { window.CustomWiggle.create('studioWiggle', { wiggles: 4, type: 'easeOut' }); } catch (_) {}
+      }
+
+      const { state, scenes, lotties = {}, transparentBg, motionPreset } = payload;
+      const br = state.brand || {};
+      const opts = state.options || {};
+      const layout = state.layout || 'C';
+
+      const bgHex = br.bg || '#F4F5F2';
+      const isDark = luminance(bgHex) < 128;
+      const acInk = luminance(br.accent || '#F8D146') < 145 ? '#FFFFFF' : '#111827';
+      const root = document.getElementById('root');
+      root.className = `${isDark ? 'dark-theme' : ''} layout-${layout}`;
+
+      const rs = document.documentElement.style;
+      rs.setProperty('--bg', bgHex);
+      rs.setProperty('--text', br.text || (isDark ? '#F8FAFC' : '#262B2E'));
+      rs.setProperty('--primary', br.primary || '#007AFF');
+      rs.setProperty('--accent', br.accent || '#F8D146');
+      rs.setProperty('--accent-ink', acInk);
+      rs.setProperty('--card-bg', isDark ? 'rgba(24, 32, 48, 0.94)' : 'rgba(255, 255, 255, 0.96)');
+      rs.setProperty('--card-border', isDark ? 'rgba(255, 255, 255, 0.14)' : 'rgba(15, 23, 42, 0.08)');
+      rs.setProperty('--display-font', `'${br.displayFont || 'Hasti'}', 'Peyda', sans-serif`);
+      rs.setProperty('--body-font', `'${br.bodyFont || 'Pinar'}', 'Peyda', sans-serif`);
+
+      document.getElementById('backdrop').style.display = transparentBg ? 'none' : 'block';
+      document.getElementById('orbTR').style.display = opts.cornerBlurAccents ? 'block' : 'none';
+      document.getElementById('orbBL').style.display = opts.cornerBlurAccents ? 'block' : 'none';
+      setupAmbientBokeh(br.primary || '#007AFF', br.accent || '#F8D146', !!opts.cornerBlurAccents && !transparentBg);
+
+      const hEl = document.getElementById('brand-handle');
+      if (br.handle && br.handle.trim()) {
+        hEl.textContent = br.handle.trim();
+        hEl.style.display = 'block';
+        const pos = br.handlePos || 'tr';
+        hEl.style.top = pos.startsWith('t') ? '185px' : 'auto';
+        hEl.style.bottom = pos.startsWith('b') ? '430px' : 'auto';
+        hEl.style.right = pos.endsWith('r') ? '84px' : 'auto';
+        hEl.style.left = pos.endsWith('l') ? '84px' : (pos.endsWith('c') ? '50%' : 'auto');
+        if (pos.endsWith('c')) hEl.style.transform = 'translateX(-50%)';
+      }
+
+      const scaleMul = { sm: 0.85, md: 1.0, lg: 1.16, xl: 1.30 }[opts.fontScale || 'md'] || 1.0;
+      const hlPx = Math.round((layout === 'E' ? 54 : 64) * scaleMul);
+      const kwPx = Math.round(42 * scaleMul);
+      const capPx = Math.round(35 * scaleMul);
+
+      const host = document.getElementById('scenes-host');
+      host.innerHTML = '';
+      const tl = gsap.timeline({ paused: true });
+      const sceneEls = [];
+
+      for (let idx = 0; idx < scenes.length; idx++) {
+        const sc = scenes[idx];
+        const el = document.createElement('div');
+        el.className = 'scene';
+        el.id = `sc-${idx}`;
+        sceneEls.push(el);
+        const t0 = Number(sc.t || 0);
+        const t1 = Number(sc.end || (t0 + 3.5));
+        if (sc.speechCues?.length) {
+          host.appendChild(el);
+          addSpeechScene(el,sc,tl,payload.matte,payload.introSeconds,transparentBg);
+          continue;
+        }
+        const dur = Math.max(0.6, t1 - t0);
+
+        const globalAnim = opts.textAnimStyle || 'classic-rise';
+        const textAnim = (sc.textFx && sc.textFx !== 'auto') ? sc.textFx : globalAnim;
+        const hlPosKey = sc.textFx === 'none' ? 'none' : ((sc.headlinePosBeat && sc.headlinePosBeat !== 'auto') ? sc.headlinePosBeat : (opts.headlinePos || 'top'));
+        const hlTopPx = layout === 'E'
+          ? ({ top: 180, 'top-right': 180, center: 420, bottom: 790 }[hlPosKey] || 180)
+          : ({ top: 240, 'top-right': 240, center: 790, bottom: 1310 }[hlPosKey] || 240);
+
+        const vtype = sc.resolvedVisualType || sc.visualType || 'clean-spotlight';
+        const smode = sc.screenMotion || (vtype === 'ui-showcase' ? 'zoom-in-click' : 'card');
+        const isFullBleed = !!sc.assetFileUri && vtype !== 'three-3d-showcase' && smode !== 'card' && (vtype === 'ui-showcase' || smode !== 'auto');
+
+        let inner = '';
+
+        if (opts.flowlineRibbon && !isFullBleed && !['clean-spotlight', 'kinetic-text', 'three-3d-showcase', 'code-magic'].includes(vtype) && sc.kind === 'beat') {
+          const dPath = idx % 2 === 0
+            ? 'M -60 560 C 260 920, 790 780, 1140 1180'
+            : 'M 1140 580 C 780 940, 290 820, -60 1190';
+          inner += `<svg class="flow-svg" viewBox="0 0 1080 1920"><path class="flow-path" d="${dPath}" fill="none" stroke="${br.primary || '#007AFF'}" stroke-width="50" stroke-linecap="round" opacity="0.16"/></svg>`;
+        }
+
+        if (sc.kind === 'intro') {
+          inner += `
+            <div class="stage-center">
+              <div class="clean-card">
+                <div class="lottie-corner" data-lottie="sparkle_burst"></div>
+                ${sc.logoUri ? `<img class="card-media" src="${sc.logoUri}" style="max-height:220px;" />` : ''}
+                <div style="font-family:var(--display-font); font-size:${hlPx}px; font-weight:800; text-align:center;">${esc(state.title || 'خوش آمدید')}</div>
+                ${state.cover?.badge ? `<div style="padding:10px 28px; border-radius:999px; background:var(--accent); color:var(--accent-ink); font-family:var(--display-font); font-size:36px; font-weight:800;">${esc(state.cover.badge)}</div>` : ''}
+              </div>
+            </div>`;
+        } else if (sc.kind === 'outro') {
+          const ctaW = opts.outroCtaWord || state.creative?.action || '';
+          const ctaSub = opts.outroSubtitle || '';
+          inner += `
+            <div class="physics-layer" data-physics-burst="1"></div>
+            <div class="stage-center">
+              <div class="clean-card">
+                <div class="lottie-box" data-lottie="checkmark_success"></div>
+                ${sc.logoUri ? `<img class="card-media" src="${sc.logoUri}" style="max-height:170px;" />` : ''}
+                <div style="padding:16px 42px; border-radius:26px; background:var(--primary); color:#FFF; font-family:var(--display-font); font-size:${Math.round(hlPx * 1.05)}px; font-weight:800;">${esc(ctaW)}</div>
+                <div style="font-size:40px; font-weight:700; text-align:center; opacity:0.88;">${esc(ctaSub)}</div>
+              </div>
+            </div>`;
+        } else if (isFullBleed) {
+          inner += `
+            <div class="fullbleed-wrap">
+              <div class="fullbleed-stage">
+                <img src="${sc.assetFileUri}" />
+                <svg class="target-highlight-svg" viewBox="0 0 1080 1920"></svg>
+                <div class="cursor-ripple"></div>
+                <div class="macos-cursor">${cursorSvg()}</div>
+              </div>
+            </div>`;
+        } else {
+          // Headline (uses official GSAP SplitText for RTL-safe line/word reveals, ScrambleTextPlugin, or word markup)
+          if (hlPosKey !== 'none' && sc.headline && vtype !== 'kinetic-text') {
+            const useSplit = (textAnim === 'classic-rise' || textAnim === 'mask-clip-rise') && !!(window.SplitText || window.SplitType);
+            const useScramble = textAnim === 'scramble-tech' && !!window.ScrambleTextPlugin;
+            inner += `<div class="headline-box ${hlPosKey === 'top-right' ? 'align-right' : ''}" data-use-splittext="${useSplit ? '1' : '0'}" data-scramble-text="${useScramble ? esc(sc.headline) : ''}" style="top:${hlTopPx}px; font-size:${hlPx}px;">${(useSplit || useScramble) ? esc(sc.headline) : buildWordMarkup(sc.headline, textAnim)}</div>`;
+          }
+
+          if (vtype === 'three-3d-showcase') {
+            inner += `<div class="stage-center"><div class="three-host"></div></div>`;
+          } else if (vtype === 'morph-svg') {
+            inner += `
+              <div class="stage-center">
+                <div class="clean-card">
+                  <svg class="morph-svg" viewBox="0 0 240 240" width="220" height="220" style="overflow:visible;">
+                    <defs>
+                      <linearGradient id="morphGrad-${idx}" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="${br.primary || '#007AFF'}"/>
+                        <stop offset="100%" stop-color="${br.accent || '#F8D146'}"/>
+                      </linearGradient>
+                    </defs>
+                    <path class="morph-shape" d="M120 20 L210 70 L210 170 L120 220 L30 170 L30 70 Z" fill="url(#morphGrad-${idx})" opacity="0.92"/>
+                    <path class="morph-target" style="display:none;" d="M120 18 C158 18 196 36 206 72 C216 118 192 178 120 222 C48 178 24 118 34 72 C44 36 82 18 120 18 Z"/>
+                    <path class="morph-check" d="M82 122 L109 149 L164 90" fill="none" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <div style="font-family:var(--display-font); font-size:46px; font-weight:800; text-align:center;">${esc(sc.keyword || sc.headline || 'تبدیل هوشمند')}</div>
+                  ${sc.spoken ? `<div style="font-size:32px; opacity:0.78; text-align:center; max-width:660px; line-height:1.5;">${esc(sc.spoken.slice(0, 68))}</div>` : ''}
+                </div>
+              </div>`;
+          } else if (vtype === 'physics-burst') {
+            inner += `
+              <div class="physics-layer" data-physics-burst="1"></div>
+              <div class="stage-center">
+                <div class="clean-card">
+                  <div class="lottie-box" data-lottie="sparkle_burst"></div>
+                  <div style="font-family:var(--display-font); font-size:52px; font-weight:900; color:var(--primary); text-align:center;">${esc(sc.keyword || sc.headline || 'نتیجه چشمگیر')}</div>
+                  ${sc.spoken ? `<div style="font-size:34px; font-weight:700; text-align:center; opacity:0.84; max-width:660px; line-height:1.5;">${esc(sc.spoken.slice(0, 74))}</div>` : ''}
+                </div>
+              </div>`;
+          } else if (vtype === 'rough-sketch' || vtype === 'rough-callout') {
+            // Rough.js Hand-Drawn Strike-Through & Marker Highlight + Lottie Checkmark!
+            inner += `
+              <div class="stage-center">
+                <div class="rough-card">
+                  <svg class="rough-overlay-svg" viewBox="0 0 860 360"></svg>
+                  <div class="rough-row old-way">
+                    <span style="font-size:36px; font-weight:700; color:#64748B;">روش دستی و زمان‌بر قدیمی</span>
+                    <span style="font-size:30px; font-weight:800; color:#EF4444;">حذف شد</span>
+                  </div>
+                  <div class="rough-row new-way" style="background:rgba(37,99,235,0.06);">
+                    <div style="display:flex; align-items:center; gap:20px;">
+                      <div class="lottie-box" style="width:78px;height:78px;" data-lottie="checkmark_success"></div>
+                      <span style="font-family:var(--display-font); font-size:42px; font-weight:800; color:var(--text);">${esc(sc.keyword || sc.headline || 'اجرای هوشمند و تمیز')}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>`;
+          } else if (vtype === 'd3-chart') {
+            // D3-Shape Smooth Growth Chart + Lottie Sparkle!
+            inner += `
+              <div class="stage-center">
+                <div class="d3-card">
+                  <div style="display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                      <div style="font-size:28px; color:var(--muted); font-weight:700;">داده‌های سکانس</div>
+                      <div style="font-family:var(--display-font); font-size:48px; font-weight:800; color:var(--primary);">${esc(sc.chartUnit)}</div>
+                    </div>
+                    <div class="lottie-box" style="width:86px;height:86px;" data-lottie="sparkle_burst"></div>
+                  </div>
+                  <svg class="d3-svg" viewBox="0 0 770 320" style="width:100%; height:320px; overflow:visible;"></svg>
+                </div>
+              </div>`;
+          } else if (vtype === 'bento-grid') {
+            // Muuri Animated 3-Tile Bento Grid!
+            const words = String(sc.spoken || sc.headline || 'سبک مدرن | تایپوگرافی | موشن تمیز').split(/[،|,]+/).map(s => s.trim()).filter(Boolean);
+            const tA = sc.keyword || words[0] || 'هسته هوشمند GSAP';
+            const tB = words[1] || 'تایپوگرافی فارسی تمیز';
+            const tC = words[2] || 'هماهنگ با ریتم گفتار';
+            inner += `
+              <div class="stage-center">
+                <div class="bento-wrap">
+                  <div class="muuri-grid">
+                    <div class="muuri-item w-full"><div class="bento-tile featured">
+                      <span style="font-size:26px; opacity:0.85; font-weight:700;">ویژگی اصلی</span>
+                      <span style="font-family:var(--display-font); font-size:46px; font-weight:800;">${esc(tA)}</span>
+                    </div></div>
+                    <div class="muuri-item w-half"><div class="bento-tile">
+                      <div class="lottie-box" style="width:68px;height:68px;" data-lottie="pulse_target"></div>
+                      <span style="font-size:34px; font-weight:800;">${esc(tB)}</span>
+                    </div></div>
+                    <div class="muuri-item w-half"><div class="bento-tile">
+                      <div class="lottie-box" style="width:68px;height:68px;" data-lottie="checkmark_success"></div>
+                      <span style="font-size:34px; font-weight:800;">${esc(tC)}</span>
+                    </div></div>
+                  </div>
+                </div>
+              </div>`;
+          } else if (vtype === 'code-magic') {
+            inner += `
+              <div class="stage-center">
+                <div class="code-card">
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; padding-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.1);">
+                    <div style="display:flex; gap:10px;">
+                      <span style="width:16px;height:16px;border-radius:50%;background:#FF5F56;"></span>
+                      <span style="width:16px;height:16px;border-radius:50%;background:#FFBD2E;"></span>
+                      <span style="width:16px;height:16px;border-radius:50%;background:#27C93F;"></span>
+                    </div>
+                    <span style="color:#94A3B8; font-family:JetBrainsMono,monospace; font-size:22px;">studio-pipeline.js</span>
+                  </div>
+                  <div class="code-focus-bar"></div>
+                  ${sc.shikiHtml || ''}
+                </div>
+              </div>`;
+          } else if (vtype === 'kinetic-text') {
+            inner += `
+              <div class="stage-center">
+                <div style="text-align:center; padding:0 40px;">
+                  <div class="headline-box" style="position:relative; left:0; right:0; font-size:${Math.round(hlPx * 1.28)}px;">${buildWordMarkup(sc.headline || sc.spoken || '', 'emphasis-word')}</div>
+                </div>
+              </div>`;
+          } else if (vtype === 'counter' && /[0-9۰-۹]/.test([sc.headline,sc.keyword,sc.spoken].join(' '))) {
+            const numMatch = String(`${sc.headline || ''} ${sc.keyword || ''} ${sc.spoken || ''}`).match(/[\d\u06F0-\u06F9]+/);
+            const targetNum = numMatch ? parseInt(numMatch[0].replace(/[\u06F0-\u06F9]/g, d => d.charCodeAt(0) - 1776), 10) : 0;
+            inner += `
+              <div class="physics-layer" data-physics-burst="1"></div>
+              <div class="stage-center">
+                <div class="clean-card" data-target-num="${targetNum}">
+                  <div class="lottie-corner" data-lottie="sparkle_burst"></div>
+                  <div class="gsap-counter" style="font-family:var(--display-font); font-size:158px; font-weight:900; color:var(--primary); direction:ltr;">0</div>
+                  <div style="font-size:42px; font-weight:700; text-align:center;">${esc(sc.keyword || sc.headline || '')}</div>
+                </div>
+              </div>`;
+          } else if (vtype === 'compare') {
+            inner += `
+              <div class="stage-center">
+                <div class="compare-grid">
+                  <div class="cmp-box old">
+                    <div style="font-size:32px; color:#EF4444; font-weight:800; margin-bottom:14px;">روش قدیمی</div>
+                    <div style="font-size:38px; font-weight:700; opacity:0.75;">شلوغ و زمان‌بر</div>
+                  </div>
+                  <div class="cmp-box new">
+                    <div style="font-size:32px; color:var(--primary); font-weight:800; margin-bottom:14px;">روش هوشمند</div>
+                    <div style="font-size:40px; font-weight:800;">${esc(sc.keyword || 'سریع و یکپارچه')}</div>
+                  </div>
+                </div>
+              </div>`;
+          } else if (vtype === 'cursor-guided-ui') {
+            inner += `
+              <div class="stage-center">
+                <div class="guided-ui-card">
+                  <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; border-bottom:1px solid rgba(15,23,42,0.07);">
+                    <span style="font-size:28px; color:var(--muted); font-weight:700;">پنل کنترل هوشمند</span>
+                    <div style="display:flex; gap:10px; direction:ltr;">
+                      <span style="width:16px; height:16px; border-radius:50%; background:#FCA5A5;"></span>
+                      <span style="width:16px; height:16px; border-radius:50%; background:#FCD34D;"></span>
+                      <span style="width:16px; height:16px; border-radius:50%; background:#86EFAC;"></span>
+                    </div>
+                  </div>
+                  ${sc.assetFileUri ? `<img src="${sc.assetFileUri}" style="width:100%; max-height:330px; object-fit:cover; border-radius:20px;" />` : ''}
+                  <div class="guided-row">
+                    <span style="font-size:36px; font-weight:800;">${esc(sc.keyword || 'فعال‌سازی حالت هوشمند')}</span>
+                    <div class="guided-toggle"><div class="guided-knob"></div></div>
+                  </div>
+                </div>
+                <div class="cursor-ripple"></div>
+                <div class="macos-cursor">${cursorSvg()}</div>
+              </div>`;
+          } else if (vtype === 'clean-spotlight') {
+            if (sc.assetFileUri) inner += `<div class="stage-center"><img class="card-media" src="${sc.assetFileUri}" /></div>`;
+            else if (!sc.headline && !['A','E'].includes(layout) && !['captions','both','description'].includes(opts.textMode)) {
+              inner += `<div class="stage-center"><div class="clean-card">${esc(sc.intent || sc.spoken || '')}</div></div>`;
+            }
+          } else {
+            const nextSc = scenes[idx + 1];
+            const rearLabel = nextSc?.headline || sc.keyword || 'گام بعدی';
+            inner += `
+              <div class="stage-center">
+                ${vtype === 'depth-peek' ? `
+                  <div class="depth-back-card">
+                    <span style="font-family:var(--display-font); font-size:32px; color:var(--primary); font-weight:800;">${esc(rearLabel)}</span>
+                    <span style="font-size:24px; opacity:0.65;">آماده نمایش...</span>
+                  </div>
+                  <div class="depth-peek-pill">${esc(sc.keyword || 'نکته کلیدی')}</div>
+                ` : ''}
+                <div class="clean-card">
+                  <div class="lottie-corner" data-lottie="pulse_target"></div>
+                  ${sc.assetFileUri ? `<img class="card-media" src="${sc.assetFileUri}" />` : `
+                    <div style="width:140px; height:140px; border-radius:36px; background:rgba(0,122,255,0.10); display:grid; place-items:center; font-family:var(--display-font); font-size:64px; color:var(--primary);">${idx + 1}</div>
+                  `}
+                  ${!sc.assetFileUri && sc.spoken ? `<div style="font-size:38px; font-weight:700; text-align:center; line-height:1.5; max-width:680px;">${esc(sc.spoken.slice(0, 72))}</div>` : ''}
+                </div>
+              </div>`;
+          }
+
+          const skipPillTypes = ['depth-peek', 'cursor-guided-ui', 'counter', 'compare', 'rough-sketch', 'd3-chart', 'bento-grid'];
+          const tMode = opts.textMode || 'keywords';
+          if (sc.keyword && !skipPillTypes.includes(vtype) && sc.textFx !== 'none' && (tMode === 'keywords' || tMode === 'both')) {
+            const kwTop = layout === 'E' ? 835 : (hlPosKey === 'bottom' ? 370 : 1265);
+            inner += `<div class="kw-pill" style="top:${kwTop}px; font-size:${kwPx}px;">${esc(sc.keyword)}</div>`;
+          }
+
+        }
+        {
+          const showCap = ((opts.textMode === 'captions' || opts.textMode === 'both' || opts.textMode === 'description' || (opts.captions && opts.captions !== 'none')) && sc.spoken && (vtype !== 'kinetic-text' || sc.headline !== sc.spoken));
+          if (showCap) {
+            const capTop = layout === 'C' && vtype === 'clean-spotlight' && !sc.assetFileUri && !sc.headline ? 900 : isFullBleed ? 1420 : layout === 'E' ? 905 : ({ 'bottom-safe': 1420, 'below-card': 1250, center: 960, top: 245 }[opts.captionPos || 'bottom-safe'] || 1420);
+            inner += `<div class="caption-rail" style="top:${capTop}px; font-size:${capPx}px;"></div>`;
+          }
+        }
+
+        el.innerHTML = inner;
+        host.appendChild(el);
+        const rail = el.querySelector('.caption-rail');
+        if (rail) {
+          const words = sc.spoken.trim().split(/\s+/);
+          const timed = Number.isFinite(sc.sourceStart) && sc.words?.map(w => w.w).join(' ') === words.join(' ');
+          const cues = [];
+          let group = [];
+          let start = t0;
+          for (let i = 0; i < words.length; i++) {
+            if (!group.length) start = timed ? t0 + sc.words[i].s - sc.sourceStart : t0 + dur * i / words.length;
+            group.push(words[i]);
+            if (group.join(' ').length >= 32 || /[،؛.!؟]$/.test(words[i]) || i === words.length - 1) {
+              cues.push({start, text: group.join(' ')});
+              group = [];
+            }
+          }
+          window.__seekHooks.push(time => {
+            rail.textContent = cues.findLast(c => c.start <= time)?.text || '';
+          });
+        }
+
+
+        // ---------------- Initialize Per-Library Components Inside Scene ----------------
+
+        // 1. Official GSAP SplitText (RTL-safe lines & words, NEVER chars on Persian!) with SplitType fallback
+        el.querySelectorAll('[data-use-splittext="1"]').forEach((stBox) => {
+          if (window.SplitText) {
+            try {
+              new window.SplitText(stBox, { type: 'lines,words', linesClass: 'hl-mask', wordsClass: 'hl-w' });
+            } catch (_) {
+              if (window.SplitType) new window.SplitType(stBox, { types: 'lines,words' });
+            }
+          } else if (window.SplitType) {
+            new window.SplitType(stBox, { types: 'lines,words' });
+          }
+        });
+
+        // 1b. Official GSAP ScrambleTextPlugin for scramble-tech headlines
+        el.querySelectorAll('[data-scramble-text]').forEach((scBox) => {
+          const finalTxt = scBox.dataset.scrambleText;
+          if (!finalTxt || !window.ScrambleTextPlugin) return;
+          tl.fromTo(scBox,
+            { opacity: 0.25, y: 12 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: Math.min(0.85, dur * 0.45),
+              scrambleText: { text: finalTxt, chars: '01█▓░/\\', speed: 0.45, revealDelay: 0.08 },
+              ease: 'power2.out'
+            },
+            t0 + 0.08
+          );
+        });
+
+        // 1c. Official GSAP MorphSVGPlugin + DrawSVGPlugin on morph-svg scenes
+        const morphShape = el.querySelector('.morph-shape');
+        const morphTarget = el.querySelector('.morph-target');
+        const morphCheck = el.querySelector('.morph-check');
+        if (morphShape && morphTarget) {
+          if (window.MorphSVGPlugin) {
+            tl.to(morphShape, {
+              morphSVG: morphTarget,
+              duration: Math.min(0.85, dur * 0.45),
+              ease: 'power3.inOut'
+            }, t0 + 0.28);
+          }
+          if (morphCheck) {
+            if (window.DrawSVGPlugin) {
+              tl.fromTo(morphCheck, { drawSVG: '0% 0%' }, { drawSVG: '0% 100%', duration: 0.48, ease: 'power2.out' }, t0 + 0.52);
+            } else {
+              tl.fromTo(morphCheck, { strokeDasharray: 300, strokeDashoffset: 300 }, { strokeDashoffset: 0, duration: 0.48, ease: 'power2.out' }, t0 + 0.52);
+            }
+          }
+        }
+
+        // 1d. Official GSAP Physics2DPlugin celebratory particle burst
+        const physLayer = el.querySelector('[data-physics-burst="1"]');
+        if (physLayer && window.Physics2DPlugin) {
+          const colors = [br.primary || '#007AFF', br.accent || '#F8D146', '#10B981', '#F97316'];
+          const dots = [];
+          for (let pi = 0; pi < 14; pi++) {
+            const d = document.createElement('div');
+            d.className = 'phys-dot';
+            const sz = 12 + (pi % 4) * 5;
+            d.style.width = `${sz}px`;
+            d.style.height = `${sz}px`;
+            d.style.left = '540px';
+            d.style.top = '820px';
+            d.style.background = colors[pi % colors.length];
+            physLayer.appendChild(d);
+            dots.push(d);
+          }
+          tl.set(dots, { opacity: 1, x: 0, y: 0 }, t0 + 0.22);
+          tl.to(dots, {
+            duration: Math.min(1.45, dur * 0.72),
+            physics2D: {
+              velocity: () => 260 + Math.random() * 420,
+              angle: () => 210 + Math.random() * 120,
+              gravity: 860,
+            },
+            opacity: 0,
+            scale: 0.4,
+            ease: 'none'
+          }, t0 + 0.22);
+        }
+
+        // 2. Lottie-Web deterministic frame-locked badges
+        el.querySelectorAll('[data-lottie]').forEach((lBox) => {
+          const name = lBox.dataset.lottie;
+          if (lotties[name]) mountLottie(lBox, lotties[name], t0 + 0.14, dur);
+        });
+
+        // 3. Three.js WebGL 3D Device Showcase
+        const threeHost = el.querySelector('.three-host');
+        if (threeHost) {
+          await mountThreeShowcase(threeHost, sc, br, t0, t1);
+        }
+
+        // 4. Rough.js Hand-Drawn Strike-Through + Marker Box (animated smoothly via DrawSVGPlugin)
+        const roughSvg = el.querySelector('.rough-overlay-svg');
+        if (roughSvg && window.rough) {
+          const rc = window.rough.svg(roughSvg);
+          const strike = rc.line(60, 88, 800, 88, { stroke: '#EF4444', strokeWidth: 7, roughness: 2.2 });
+          const hiBox = rc.rectangle(28, 178, 804, 134, { stroke: br.primary || '#2563EB', strokeWidth: 5, roughness: 1.9, bowing: 1.6 });
+          roughSvg.appendChild(strike);
+          roughSvg.appendChild(hiBox);
+          roughSvg.querySelectorAll('path').forEach((p, pi) => {
+            if (window.DrawSVGPlugin) {
+              tl.fromTo(p, { drawSVG: '0% 0%' }, { drawSVG: '0% 100%', duration: 0.55, ease: 'power2.out' }, t0 + 0.24 + pi * 0.20);
+            } else {
+              tl.fromTo(p, { strokeDasharray: 2400, strokeDashoffset: 2400 }, { strokeDashoffset: 0, duration: 0.55, ease: 'power2.out' }, t0 + 0.24 + pi * 0.20);
+            }
+          });
+        }
+
+        // 5. D3-Shape Smooth Growth Chart (animated smoothly via DrawSVGPlugin)
+        const d3Svg = el.querySelector('.d3-svg');
+        if (d3Svg && window.d3) {
+          const values = sc.chartValues;
+          const low = Math.min(...values), high = Math.max(...values);
+          const pts = values.map((v,i) => [30 + 705 * i / (values.length-1), high === low ? 150 : 265 - 231 * (v-low)/(high-low)]);
+          const lineGen = window.d3.line().x(d => d[0]).y(d => d[1]);
+          const areaGen = window.d3.area().x(d => d[0]).y0(295).y1(d => d[1]);
+          const pCol = br.primary || '#2563EB';
+          d3Svg.innerHTML = `
+            <defs>
+              <linearGradient id="d3grad-${idx}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="${pCol}" stop-opacity="0.32"/>
+                <stop offset="100%" stop-color="${pCol}" stop-opacity="0.0"/>
+              </linearGradient>
+            </defs>
+            <path class="d3-area" d="${areaGen(pts)}" fill="url(#d3grad-${idx})" opacity="0"/>
+            <path class="d3-line" d="${lineGen(pts)}" fill="none" stroke="${pCol}" stroke-width="10" stroke-linecap="round"/>
+            ${pts.map((pt, i) => `<text x="${pt[0]}" y="${pt[1]-18}" text-anchor="middle" font-size="24" fill="currentColor">${values[i].toLocaleString("fa-IR")}</text><circle class="d3-dot" cx="${pt[0]}" cy="${pt[1]}" r="13" fill="#FFFFFF" stroke="${pCol}" stroke-width="6"/>`).join('')}
+          `;
+          if (window.DrawSVGPlugin) {
+            tl.fromTo(d3Svg.querySelector('.d3-line'), { drawSVG: '0% 0%' }, { drawSVG: '0% 100%', duration: 0.85, ease: 'power3.out' }, t0 + 0.16);
+          } else {
+            tl.fromTo(d3Svg.querySelector('.d3-line'), { strokeDasharray: 1400, strokeDashoffset: 1400 }, { strokeDashoffset: 0, duration: 0.85, ease: 'power3.out' }, t0 + 0.16);
+          }
+          tl.to(d3Svg.querySelector('.d3-area'), { opacity: 1, duration: 0.55 }, t0 + 0.35);
+          tl.fromTo(d3Svg.querySelectorAll('.d3-dot'), { scale: 0, transformOrigin: 'center center' }, { scale: 1, stagger: 0.11, duration: 0.32, ease: 'back.out(2)' }, t0 + 0.24);
+        }
+
+        // 6. Muuri Animated Bento Grid
+        const muuriEl = el.querySelector('.muuri-grid');
+        if (muuriEl) {
+          if (window.Muuri) {
+            try {
+              el.style.visibility = 'visible';
+              new window.Muuri(muuriEl, { dragEnabled: false, layout: { fillGaps: true, rightToLeft: true } });
+              el.style.visibility = 'hidden';
+            } catch (_) {}
+          }
+          tl.fromTo(muuriEl.querySelectorAll('.bento-tile'),
+            { y: 40, scale: 0.88, opacity: 0 },
+            { y: 0, scale: 1, opacity: 1, stagger: 0.14, duration: 0.46, ease: 'back.out(1.5)' },
+            t0 + 0.10
+          );
+        }
+
+        // 7. Shiki Code Line Spotlight Motion
+        const codeBar = el.querySelector('.code-focus-bar');
+        if (codeBar) {
+          tl.fromTo(el.querySelector('.code-card'), { y: 44, opacity: 0, scale: 0.94 }, { y: 0, opacity: 1, scale: 1, duration: 0.46, ease: 'power3.out' }, t0 + 0.08);
+          tl.fromTo(codeBar, { y: 0 }, { y: 124, duration: Math.min(1.4, dur * 0.65), ease: 'steps(3)' }, t0 + 0.35);
+        }
+
+        // ---------------- Master GSAP Scene Transitions & Element Choreography ----------------
+        tl.set(el, { autoAlpha: 1, zIndex: 10 + idx }, t0);
+
+        const trKind = sc.transition && sc.transition !== 'auto' ? sc.transition : (opts.transition || 'push');
+        const trDur = 0.56;
+        const pushEase = window.CustomEase ? 'canvasPush' : 'power4.inOut';
+        if (idx > 0) {
+          const prevEl = sceneEls[idx - 1];
+          if (trKind === 'circles') {
+            tl.fromTo(el, { clipPath: 'circle(0% at 50% 50%)' }, { clipPath: 'circle(125% at 50% 50%)', duration: 0.54, ease: 'power3.inOut' }, t0);
+            tl.set(prevEl, { autoAlpha: 0 }, t0 + 0.56);
+          } else if (trKind === 'zoom') {
+            tl.to(prevEl, { scale: 1.18, opacity: 0, filter: 'blur(6px)', duration: 0.46, ease: 'power3.inOut' }, t0);
+            tl.fromTo(el, { scale: 0.84, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.48, ease: 'power3.out' }, t0);
+            tl.set(prevEl, { autoAlpha: 0 }, t0 + 0.48);
+          } else if (trKind === 'dissolve') {
+            tl.to(prevEl, { opacity: 0, duration: 0.38, ease: 'power2.out' }, t0);
+            tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.38, ease: 'power2.out' }, t0);
+            tl.set(prevEl, { autoAlpha: 0 }, t0 + 0.40);
+          } else if (trKind === 'cut') {
+            tl.set(prevEl, { autoAlpha: 0 }, t0);
+          } else {
+            // TRUE CONTINUOUS HORIZONTAL CANVAS SCROLL: prev slides 0 -> -1080 simultaneously as next slides +1080 -> 0
+            const dir = trKind === 'push-right' ? 1 : -1;
+            tl.fromTo(prevEl,
+              { x: 0, filter: 'blur(0px)' },
+              { x: dir * 1080, filter: 'blur(4px)', duration: trDur, ease: pushEase },
+              t0
+            );
+            tl.fromTo(el,
+              { x: -dir * 1080, filter: 'blur(4px)' },
+              { x: 0, filter: 'blur(0px)', duration: trDur, ease: pushEase },
+              t0
+            );
+            tl.set(prevEl, { autoAlpha: 0, x: 0, filter: 'blur(0px)' }, t0 + trDur + 0.02);
+          }
+        } else {
+          // Frame 1 instant visual hook (no slow/blocking fade-in!)
+          tl.fromTo(el, { opacity: 1, scale: 0.985 }, { opacity: 1, scale: 1, duration: 0.28, ease: 'power3.out' }, t0);
+        }
+
+        const flowPath = el.querySelector('.flow-path');
+        if (flowPath) {
+          if (window.DrawSVGPlugin) {
+            tl.fromTo(flowPath, { drawSVG: '0% 0%' }, { drawSVG: '0% 100%', duration: Math.min(0.85, dur * 0.5), ease: 'power2.out' }, t0 + 0.08);
+          } else {
+            tl.fromTo(flowPath, { strokeDasharray: 1800, strokeDashoffset: 1800 }, { strokeDashoffset: 0, duration: Math.min(0.85, dur * 0.5), ease: 'power2.out' }, t0 + 0.08);
+          }
+        }
+
+        const mainCard = el.querySelector('.clean-card, .rough-card, .d3-card');
+        if (mainCard) {
+          const physics = motionPreset?.params || {};
+          const distance = motionPreset?.kind === 'wiggle-shake' ? Math.min(24, Number(physics.amp) || 12) : 0;
+          const ease = motionPreset?.kind === 'elastic-bounce'
+            ? (window.CustomBounce ? 'studioBounce' : 'back.out(1.6)')
+            : (motionPreset?.kind === 'wiggle-shake' && window.CustomWiggle ? 'studioWiggle' : 'power3.out');
+          tl.fromTo(mainCard,
+            { x: distance, y: 26, scale: 0.97, opacity: 0 },
+            { x: 0, y: 0, scale: 1, opacity: 1, duration: Math.min(Number(physics.duration) || 0.42, dur * 0.55), ease },
+            t0 + 0.06
+          );
+        }
+
+        const backCard = el.querySelector('.depth-back-card');
+        const peekPill = el.querySelector('.depth-peek-pill');
+        if (backCard && mainCard) {
+          tl.fromTo(backCard,
+            { y: 10, x: 0, scale: 0.84, rotation: 0, opacity: 0 },
+            { y: -88, x: 46, scale: 0.92, rotation: 3.2, opacity: 0.88, duration: 0.55, ease: 'power3.out' },
+            t0 + 0.16
+          );
+          if (dur > 1.8) {
+            tl.to(mainCard, { y: 34, scale: 0.94, filter: 'blur(2px)', opacity: 0.72, duration: 0.45, ease: 'power2.inOut' }, t1 - 0.65);
+            tl.to(backCard, { zIndex: 9, y: -12, x: 0, scale: 0.98, rotation: 0, filter: 'blur(0px)', opacity: 1, duration: 0.48, ease: 'back.out(1.5)' }, t1 - 0.65);
+          }
+        }
+        if (peekPill) {
+          tl.fromTo(peekPill,
+            { x: 0, y: 0, scale: 0.7, opacity: 0 },
+            { x: 0, y: layout === 'E' ? 255 : 315, scale: 1, opacity: 1, zIndex: 15, duration: 0.56, ease: 'back.out(1.75)' },
+            t0 + 0.34
+          );
+        }
+
+        el.querySelectorAll('.headline-box, .caption-rail').forEach((box, bi) => {
+          const words = box.querySelectorAll('.hl-w, .word');
+          if (!words.length) return;
+          const baseStart = t0 + (bi === 0 ? 0.08 : 0.18);
+          if (textAnim === 'word-unblur') {
+            tl.fromTo(words,
+              { opacity: 0, filter: 'blur(12px)', y: 14 },
+              { opacity: 1, filter: 'blur(0px)', y: 0, duration: 0.34, stagger: 0.10, ease: 'power2.out' },
+              baseStart
+            );
+          } else if (textAnim === 'mask-clip-rise') {
+            tl.fromTo(words,
+              { yPercent: 118, opacity: 0 },
+              { yPercent: 0, opacity: 1, duration: 0.44, stagger: 0.07, ease: 'power4.out' },
+              baseStart
+            );
+          } else if (textAnim === 'emphasis-word') {
+            tl.fromTo(words,
+              { scale: 0.78, opacity: 0, y: 14 },
+              { scale: 1, opacity: 1, y: 0, duration: 0.38, stagger: 0.08, ease: 'back.out(1.9)' },
+              baseStart
+            );
+          } else {
+            tl.fromTo(words,
+              { y: 20, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.36, stagger: 0.06, ease: 'power3.out' },
+              baseStart
+            );
+          }
+        });
+
+        const kwPill = el.querySelector('.kw-pill');
+        if (kwPill) {
+          tl.fromTo(kwPill,
+            { y: 26, scale: 0.78, opacity: 0 },
+            { y: 0, scale: 1, opacity: 1, duration: 0.40, ease: 'back.out(1.85)' },
+            t0 + 0.28
+          );
+        }
+
+        const counterEl = el.querySelector('.gsap-counter');
+        if (counterEl && mainCard) {
+          const target = Number(mainCard.dataset.targetNum || 100);
+          const proxy = { val: 0 };
+          tl.to(proxy, {
+            val: target,
+            duration: Math.min(1.1, dur * 0.55),
+            ease: 'power3.out',
+            onUpdate: () => { counterEl.textContent = Math.round(proxy.val).toLocaleString('fa-IR'); }
+          }, t0 + 0.14);
+        }
+
+        const fbStage = el.querySelector('.fullbleed-stage');
+        const curEl = el.querySelector('.macos-cursor');
+        const ripEl = el.querySelector('.cursor-ripple');
+        const showCursor = sc.cursorClick !== undefined ? !!sc.cursorClick : true;
+
+        if (fbStage) {
+          const fx = Number(sc.focusX ?? 50);
+          const fy = Number(sc.focusY ?? 42);
+          const img = fbStage.querySelector('img');
+          await img.decode().catch(() => {});
+          const scale = Math.min(1080/(img.naturalWidth || 1080), 1920/(img.naturalHeight || 1920));
+          const w = (img.naturalWidth || 1080)*scale, h = (img.naturalHeight || 1920)*scale;
+          const tx = (1080-w)/2 + fx*w/100, ty = (1920-h)/2 + fy*h/100;
+          const tilt = sc.tilt3d || smode === 'tilt-3d-click';
+          fbStage.style.transformOrigin = `${tx}px ${ty}px`;
+          if (smode === 'zoom-out-reveal') {
+            tl.fromTo(fbStage, { scale: 1.45, rotationY: tilt ? -8 : 0 }, { scale: 1.02, rotationY: 0, duration: dur * 0.85, ease: 'power3.inOut' }, t0);
+          } else {
+            tl.fromTo(fbStage,
+              { scale: 1.03, rotationY: 0, rotationX: 0, rotationZ: 0 },
+              { scale: 1.42, rotationY: tilt ? -9 : 0, rotationX: tilt ? 4 : 0, rotationZ: tilt ? -1.4 : 0, duration: Math.min(sc.cameraPace === "quick" ? 0.4 : 1, dur * 0.65), ease: 'power3.inOut' },
+              t0 + 0.08
+            );
+          }
+
+          // Precision DrawSVGPlugin animated target highlight box directly centered on (focusX%, focusY%)
+          const hiSvg = fbStage.querySelector('.target-highlight-svg');
+          if (hiSvg) {
+            const boxW = Math.max(120, Math.min(w * 0.82, (Number(sc.focusW) || 32) * w / 100));
+            const boxH = Math.max(68, Math.min(h * 0.55, (Number(sc.focusH) || 11) * h / 100));
+            const bx = Math.max(16, Math.min(1080 - boxW - 16, tx - boxW / 2));
+            const by = Math.max(16, Math.min(1920 - boxH - 16, ty - boxH / 2));
+            const hiColor = br.accent || '#F8D146';
+            const prColor = br.primary || '#007AFF';
+            hiSvg.innerHTML = `
+              <rect class="hi-fill" x="${bx}" y="${by}" width="${boxW}" height="${boxH}" rx="18" fill="${hiColor}" opacity="0"/>
+              <rect class="hi-stroke" x="${bx}" y="${by}" width="${boxW}" height="${boxH}" rx="18" fill="none" stroke="${prColor}" stroke-width="7" stroke-linecap="round"/>
+            `;
+            const hiFill = hiSvg.querySelector('.hi-fill');
+            const hiStroke = hiSvg.querySelector('.hi-stroke');
+            if (window.DrawSVGPlugin) {
+              tl.fromTo(hiStroke, { drawSVG: '0% 0%' }, { drawSVG: '0% 100%', duration: 0.58, ease: 'power2.out' }, t0 + 0.22);
+            } else {
+              tl.fromTo(hiStroke, { strokeDasharray: 1800, strokeDashoffset: 1800 }, { strokeDashoffset: 0, duration: 0.58, ease: 'power2.out' }, t0 + 0.22);
+            }
+            tl.fromTo(hiFill, { opacity: 0 }, { opacity: 0.20, duration: 0.35, ease: 'power2.out' }, t0 + 0.45);
+          }
+
+          if (curEl) {
+            if (!showCursor) {
+              curEl.style.display = 'none';
+            } else {
+              const clickAt = t0 + Math.min(0.95, dur * 0.45);
+              if (window.MotionPathPlugin) {
+                tl.set(curEl, { x: 980, y: 1620, opacity: 0 }, t0);
+                tl.to(curEl, {
+                  opacity: 1,
+                  duration: clickAt - t0,
+                  ease: 'power3.inOut',
+                  motionPath: {
+                    path: [{ x: 980, y: 1620 }, { x: Math.round((980 + tx) / 2 - 140), y: Math.round((1620 + ty) / 2 - 90) }, { x: tx, y: ty }],
+                    curviness: 1.4
+                  }
+                }, t0 + 0.05);
+              }
+              tl.to(curEl, { scale: 0.80, duration: 0.09, ease: 'power2.in' }, clickAt);
+              tl.to(curEl, { scale: 1.0, duration: 0.16, ease: 'back.out(2)' }, clickAt + 0.09);
+              if (ripEl) {
+                tl.set(ripEl, { left: tx, top: ty }, clickAt);
+                tl.fromTo(ripEl, { scale: 0.25, opacity: 0.95 }, { scale: 3.2, opacity: 0, duration: 0.55, ease: 'power2.out' }, clickAt + 0.04);
+              }
+            }
+          }
+        } else if (curEl && el.querySelector('.guided-ui-card')) {
+          const toggle = el.querySelector('.guided-toggle');
+          const knob = el.querySelector('.guided-knob');
+          const clickAt = t0 + Math.min(0.92, dur * 0.45);
+          const tx = 215, ty = sc.assetFileUri ? 560 : 435;
+          tl.set(curEl, { x: 760, y: 690, opacity: 0 }, t0);
+          if (window.MotionPathPlugin) {
+            tl.to(curEl, {
+              opacity: 1,
+              duration: clickAt - t0,
+              ease: 'power3.inOut',
+              motionPath: { path: [{ x: 760, y: 690 }, { x: 460, y: 340 }, { x: tx, y: ty }], curviness: 1.35 }
+            }, t0 + 0.08);
+          }
+          tl.to(curEl, { scale: 0.82, duration: 0.09 }, clickAt);
+          tl.to(curEl, { scale: 1, duration: 0.16, ease: 'back.out(2)' }, clickAt + 0.09);
+          if (toggle && knob) {
+            tl.to(toggle, { backgroundColor: br.primary || '#007AFF', duration: 0.22 }, clickAt + 0.06);
+            tl.to(knob, { x: -44, duration: 0.26, ease: 'back.out(1.8)' }, clickAt + 0.06);
+          }
+          if (ripEl) {
+            tl.set(ripEl, { left: tx + 10, top: ty + 10 }, clickAt);
+            tl.fromTo(ripEl, { scale: 0.3, opacity: 0.9 }, { scale: 2.8, opacity: 0, duration: 0.5, ease: 'power2.out' }, clickAt + 0.05);
+          }
+        }
+
+      }
+
+      window.__masterTl = tl;
+      return {
+        scenesCount: scenes.length,
+        duration: tl.duration(),
+        libsLoaded: {
+          gsap: !!window.gsap,
+          gsapVersion: window.gsap?.version || '',
+          ScrollTrigger: !!window.ScrollTrigger,
+          ScrollSmoother: !!window.ScrollSmoother,
+          ScrollToPlugin: !!window.ScrollToPlugin,
+          SplitText: !!window.SplitText,
+          ScrambleTextPlugin: !!window.ScrambleTextPlugin,
+          TextPlugin: !!window.TextPlugin,
+          DrawSVGPlugin: !!window.DrawSVGPlugin,
+          MorphSVGPlugin: !!window.MorphSVGPlugin,
+          MotionPathPlugin: !!window.MotionPathPlugin,
+          MotionPathHelper: !!window.MotionPathHelper,
+          Flip: !!window.Flip,
+          Draggable: !!window.Draggable,
+          InertiaPlugin: !!window.InertiaPlugin,
+          Observer: !!window.Observer,
+          Physics2DPlugin: !!window.Physics2DPlugin,
+          PhysicsPropsPlugin: !!window.PhysicsPropsPlugin,
+          GSDevTools: !!window.GSDevTools,
+          EaselPlugin: !!window.EaselPlugin,
+          PixiPlugin: !!window.PixiPlugin,
+          CustomEase: !!window.CustomEase,
+          EasePack: !!(window.RoughEase || window.SlowMo || window.ExpoScaleEase),
+          CustomWiggle: !!window.CustomWiggle,
+          CustomBounce: !!window.CustomBounce,
+          three: !!window.THREE,
+          lottie: !!window.lottie,
+          rough: !!window.rough,
+          roughNotation: !!window.RoughNotation,
+          splitType: !!window.SplitType,
+          d3: !!window.d3,
+          pixi: !!window.PIXI,
+          muuri: !!window.Muuri,
+          barba: !!window.barba,
+        },
+      };
+    };
+
+    window.seekStudio = function(t) {
+      if (window.__masterTl) window.__masterTl.seek(t, false);
+      for (const fn of window.__seekHooks) fn(t);
+    };
+  </script>
+</body>
+</html>

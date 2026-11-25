@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
   <title>راهنمای ساخت ویدیو با reel-motion-edit</title>
-  <meta name="description" content="راهنمای تصویری انتخاب سبک از گالری، ساخت ویدیو با موتور پلن و استفاده از Remotion">
+  <meta name="description" content="راهنمای تصویری انتخاب سبک از گالری، ساخت ویدیو با موتور پلن و استفاده از Three.js + GSAP">
   <style>
     :root { font-family: Tahoma, "Segoe UI", sans-serif; color: #f2f1ec; background: #0e151b; line-height: 1.9; }
     * { box-sizing: border-box; }
@@ -47,7 +47,7 @@
   <header>
     <nav aria-label="بخش‌های راهنما">
       <strong>reel-motion-edit</strong>
-      <a href="#styles">انتخاب سبک</a><a href="#commands">دستورهای زبانی</a><a href="#plan">موتور پلن</a><a href="#remotion">Remotion</a><a href="../README.md">README</a>
+      <a href="#styles">انتخاب سبک</a><a href="#commands">دستورهای زبانی</a><a href="#plan">موتور پلن</a><a href="#remotion">Three.js + GSAP</a><a href="../README.md">README</a>
     </nav>
   </header>
   <main>
@@ -55,19 +55,19 @@
       <div>
         <div class="eyebrow">راهنمای تصویری ساخت ویدیو</div>
         <h1>از عکس سبک تا ویدیوی نهایی</h1>
-        <p>سبک را در گالری ببین، چیدمان چهره را مشخص کن، متن و زمان‌های ویدیوی خودت را بده و با موتور پلن یا Remotion پیش‌نمایش و خروجی بساز.</p>
+        <p>سبک را در گالری ببین، چیدمان چهره را مشخص کن، متن و زمان‌های ویدیوی خودت را بده و با موتور پلن یا Three.js + GSAP پیش‌نمایش و خروجی بساز.</p>
         <div class="actions"><a class="button" href="#styles">سبک‌ها را ببین</a><a class="button secondary" href="../GUIDE.md">راهنمای گام‌به‌گام</a></div>
       </div>
       <img src="../gallery/_gallery-face.jpg" alt="نمونه‌های سبک روی ویدیوی گوینده" loading="eager">
     </section>
     <section id="styles">
       <h2>۱. سبک و قاب را انتخاب کن</h2>
-      <p>حرفِ نام عکس، شکل استفاده از چهره است؛ شماره، ظاهر را نشان می‌دهد. A یعنی گرافیک روی چهره، B چهره در پنجره، C موشن کامل، E قاب تقسیم‌شده و D نمونهٔ Remotion.</p>
+      <p>حرفِ نام عکس، شکل استفاده از چهره است؛ شماره، ظاهر را نشان می‌دهد. A یعنی گرافیک روی چهره، B چهره در پنجره، C موشن کامل، E قاب تقسیم‌شده و D نمونهٔ Three.js + GSAP.</p>
       <div class="grid">
         <div class="card"><span class="pill">A</span><h3>روی چهره</h3><p>ویدیوی اصلی می‌ماند؛ المان‌ها با گفتار ظاهر می‌شوند.</p></div>
         <div class="card"><span class="pill">B / E</span><h3>چهره در چیدمان</h3><p>برای توضیح فرایند، چهره در پنجره یا نیمهٔ پایین قرار می‌گیرد.</p></div>
         <div class="card"><span class="pill">C</span><h3>موشن کامل</h3><p>در کات‌اوی، تصویر گوینده حذف می‌شود و گفتار روی گرافیک ادامه دارد.</p></div>
-        <div class="card"><span class="pill">D</span><h3>Remotion</h3><p>صحنه‌های کدنویسی‌شدهٔ دو یا سه‌بعدی در قالب React.</p></div>
+        <div class="card"><span class="pill">D</span><h3>Three.js + GSAP</h3><p>صحنه‌های کدنویسی‌شدهٔ دو یا سه‌بعدی در قالب React.</p></div>
       </div>
       <p class="muted">عکس‌های گالری فقط مرجع بصری‌اند. کد A/B/C/E در <code>assets/styles.json</code> و <code>assets/engine.html</code> است؛ کد D در <code>templates/remotion/src/</code>. ۲۶ پریست پلن وجود دارد و همهٔ آنها هنوز عکس گالری ندارند.</p>
       <div class="shots">
@@ -75,7 +75,7 @@
         <a class="shot" href="../gallery/E10-warmguide.jpg"><img src="../gallery/E10-warmguide.jpg" alt="E10 آموزشی با قاب تقسیم‌شده" loading="lazy"><span>E10 · قاب تقسیم‌شده</span></a>
         <a class="shot" href="../gallery/C09-hud.jpg"><img src="../gallery/C09-hud.jpg" alt="C09 موشن HUD" loading="lazy"><span>C09 · موشن تمام‌صفحه</span></a>
         <a class="shot" href="../gallery/D13-3d-premium.jpg"><img src="../gallery/D13-3d-premium.jpg" alt="D13 سه‌بعدی پریمیوم" loading="lazy"><span>D13 · سه‌بعدی پریمیوم</span></a>
-        <a class="shot" href="../gallery/D15-remotion-blueprint.jpg"><img src="../gallery/D15-remotion-blueprint.jpg" alt="D15 نقشه‌کشی Remotion" loading="lazy"><span>D15 · نقشه‌کشی</span></a>
+        <a class="shot" href="../gallery/D15-remotion-blueprint.jpg"><img src="../gallery/D15-remotion-blueprint.jpg" alt="D15 نقشه‌کشی Three.js + GSAP" loading="lazy"><span>D15 · نقشه‌کشی</span></a>
       </div>
       <div class="actions"><a class="button secondary" href="../gallery/README.md">جدول کامل گالری</a><a class="button secondary" href="../references/commands-fa.md">۲۶ نام سبک</a></div>
     </section>
@@ -88,7 +88,7 @@ A روی چهره باشد و بخش پشتیبانی از ثانیهٔ ۲۷ ت�
 در بخش نظرها از اسکرین‌شات‌های review استفاده کن؛ زیرنویس کمی پایین‌تر باشد.
 موسیقی بیزنسی با گین -20 dB و ترنزیشن ووش، زوم‌اوت ساده و فلش کوتاه بگذار.
 MP4 کامل و پیش‌نمایش بخش اصلاح‌شده را بده.</pre>
-      <p><a href="../references/commands-fa.md">کتابخانهٔ فرمان‌ها</a> نمونه‌های انتخاب سبک، گالری، صدا، زیرنویس، شواهد، اصلاح و تحویل را دارد. این جمله‌ها دستور PowerShell نیستند؛ دستیار آنها را به پلن یا کد Remotion تبدیل می‌کند.</p>
+      <p><a href="../references/commands-fa.md">کتابخانهٔ فرمان‌ها</a> نمونه‌های انتخاب سبک، گالری، صدا، زیرنویس، شواهد، اصلاح و تحویل را دارد. این جمله‌ها دستور PowerShell نیستند؛ دستیار آنها را به پلن یا کد Three.js + GSAP تبدیل می‌کند.</p>
     </section>
     <section id="plan">
       <h2>۳. مسیر موتور پلن</h2>
@@ -107,8 +107,8 @@ python scripts/compose.py "WORKDIR/plan.json" --out "OUTPUT.mp4"</pre>
       <p>این فرمان‌ها را در PowerShell از ریشهٔ مخزن اجرا کن و <code>SOURCE</code>، <code>WORKDIR</code> و <code>OUTPUT</code> را با مسیرهای خودت عوض کن. <a href="../GUIDE.md#۳-با-موتور-پلن-ویدیو-بساز">توضیح کامل</a></p>
     </section>
     <section id="remotion">
-      <h2>۴. مسیر Remotion</h2>
-      <p>در Remotion عکس‌های D12 تا D16 به پنج Composition مربوط‌اند: <code>Pop3DVideo</code>، <code>Premium3DVideo</code>، <code>MinimalVideo</code>، <code>InfographicVideo</code> و <code>MainVideo</code>. قالب، داستان نمونه است؛ زمان، متن و صحنه‌ها را با ورودی تازه بازنویسی کن.</p>
+      <h2>۴. مسیر Three.js + GSAP</h2>
+      <p>در Three.js + GSAP عکس‌های D12 تا D16 به پنج Composition مربوط‌اند: <code>Pop3DVideo</code>، <code>Premium3DVideo</code>، <code>MinimalVideo</code>، <code>InfographicVideo</code> و <code>MainVideo</code>. قالب، داستان نمونه است؛ زمان، متن و صحنه‌ها را با ورودی تازه بازنویسی کن.</p>
       <pre class="code">python scripts/remotion_init.py "WORKDIR" --audio "SOURCE.mp4" --install
 Set-Location "WORKDIR/remotion"
 npm run dev
@@ -116,7 +116,7 @@ npm run lint
 npx remotion compositions
 npx remotion still Premium3DVideo "frame.jpg" --frame=120 --gl=angle
 npx remotion render Premium3DVideo "final.mp4" --gl=angle</pre>
-      <p>در Studio پیش‌نمایش را بررسی کن. شناسه و مدت در <code>src/Root.tsx</code>، زمان‌بندی سه‌بعدی در <code>src/pop3d/timing.ts</code> و صحنه‌ها در پوشه‌های <code>src/</code> هستند. برای ۲بعدی تنظیم GL معمولاً لازم نیست. <a href="../GUIDE.md#۴-با-remotion-ویدیو-بساز">آموزش کامل Remotion</a> · <a href="https://www.remotion.dev/docs/studio">مستند رسمی Studio</a></p>
+      <p>در Studio پیش‌نمایش را بررسی کن. شناسه و مدت در <code>src/Root.tsx</code>، زمان‌بندی سه‌بعدی در <code>src/pop3d/timing.ts</code> و صحنه‌ها در پوشه‌های <code>src/</code> هستند. برای ۲بعدی تنظیم GL معمولاً لازم نیست. <a href="../GUIDE.md#۴-با-remotion-ویدیو-بساز">آموزش کامل Three.js + GSAP</a> · <a href="https://www.remotion.dev/docs/studio">مستند رسمی Studio</a></p>
     </section>
     <section>
       <h2>۵. پیش از تحویل</h2>

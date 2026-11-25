@@ -41,15 +41,35 @@ def ensure_pip(pkg, mod=None):
         subprocess.run([sys.executable, "-m", "pip", "install", "-q", pkg], check=True)
 
 
+NODE_PKGS = [
+    "puppeteer-core@23.11.1",
+    "gsap@latest",
+    "@gsap/react",
+    "lottie-web",
+    "roughjs",
+    "rough-notation",
+    "split-type",
+    "three",
+    "pixi.js",
+    "pixi-filters",
+    "d3-shape",
+    "d3-interpolate",
+    "shiki",
+    "muuri",
+    "@barba/core",
+]
+
+
 def ensure_node():
     nd = CACHE / "node"
     nd.mkdir(parents=True, exist_ok=True)
-    if not (nd / "node_modules" / "puppeteer-core").exists() or not (nd / "node_modules" / "gsap").exists():
-        log("npm install puppeteer-core gsap (no bundled browser download)")
+    needed = ("puppeteer-core", "gsap", "lottie-web", "roughjs", "split-type", "three", "d3-shape", "muuri")
+    if any(not (nd / "node_modules" / m).exists() for m in needed):
+        log("npm install motion & 3D JS toolkit (no bundled browser download)")
         if not (nd / "package.json").exists():
             (nd / "package.json").write_text('{"name":"rme-cache","private":true}')
         npm = shutil.which("npm") or shutil.which("npm.cmd")
-        subprocess.run([npm, "i", "--no-audit", "--no-fund", "puppeteer-core@23.11.1", "gsap@3.12.5"],
+        subprocess.run([npm, "i", "--no-audit", "--no-fund", *NODE_PKGS],
                        cwd=nd, check=True, shell=os.name == "nt")
     return nd
 
@@ -94,6 +114,8 @@ def main():
     CACHE.mkdir(parents=True, exist_ok=True)
     ff = need("ffmpeg"); need("ffprobe"); need("node")
     ensure_pip("numpy")
+    ensure_pip("Pillow", "PIL")
+    ensure_pip("onnxruntime")
     ensure_pip("faster-whisper", "faster_whisper")
     nd = ensure_node()
     browser = find_browser()
